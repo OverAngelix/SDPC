@@ -23,3 +23,19 @@ export function buildSlots (buttons: Button[], parentId: string | null): (Button
   }
   return slots
 }
+
+/** L'identifiant du bouton et ceux de tout son contenu (un dossier, ses sous-dossiers, etc.) */
+export function collectSubtree (buttons: Button[], rootId: string): Set<string> {
+  const ids = new Set([rootId])
+  let grew = true
+  while (grew) {
+    grew = false
+    for (const button of buttons) {
+      if (button.parentId !== null && ids.has(button.parentId) && !ids.has(button.id)) {
+        ids.add(button.id)
+        grew = true
+      }
+    }
+  }
+  return ids
+}

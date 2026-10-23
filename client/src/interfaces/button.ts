@@ -13,3 +13,9 @@ export interface Button {
   /** Actions uniquement : URL http(s) vers laquelle rediriger */
   url?: string
 }
+
+/** Champs envoyés pour créer un bouton : le serveur attribue l'identifiant */
+export type ButtonInput = Omit<Button, 'id'>
+
+/** Champs modifiables d'un bouton existant : le dossier parent ne l'est pas */
+export type ButtonPatch = Partial<Pick<Button, 'label' | 'icon' | 'type' | 'position' | 'url'>>

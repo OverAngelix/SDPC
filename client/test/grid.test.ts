@@ -1,6 +1,6 @@
 import type { Button } from '@/interfaces/button'
 import { describe, expect, it } from 'vitest'
-import { BACK_SLOT, buildSlots, COLUMNS, ROWS, SLOTS } from '@/grid'
+import { BACK_SLOT, buildSlots, collectSubtree, COLUMNS, ROWS, SLOTS } from '@/grid'
 
 function makeButton (overrides: Partial<Button>): Button {
   return {
@@ -83,5 +83,23 @@ describe('buildSlots', () => {
 
     expect(slots).toHaveLength(SLOTS)
     expect(slots.every(slot => slot === null)).toBe(true)
+  })
+})
+
+describe('collectSubtree', () => {
+  const games = makeButton({ id: 'games', type: 'folder', url: undefined })
+  const retro = makeButton({ id: 'retro', parentId: 'games', position: 1, type: 'folder', url: undefined })
+  const mario = makeButton({ id: 'mario', parentId: 'retro', position: 1 })
+  const zelda = makeButton({ id: 'zelda', parentId: 'games', position: 2 })
+  const mail = makeButton({ id: 'mail', position: 1 })
+  const all = [games, retro, mario, zelda, mail]
+
+  it('renvoie le bouton seul quand il n\'a pas de contenu', () => {
+    expect(collectSubtree(all, 'mail')).toEqual(new Set(['mail']))
+  })
+
+  it('renvoie le dossier et son contenu sur tous les niveaux', () => {
+    expect(collectSubtree(all, 'games')).toEqual(new Set(['games', 'retro', 'mario', 'zelda']))
+    expect(collectSubtree(all, 'retro')).toEqual(new Set(['retro', 'mario']))
   })
 })

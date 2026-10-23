@@ -1,8 +1,8 @@
-import type { Button } from '@/interfaces/button'
+import type { Button, ButtonInput, ButtonPatch } from '@/interfaces/button'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import { fetchButtons } from '@/api/buttons'
-import { buildSlots } from '@/grid'
+import { createButton, deleteButton, fetchButtons, updateButton } from '@/api/buttons'
+import { buildSlots, collectSubtree } from '@/grid'
 
 export const useButtonsStore = defineStore('buttons', () => {
   const buttons = ref<Button[]>([])
@@ -48,5 +48,26 @@ export const useButtonsStore = defineStore('buttons', () => {
     return path.length > 0 && path[0]!.parentId === null ? path : null
   }
 
-  return { buttons, loading, error, loaded, load, slotsOf, pathTo }
+  // Les écritures laissent remonter l'erreur du serveur (400, 409…) : c'est le formulaire qui l'affiche.
+  // La réponse du serveur met la liste à jour, sans recharger tous les boutons.
+  async function create (input: ButtonInput) {
+    const created = await createButton(input)
+    buttons.value = [...buttons.value, created]
+    return created
+  }
+
+  async function update (id: string, patch: ButtonPatch) {
+    const updated = await updateButton(id, patch)
+    buttons.value = buttons.value.map(button => button.id === id ? updated : button)
+    return updated
+  }
+
+  async function remove (id: string) {
+    await deleteButton(id)
+    // Le serveur supprime aussi le contenu d'un dossier
+    const removed = collectSubtree(buttons.value, id)
+    buttons.value = buttons.value.filter(button => !removed.has(button.id))
+  }
+
+  return { buttons, loading, error, loaded, load, slotsOf, pathTo, create, update, remove }
 })

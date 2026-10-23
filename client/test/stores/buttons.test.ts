@@ -1,13 +1,21 @@
 import type { Button } from '@/interfaces/button'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { fetchButtons } from '@/api/buttons'
+import { createButton, deleteButton, fetchButtons, updateButton } from '@/api/buttons'
 import { SLOTS } from '@/grid'
 import { useButtonsStore } from '@/stores/buttons'
 
-vi.mock('@/api/buttons', () => ({ fetchButtons: vi.fn() }))
+vi.mock('@/api/buttons', () => ({
+  fetchButtons: vi.fn(),
+  createButton: vi.fn(),
+  updateButton: vi.fn(),
+  deleteButton: vi.fn(),
+}))
 
 const fetchButtonsMock = vi.mocked(fetchButtons)
+const createButtonMock = vi.mocked(createButton)
+const updateButtonMock = vi.mocked(updateButton)
+const deleteButtonMock = vi.mocked(deleteButton)
 
 function makeButton (overrides: Partial<Button>): Button {
   return {
@@ -31,6 +39,9 @@ describe('buttons store', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
     fetchButtonsMock.mockReset()
+    createButtonMock.mockReset()
+    updateButtonMock.mockReset()
+    deleteButtonMock.mockReset()
   })
 
   it('démarre vide, sans chargement ni erreur', () => {
@@ -168,6 +179,94 @@ describe('buttons store', () => {
       await store.load()
 
       expect(store.pathTo('a')).toBeNull()
+    })
+  })
+
+  describe('create', () => {
+    it('envoie le bouton au serveur et l\'ajoute à la liste', async () => {
+      fetchButtonsMock.mockResolvedValue([games])
+      const store = useButtonsStore()
+      await store.load()
+      const { id: _id, ...input } = mail
+      createButtonMock.mockResolvedValue(mail)
+
+      const created = await store.create(input)
+
+      expect(createButtonMock).toHaveBeenCalledWith(input)
+      expect(created).toEqual(mail)
+      expect(store.buttons).toEqual([games, mail])
+      expect(store.slotsOf(null)[4]).toEqual(mail)
+    })
+
+    it('laisse la liste intacte et relance l\'erreur du serveur', async () => {
+      fetchButtonsMock.mockResolvedValue([games])
+      const store = useButtonsStore()
+      await store.load()
+      const failure = new Error('Request failed with status code 409')
+      createButtonMock.mockRejectedValue(failure)
+
+      await expect(store.create({ parentId: null, position: 0, label: 'X', icon: 'mdi-star', type: 'folder' })).rejects.toBe(failure)
+      expect(store.buttons).toEqual([games])
+    })
+  })
+
+  describe('update', () => {
+    it('remplace le bouton par la réponse du serveur', async () => {
+      fetchButtonsMock.mockResolvedValue([games, mail])
+      const store = useButtonsStore()
+      await store.load()
+      const renamed = { ...mail, label: 'Courrier' }
+      updateButtonMock.mockResolvedValue(renamed)
+
+      await store.update('mail', { label: 'Courrier' })
+
+      expect(updateButtonMock).toHaveBeenCalledWith('mail', { label: 'Courrier' })
+      expect(store.buttons).toEqual([games, renamed])
+    })
+
+    it('laisse la liste intacte quand le serveur refuse', async () => {
+      fetchButtonsMock.mockResolvedValue([games, mail])
+      const store = useButtonsStore()
+      await store.load()
+      updateButtonMock.mockRejectedValue(new Error('Request failed with status code 400'))
+
+      await expect(store.update('mail', { label: '' })).rejects.toThrow()
+      expect(store.buttons).toEqual([games, mail])
+    })
+  })
+
+  describe('remove', () => {
+    it('retire le bouton de la liste', async () => {
+      fetchButtonsMock.mockResolvedValue([games, mail])
+      const store = useButtonsStore()
+      await store.load()
+      deleteButtonMock.mockResolvedValue()
+
+      await store.remove('mail')
+
+      expect(deleteButtonMock).toHaveBeenCalledWith('mail')
+      expect(store.buttons).toEqual([games])
+    })
+
+    it('retire aussi tout le contenu d\'un dossier', async () => {
+      fetchButtonsMock.mockResolvedValue([games, retro, mario, mail])
+      const store = useButtonsStore()
+      await store.load()
+      deleteButtonMock.mockResolvedValue()
+
+      await store.remove('games')
+
+      expect(store.buttons).toEqual([mail])
+    })
+
+    it('garde le bouton quand le serveur refuse', async () => {
+      fetchButtonsMock.mockResolvedValue([mail])
+      const store = useButtonsStore()
+      await store.load()
+      deleteButtonMock.mockRejectedValue(new Error('Network Error'))
+
+      await expect(store.remove('mail')).rejects.toThrow()
+      expect(store.buttons).toEqual([mail])
     })
   })
 })
