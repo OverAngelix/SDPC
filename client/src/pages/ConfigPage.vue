@@ -30,6 +30,7 @@
     <confirm-delete
       v-model="removeOpen"
       :button="removing"
+      :content-count="removeCount"
       :error="removeError"
       :loading="removeLoading"
       @confirm="confirmRemove"
@@ -48,6 +49,7 @@
   import ConfirmDelete from '@/components/ConfirmDelete.vue'
   import GridStatus from '@/components/GridStatus.vue'
   import { useFolderNavigation } from '@/composables/folderNavigation'
+  import { countContent } from '@/grid'
   import { useButtonsStore } from '@/stores/buttons'
   import { describeApiError } from '@/utils/apiError'
 
@@ -62,6 +64,8 @@
 
   const removeOpen = ref(false)
   const removing = ref<Button | null>(null)
+  // Compté à l'ouverture : la liste change dès que le serveur a supprimé, avant la fermeture du dialogue
+  const removeCount = ref(0)
   const removeLoading = ref(false)
   const removeError = ref<ApiErrorMessage | null>(null)
 
@@ -81,6 +85,7 @@
 
   function startRemove (button: Button) {
     removing.value = button
+    removeCount.value = countContent(store.buttons, button.id)
     removeError.value = null
     removeOpen.value = true
   }

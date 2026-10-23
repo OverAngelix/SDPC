@@ -1,9 +1,20 @@
 <template>
   <v-dialog v-model="open" max-width="440" :persistent="loading">
-    <v-card title="Supprimer ce bouton ?">
+    <v-card :title="button?.type === 'folder' ? 'Supprimer ce dossier ?' : 'Supprimer ce bouton ?'">
       <v-card-text>
+        <v-alert
+          v-if="count > 0"
+          class="mb-4"
+          density="compact"
+          icon="mdi-alert"
+          type="warning"
+          variant="tonal"
+        >
+          Ce dossier contient {{ countText }}, sous-dossiers compris. Ils seront tous supprimés avec lui.
+        </v-alert>
+
         <p v-if="button?.type === 'folder'">
-          Le dossier « {{ button.label }} » et tout son contenu seront supprimés.
+          Le dossier « {{ button.label }} » sera supprimé<template v-if="count === 0"> : il est vide</template>.
         </p>
 
         <p v-else>
@@ -30,7 +41,7 @@
         <v-btn
           color="error"
           :loading="loading"
-          text="Supprimer"
+          :text="confirmText"
           variant="flat"
           @click="emit('confirm')"
         />
@@ -42,13 +53,16 @@
 <script lang="ts" setup>
   import type { ApiErrorMessage } from '@/interfaces/api'
   import type { Button } from '@/interfaces/button'
+  import { computed } from 'vue'
 
   // Dialogue ouvert ou fermé
   const open = defineModel<boolean>({ required: true })
 
-  defineProps<{
+  const props = defineProps<{
     /** Le bouton à supprimer */
     button: Button | null
+    /** Nombre de boutons que contient le dossier à supprimer, sous-dossiers compris (0 sinon) */
+    contentCount?: number
     /** Suppression en cours */
     loading?: boolean
     /** Erreur de la dernière tentative */
@@ -58,4 +72,9 @@
   const emit = defineEmits<{
     confirm: []
   }>()
+
+  const count = computed(() => props.contentCount ?? 0)
+  const countText = computed(() => `${count.value} bouton${count.value > 1 ? 's' : ''}`)
+  // Le libellé du bouton rappelle ce qui disparaît : on ne confirme pas à l'aveugle
+  const confirmText = computed(() => count.value > 0 ? `Supprimer le dossier et ses ${countText.value}` : 'Supprimer')
 </script>
