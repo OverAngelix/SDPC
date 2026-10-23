@@ -3,7 +3,7 @@
 | | |
 | --- | --- |
 | **Statut** | Livré |
-| **Personne active** | À définir |
+| **Personne active** | OverAngelix |
 | **Périmètre** | `server/` |
 | **Dépend de** | [01 — Connexion client ↔ serveur](01-connexion-client-serveur.md) |
 
