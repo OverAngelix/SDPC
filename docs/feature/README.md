@@ -4,4 +4,4 @@ Une fiche par feature : explication, TODO, implémentation et personne active. N
 
 | N° | Feature | Statut | Personne active |
 | --- | --- | --- | --- |
-| 01 | [Connexion client ↔ serveur](01-connexion-client-serveur.md) | En cours | OverAngelix |
+| 01 | [Connexion client ↔ serveur](01-connexion-client-serveur.md) | Livré | OverAngelix |

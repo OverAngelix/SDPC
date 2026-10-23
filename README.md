@@ -31,20 +31,20 @@ npm ci
 npm run dev
 ```
 
-Puis ouvrir <http://localhost:3000>. En développement, le client redirige `/api` vers le serveur.
+Puis ouvrir <http://localhost:3000>. En développement, le client redirige `/api` vers le serveur. En production, l'URL de l'API se règle avec `VITE_API_URL` (voir `client/.env.example`).
 
 ## Commandes
 
 | Dossier | Commandes |
 | --- | --- |
-| `server/` | `npm run dev`, `npm run build`, `npm start`, `npm run type-check` |
-| `client/` | `npm run dev`, `npm run build`, `npm run type-check`, `npm run lint` |
+| `server/` | `npm run dev`, `npm run build`, `npm start`, `npm run type-check`, `npm test` |
+| `client/` | `npm run dev`, `npm run build`, `npm run type-check`, `npm run lint`, `npm test` |
 
 ## Features mises en place
 
 | Feature | Statut | Personne active |
 | --- | --- | --- |
-| [01 — Connexion client ↔ serveur](docs/feature/01-connexion-client-serveur.md) | En cours | OverAngelix |
+| [01 — Connexion client ↔ serveur](docs/feature/01-connexion-client-serveur.md) | Livré | OverAngelix |
 
 La liste complète et le détail de chaque feature (TODO, implémentation) sont dans [`docs/feature/`](docs/feature/README.md).
 
