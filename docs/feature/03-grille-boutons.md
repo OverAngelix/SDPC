@@ -9,11 +9,11 @@
 
 ## Explication de la feature
 
-L'onglet **Grille** affiche les boutons comme un Stream Deck : 5 colonnes × 7 lignes, chaque bouton avec son icône et son libellé.
+L'onglet **Grille** affiche les boutons comme un Stream Deck : 7 colonnes × 5 lignes, chaque bouton avec son icône et son libellé.
 
-- Un clic sur une **action** redirige vers son URL.
+- Un clic sur une **action** ouvre son URL dans un nouvel onglet.
 - Un clic sur un **dossier** remplace la grille par son contenu, sur autant de niveaux que nécessaire.
-- Un **retour** et un **fil d'Ariane** permettent de remonter.
+- Dans un dossier, le **bouton retour** occupe la première case de la grille (comme sur un Stream Deck Elgato) : 35 emplacements utilisables à la racine, 34 dans un dossier. Il n'y a pas de fil d'Ariane.
 - Les emplacements libres sont affichés vides, pour que la grille garde toujours sa forme.
 
 C'est la feature qui rend l'application utilisable au quotidien.
@@ -22,12 +22,12 @@ C'est la feature qui rend l'application utilisable au quotidien.
 
 - [x] Client API des boutons (`client/src/api/buttons.ts`) basé sur l'instance axios partagée, types dans `client/src/interfaces/button.ts`
 - [x] Store Pinia `buttons` : chargement, boutons d'un dossier, chargement et erreur
-- [x] Composant `ButtonTile` : icône MDI, libellé, emplacement vide
-- [x] Composant `ButtonGrid` : grille 5 × 7 construite à partir des positions 0 à 34
+- [x] Composant `ButtonTile` : icône MDI, libellé, tuile de retour, emplacement vide
+- [x] Composant `ButtonGrid` : grille 7 × 5 construite à partir des positions 0 à 34
 - [x] Routes `/` (racine) et `/folder/:id` pour que l'URL reflète le dossier ouvert
-- [x] Clic sur une action : redirection vers l'URL dans l'onglet courant
+- [x] Clic sur une action : ouverture de l'URL dans un nouvel onglet
 - [x] Clic sur un dossier : navigation vers son contenu
-- [x] Bouton retour et fil d'Ariane
+- [x] Bouton retour à la première case d'un dossier (pas de fil d'Ariane)
 - [x] États : chargement, erreur (serveur injoignable), grille vide, dossier introuvable
 - [x] Constantes de la grille (colonnes, lignes) centralisées côté client
 - [x] Tests du store, de la construction de la grille et de la garde sur les URL (`client/test/`)
@@ -37,10 +37,11 @@ C'est la feature qui rend l'application utilisable au quotidien.
 
 - **Tout est chargé d'un coup** : `GET /api/buttons` renvoie la liste à plat, le client la garde dans le store et en déduit le contenu et le chemin de chaque dossier. Pas de requête par dossier, la navigation est instantanée.
 - **Rechargement à chaque ouverture de l'onglet Grille**, pour voir les changements faits dans la configuration. Si un rechargement échoue, la grille déjà chargée reste affichée avec un avertissement.
-- **Redirection d'une action dans l'onglet courant** (`window.location.assign`). Le client revérifie que l'URL est `http` ou `https` (`isHttpUrl`), même si le serveur la valide déjà : en cas d'URL douteuse, le clic ne fait rien.
+- **Une action s'ouvre dans un nouvel onglet** (`window.open(url, '_blank', 'noopener,noreferrer')`) : la grille reste ouverte. Le client revérifie que l'URL est `http` ou `https` (`isHttpUrl`), même si le serveur la valide déjà : en cas d'URL douteuse, le clic ne fait rien.
+- **Le retour est la case 0 de la grille d'un dossier**, pas un bouton à part : il mène au dossier parent, ou à la racine depuis un dossier de premier niveau. Le serveur interdit les boutons à cet emplacement (fiche 02) et `buildSlots` le laisse vide dans un dossier par sécurité.
 - **Dossier introuvable** : un identifiant inconnu, une action, une chaîne de parents rompue ou cyclique donnent le même message avec un retour à l'accueil.
 - **L'onglet Grille reste actif dans un dossier** : les routes `/` et `/folder/:id` partagent un parent commun.
-- **Dimensions de la grille** dans `client/src/grid.ts` (`COLUMNS`, `ROWS`, `SLOTS`), miroir de `server/src/buttons/types.ts` : à garder alignés tant que la grille n'est pas modulable.
+- **Dimensions de la grille** dans `client/src/grid.ts` (`COLUMNS = 7`, `ROWS = 5`, `SLOTS`, `BACK_SLOT = 0`), miroir de `server/src/buttons/types.ts` : à garder alignés tant que la grille n'est pas modulable.
 
 ## Implémentation
 
@@ -51,9 +52,9 @@ GridPage (/ ou /folder/:id)
   → useButtonsStore().load()               (GET /api/buttons)
   → boutons du dossier courant, rangés par position (buildSlots)
   → ButtonGrid : 35 emplacements, vides ou occupés
-      clic action  → window.location.assign(url)   (http(s) uniquement)
+      clic action  → window.open(url, '_blank')    (http(s) uniquement)
       clic dossier → router.push(/folder/:id)
-  → FolderBreadcrumb : retour et fil d'Ariane (store.pathTo)
+      case 0 d'un dossier → tuile de retour → router.push(parent ou racine)   (store.pathTo)
 ```
 
 ### États de la page
@@ -64,7 +65,7 @@ GridPage (/ ou /folder/:id)
 | Serveur injoignable, rien de chargé | Erreur avec bouton « Réessayer » |
 | Serveur injoignable après un chargement | Grille conservée et avertissement avec « Réessayer » |
 | Dossier inconnu | Avertissement et retour à l'accueil |
-| Dossier sans bouton | Message d'aide, grille de 35 emplacements vides |
+| Dossier sans bouton | Message d'aide, grille vide (seule la tuile de retour dans un dossier) |
 
 ### Fichiers
 
@@ -72,12 +73,11 @@ GridPage (/ ou /folder/:id)
 | --- | --- |
 | `client/src/interfaces/button.ts` | Types `Button` et `ButtonType` |
 | `client/src/api/buttons.ts` | `fetchButtons` (`GET /buttons`) |
-| `client/src/grid.ts` | Constantes de la grille et `buildSlots` |
+| `client/src/grid.ts` | Constantes de la grille, `BACK_SLOT` et `buildSlots` |
 | `client/src/utils/url.ts` | `isHttpUrl` |
-| `client/src/stores/buttons.ts` | Store Pinia : `buttons`, `loading`, `error`, `loaded`, `load`, `slotsOf`, `pathTo` |
-| `client/src/components/ButtonTile.vue` | Un emplacement (bouton ou vide) |
-| `client/src/components/ButtonGrid.vue` | La grille |
-| `client/src/components/FolderBreadcrumb.vue` | Retour et fil d'Ariane |
+| `client/src/stores/buttons.ts` | Store Pinia : `buttons`, `loading`, `error`, `loaded`, `load`, `slotsOf`, `pathTo` (validité du dossier et dossier parent) |
+| `client/src/components/ButtonTile.vue` | Un emplacement (bouton, retour ou vide) |
+| `client/src/components/ButtonGrid.vue` | La grille, avec la tuile de retour à la case 0 d'un dossier |
 | `client/src/pages/GridPage.vue` | Page de l'onglet Grille |
 | `client/src/router/index.ts` | Routes `grid` (`/`) et `folder` (`/folder/:id`) |
 | `client/test/grid.test.ts` | Tests de `buildSlots` |
