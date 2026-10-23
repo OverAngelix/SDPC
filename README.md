@@ -33,6 +33,8 @@ npm run dev
 
 Puis ouvrir <http://localhost:3000>. En développement, le client redirige `/api` vers le serveur. En production, l'URL de l'API se règle avec `VITE_API_URL` (voir `client/.env.example`).
 
+Les boutons sont conservés côté serveur dans `server/data/buttons.json` (ignoré par git, chemin réglable avec `DATA_FILE`, voir `server/.env.example`).
+
 ## Commandes
 
 | Dossier | Commandes |
@@ -45,7 +47,7 @@ Puis ouvrir <http://localhost:3000>. En développement, le client redirige `/api
 | Feature | Statut | Personne active |
 | --- | --- | --- |
 | [01 — Connexion client ↔ serveur](docs/feature/01-connexion-client-serveur.md) | Livré | OverAngelix |
-| [02 — API des boutons](docs/feature/02-api-boutons.md) | À faire | À définir |
+| [02 — API des boutons](docs/feature/02-api-boutons.md) | Livré | À définir |
 | [03 — Grille de boutons](docs/feature/03-grille-boutons.md) | À faire | À définir |
 | [04 — Configuration des boutons](docs/feature/04-configuration-boutons.md) | À faire | À définir |
 | [05 — Finitions de la configuration](docs/feature/05-finitions-configuration.md) | À faire | À définir |
