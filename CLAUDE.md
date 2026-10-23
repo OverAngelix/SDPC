@@ -2,12 +2,12 @@
 
 ## Idée du projet
 
-Un Stream Deck logiciel pour PC, dans l'esprit des Stream Deck d'Elgato : une grande interface de boutons en grille (5 colonnes par 7 lignes) servant de raccourcis.
+Un Stream Deck logiciel pour PC, dans l'esprit des Stream Deck d'Elgato : une grande interface de boutons en grille (7 colonnes par 5 lignes) servant de raccourcis.
 
 - Un **bouton** a une icône et un libellé configurables.
 - Un bouton est soit une **action**, soit un **dossier**.
-- **Action** : redirige vers une URL. C'est tout. Aucune application locale n'est lancée, aucune commande n'est exécutée : uniquement des redirections vers des URL.
-- **Dossier** : un clic remplace la grille par celle du dossier, ce qui donne plusieurs pages, sur plusieurs niveaux de profondeur, comme sur un Stream Deck Elgato. Un retour permet de remonter.
+- **Action** : redirige vers une URL, dans un nouvel onglet. C'est tout. Aucune application locale n'est lancée, aucune commande n'est exécutée : uniquement des redirections vers des URL.
+- **Dossier** : un clic remplace la grille par celle du dossier, ce qui donne plusieurs pages, sur plusieurs niveaux de profondeur, comme sur un Stream Deck Elgato. Le retour occupe la première case de la grille du dossier : 35 emplacements utilisables à la racine, 34 dans un dossier. Pas de fil d'Ariane.
 
 ## Périmètre de la V1
 

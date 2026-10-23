@@ -14,5 +14,8 @@ Ordre de réalisation : 02 → 03 → 04 → 05 (chaque feature dépend de la pr
 
 ## Plus tard
 
-- **Grille modulable** : nombre de colonnes et de lignes configurable (aujourd'hui fixe : 5 × 7, emplacements 0 à 34).
+- **Grille modulable** : nombre de colonnes et de lignes configurable (aujourd'hui fixe : 7 × 5, emplacements 0 à 34 ; l'emplacement 0 d'un dossier est le retour).
 - Plein écran ou mode kiosque pour la grille, thèmes.
+- Responsive
+- Creation de compte
+- Base de données au lieu de json
