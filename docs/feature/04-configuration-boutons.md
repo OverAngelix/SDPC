@@ -11,7 +11,7 @@
 
 L'onglet **Configuration** permet de créer, modifier et supprimer les boutons : type (action ou dossier), icône, libellé, URL et contenu des dossiers.
 
-L'écran réutilise la grille de la feature 03, en mode édition : un clic sur un emplacement vide ouvre la création à cet emplacement, un clic sur un bouton ouvre sa modification, et un clic sur un dossier permet d'entrer dedans pour configurer son contenu.
+L'écran réutilise la grille de la feature 03, en mode édition : un clic sur un emplacement vide ouvre la création à cet emplacement, un clic sur un bouton ouvre sa modification, et un clic sur un dossier permet d'entrer dedans pour configurer son contenu. Dans un dossier, la première case reste le bouton retour : elle n'est pas modifiable, la création y est impossible (le serveur refuse l'emplacement 0 hors de la racine).
 
 ## TODO
 
@@ -20,7 +20,7 @@ L'écran réutilise la grille de la feature 03, en mode édition : un clic sur u
 - [ ] Formulaire de création et de modification (boîte de dialogue) : type, libellé, icône, URL
 - [ ] Champ URL affiché pour une action uniquement, validé `http(s)` côté client (le serveur reste l'autorité)
 - [ ] Choix de l'icône : liste d'icônes MDI courantes et champ libre, avec aperçu
-- [ ] Création à l'emplacement cliqué (position pré-remplie)
+- [ ] Création à l'emplacement cliqué (position pré-remplie), sauf la case 0 d'un dossier qui reste le retour
 - [ ] Suppression avec confirmation
 - [ ] Gestion des erreurs du serveur (400, 409) dans le formulaire
 - [ ] Retour visuel : confirmation d'enregistrement, erreurs
