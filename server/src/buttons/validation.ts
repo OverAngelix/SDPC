@@ -8,6 +8,7 @@ const BUTTON_TYPES: readonly ButtonType[] = ['action', 'folder']
 const ICON_PATTERN = /^mdi-[a-z0-9]+(?:-[a-z0-9]+)*$/
 // Seules des redirections web sont autorisées : ni javascript:, ni file:, etc.
 const ALLOWED_PROTOCOLS = new Set(['http:', 'https:'])
+const RESERVED_SLOT_ERROR = `position : l'emplacement ${BACK_SLOT} est réservé au bouton retour dans un dossier`
 
 export type ValidationResult<T> = { ok: true, value: T } | { ok: false, errors: string[] }
 
@@ -85,7 +86,7 @@ export function validateButtonInput (body: unknown): ValidationResult<ButtonInpu
     return { ok: false, errors }
   }
   if (parentId.value !== null && position.value === BACK_SLOT) {
-    return { ok: false, errors: [`position : l'emplacement ${BACK_SLOT} est réservé au bouton retour dans un dossier`] }
+    return { ok: false, errors: [RESERVED_SLOT_ERROR] }
   }
 
   return {
@@ -122,4 +123,14 @@ export function mergeButtonPatch (current: Button, patch: unknown): ValidationRe
     url: patch.url === undefined && patch.type === 'folder' ? undefined : patch.url ?? current.url,
   }
   return validateButtonInput(merged)
+}
+
+/** Valide le corps d'un déplacement (`{ position }`) vers un autre emplacement du dossier `parentId`. */
+export function validateMoveInput (parentId: string | null, body: unknown): ValidationResult<number> {
+  if (!isRecord(body)) return { ok: false, errors: ['Le corps de la requête doit être un objet JSON'] }
+
+  const position = parsePosition(body.position)
+  if ('error' in position) return { ok: false, errors: [position.error] }
+  if (parentId !== null && position.value === BACK_SLOT) return { ok: false, errors: [RESERVED_SLOT_ERROR] }
+  return { ok: true, value: position.value }
 }

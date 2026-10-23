@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
 import type { Button } from '../../src/buttons/types.js'
-import { mergeButtonPatch, validateButtonInput } from '../../src/buttons/validation.js'
+import { mergeButtonPatch, validateButtonInput, validateMoveInput } from '../../src/buttons/validation.js'
 
 const action = { position: 0, label: 'YouTube', icon: 'mdi-youtube', type: 'action', url: 'https://www.youtube.com' }
 const folder = { position: 1, label: 'Musique', icon: 'mdi-folder', type: 'folder' }
@@ -154,5 +154,34 @@ describe('mergeButtonPatch', () => {
 
   it('refuse un corps qui n\'est pas un objet', () => {
     assert.equal(mergeButtonPatch(current, 'texte').ok, false)
+  })
+})
+
+describe('validateMoveInput', () => {
+  it('accepte un emplacement de 0 à 34 à la racine', () => {
+    assert.deepEqual(validateMoveInput(null, { position: 0 }), { ok: true, value: 0 })
+    assert.deepEqual(validateMoveInput(null, { position: 34 }), { ok: true, value: 34 })
+  })
+
+  it('accepte un emplacement de 1 à 34 dans un dossier', () => {
+    assert.deepEqual(validateMoveInput('abc', { position: 1 }), { ok: true, value: 1 })
+  })
+
+  it('refuse l\'emplacement 0 dans un dossier : il est réservé au retour', () => {
+    const result = validateMoveInput('abc', { position: 0 })
+    assert.equal(result.ok, false)
+    assert.match(result.ok ? '' : result.errors[0]!, /réservé/)
+  })
+
+  it('refuse un emplacement absent, hors grille ou qui n\'est pas un entier', () => {
+    for (const body of [{}, { position: -1 }, { position: 35 }, { position: 1.5 }, { position: '3' }, { position: null }]) {
+      assert.equal(validateMoveInput(null, body).ok, false, JSON.stringify(body))
+    }
+  })
+
+  it('refuse un corps qui n\'est pas un objet', () => {
+    for (const body of [undefined, null, 'texte', 3, []]) {
+      assert.equal(validateMoveInput(null, body).ok, false)
+    }
   })
 })
