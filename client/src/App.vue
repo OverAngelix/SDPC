@@ -12,8 +12,11 @@
         class="mr-4"
         :color="statusColor"
         label
+        link
         :prepend-icon="statusIcon"
         :text="statusText"
+        title="Cliquer pour revérifier la connexion"
+        @click="server.retry()"
       />
     </v-app-bar>
 
@@ -24,7 +27,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, onMounted } from 'vue'
+  import { computed, onMounted, onUnmounted } from 'vue'
   import { useServerStore } from '@/stores/server'
 
   const server = useServerStore()
@@ -33,5 +36,6 @@
   const statusIcon = computed(() => ({ unknown: 'mdi-help-circle', online: 'mdi-check-circle', offline: 'mdi-alert-circle' })[server.status])
   const statusText = computed(() => ({ unknown: 'Serveur : vérification…', online: 'Serveur connecté', offline: 'Serveur injoignable' })[server.status])
 
-  onMounted(() => server.checkHealth())
+  onMounted(() => server.startPolling())
+  onUnmounted(() => server.stopPolling())
 </script>
