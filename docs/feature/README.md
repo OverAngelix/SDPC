@@ -6,7 +6,7 @@ Une fiche par feature : explication, TODO, implémentation et personne active. N
 | --- | --- | --- | --- |
 | 01 | [Connexion client ↔ serveur](01-connexion-client-serveur.md) | Livré | OverAngelix |
 | 02 | [API des boutons](02-api-boutons.md) | Livré | OverAngelix |
-| 03 | [Grille de boutons](03-grille-boutons.md) | À faire | OverAngelix |
+| 03 | [Grille de boutons](03-grille-boutons.md) | Livré | OverAngelix |
 | 04 | [Configuration des boutons](04-configuration-boutons.md) | À faire | OverAngelix |
 | 05 | [Finitions de la configuration](05-finitions-configuration.md) | À faire | OverAngelix |
 
