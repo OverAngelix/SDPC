@@ -30,6 +30,11 @@ export function buttonsRouter (store: ButtonStore) {
     res.json(await store.update(req.params.id, req.body))
   })
 
+  // Déplacement dans le dossier du bouton, avec échange si l'emplacement est occupé
+  router.post('/:id/move', async (req, res) => {
+    res.json(await store.move(req.params.id, req.body))
+  })
+
   router.delete('/:id', async (req, res) => {
     await store.remove(req.params.id)
     res.status(204).end()

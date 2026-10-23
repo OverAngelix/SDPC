@@ -106,4 +106,33 @@ describe('/api/buttons', () => {
     const saved = JSON.parse(await readFile(server.file, 'utf8'))
     assert.deepEqual(saved.buttons, [created])
   })
+
+  it('POST /:id/move déplace un bouton (200) et renvoie les boutons modifiés', async () => {
+    const youtube = (await call('POST', '', action)).body
+    const res = await call('POST', `/${youtube.id}/move`, { position: 9 })
+
+    assert.equal(res.status, 200)
+    assert.deepEqual(res.body, [{ ...youtube, position: 9 }])
+    assert.equal((await call('GET', `/${youtube.id}`)).body.position, 9)
+  })
+
+  it('POST /:id/move échange deux boutons', async () => {
+    const youtube = (await call('POST', '', action)).body
+    const music = (await call('POST', '', folder)).body
+    const res = await call('POST', `/${youtube.id}/move`, { position: music.position })
+
+    assert.equal(res.status, 200)
+    assert.deepEqual(res.body, [{ ...youtube, position: music.position }, { ...music, position: youtube.position }])
+    assert.equal((await call('GET', `/${music.id}`)).body.position, youtube.position)
+  })
+
+  it('POST /:id/move répond 400 pour un emplacement invalide ou réservé, 404 pour un bouton inconnu', async () => {
+    const parent = (await call('POST', '', folder)).body
+    const inside = (await call('POST', '', { ...action, position: 1, parentId: parent.id })).body
+
+    assert.equal((await call('POST', `/${inside.id}/move`, { position: 0 })).status, 400)
+    assert.equal((await call('POST', `/${inside.id}/move`, { position: 99 })).status, 400)
+    assert.equal((await call('POST', `/${inside.id}/move`, {})).status, 400)
+    assert.equal((await call('POST', '/fantome/move', { position: 3 })).status, 404)
+  })
 })
