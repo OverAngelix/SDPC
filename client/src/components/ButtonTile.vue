@@ -1,17 +1,17 @@
 <template>
   <v-card
-    v-if="button"
-    :aria-label="button.label"
+    v-if="back || button"
+    :aria-label="label"
     class="tile d-flex flex-column align-center justify-center pa-2"
     link
     variant="tonal"
-    @click="emit('select', button)"
+    @click="onClick"
   >
-    <v-icon class="tile-icon" :icon="button.icon" size="38cqw" />
-    <span class="tile-label text-center">{{ button.label }}</span>
+    <v-icon class="tile-icon" :icon="icon" size="38cqw" />
+    <span class="tile-label text-center">{{ label }}</span>
 
     <v-icon
-      v-if="button.type === 'folder'"
+      v-if="isFolder"
       class="tile-folder"
       icon="mdi-folder"
       size="14cqw"
@@ -23,15 +23,31 @@
 
 <script lang="ts" setup>
   import type { Button } from '@/interfaces/button'
+  import { computed } from 'vue'
 
-  defineProps<{
+  const props = defineProps<{
     /** null : emplacement libre, affiché vide pour que la grille garde sa forme */
     button: Button | null
+    /** Tuile de retour au dossier parent (première case d'un dossier) : `button` est ignoré */
+    back?: boolean
   }>()
 
   const emit = defineEmits<{
     select: [button: Button]
+    back: []
   }>()
+
+  const icon = computed(() => props.back ? 'mdi-arrow-left' : props.button?.icon)
+  const label = computed(() => props.back ? 'Retour' : props.button?.label)
+  const isFolder = computed(() => !props.back && props.button?.type === 'folder')
+
+  function onClick () {
+    if (props.back) {
+      emit('back')
+    } else if (props.button) {
+      emit('select', props.button)
+    }
+  }
 </script>
 
 <style scoped>
