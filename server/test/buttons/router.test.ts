@@ -40,7 +40,7 @@ describe('/api/buttons', () => {
 
   it('GET liste tous les boutons ou filtre par dossier', async () => {
     const parent = (await call('POST', '', folder)).body
-    const child = (await call('POST', '', { ...action, parentId: parent.id })).body
+    const child = (await call('POST', '', { ...action, position: 1, parentId: parent.id })).body
     const root = (await call('POST', '', { ...action, position: 2 })).body
 
     assert.equal((await call('GET', '')).body.length, 3)
@@ -69,7 +69,7 @@ describe('/api/buttons', () => {
 
   it('DELETE d\'un dossier supprime son contenu', async () => {
     const parent = (await call('POST', '', folder)).body
-    const child = (await call('POST', '', { ...action, parentId: parent.id })).body
+    const child = (await call('POST', '', { ...action, position: 1, parentId: parent.id })).body
     await call('DELETE', `/${parent.id}`)
     assert.equal((await call('GET', `/${child.id}`)).status, 404)
   })

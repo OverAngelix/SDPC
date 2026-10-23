@@ -65,6 +65,13 @@ describe('validateButtonInput', () => {
     assert.equal(validateButtonInput({ ...action, position: 34 }).ok, true)
   })
 
+  it('réserve l\'emplacement 0 au retour dans un dossier', () => {
+    assert.match(errorsOf({ ...action, position: 0, parentId: 'abc' })[0], /^position.*réservé/)
+    assert.equal(validateButtonInput({ ...action, position: 1, parentId: 'abc' }).ok, true)
+    // À la racine, les 35 emplacements sont utilisables
+    assert.equal(validateButtonInput({ ...action, position: 0 }).ok, true)
+  })
+
   it('exige une URL pour une action', () => {
     assert.match(errorsOf({ ...action, url: undefined })[0], /^url/)
     assert.match(errorsOf({ ...action, url: '' })[0], /^url/)
@@ -131,6 +138,13 @@ describe('mergeButtonPatch', () => {
   it('refuse de changer de dossier parent', () => {
     assert.equal(mergeButtonPatch(current, { parentId: 'autre' }).ok, false)
     assert.equal(mergeButtonPatch(current, { parentId: null }).ok, true)
+  })
+
+  it('refuse de déplacer un bouton de dossier sur l\'emplacement 0', () => {
+    const inFolder: Button = { ...current, parentId: 'abc', position: 3 }
+    assert.equal(mergeButtonPatch(inFolder, { position: 0 }).ok, false)
+    assert.equal(mergeButtonPatch(inFolder, { position: 1 }).ok, true)
+    assert.equal(mergeButtonPatch(current, { position: 0 }).ok, true)
   })
 
   it('ignore id et champs inconnus', () => {

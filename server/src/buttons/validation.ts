@@ -1,5 +1,5 @@
 import type { Button, ButtonInput, ButtonType } from './types.js'
-import { SLOTS } from './types.js'
+import { BACK_SLOT, SLOTS } from './types.js'
 
 export const LABEL_MAX_LENGTH = 50
 export const URL_MAX_LENGTH = 2048
@@ -83,6 +83,9 @@ export function validateButtonInput (body: unknown): ValidationResult<ButtonInpu
   const errors = [label, icon, type, position, parentId, url].flatMap(field => 'error' in field ? [field.error] : [])
   if ('error' in label || 'error' in icon || 'error' in type || 'error' in position || 'error' in parentId || 'error' in url) {
     return { ok: false, errors }
+  }
+  if (parentId.value !== null && position.value === BACK_SLOT) {
+    return { ok: false, errors: [`position : l'emplacement ${BACK_SLOT} est réservé au bouton retour dans un dossier`] }
   }
 
   return {

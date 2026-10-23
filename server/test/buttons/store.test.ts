@@ -45,7 +45,7 @@ describe('ButtonStore', () => {
   it('liste la racine ou le contenu d\'un dossier', async () => {
     const store = await ButtonStore.open(file)
     const parent = await store.create(folder)
-    const child = await store.create({ ...action, parentId: parent.id })
+    const child = await store.create({ ...action, position: 1, parentId: parent.id })
     const root = await store.create({ ...action, position: 2 })
 
     assert.deepEqual(store.list(null).map(button => button.id), [parent.id, root.id])
@@ -57,8 +57,19 @@ describe('ButtonStore', () => {
     const store = await ButtonStore.open(file)
     const parent = await store.create(folder)
     await store.create(action)
-    await store.create({ ...action, parentId: parent.id })
+    await store.create({ ...action, position: 1, parentId: parent.id })
     assert.equal(store.list().length, 3)
+  })
+
+  it('réserve l\'emplacement 0 d\'un dossier au retour (400), pas celui de la racine', async () => {
+    const store = await ButtonStore.open(file)
+    const parent = await store.create(folder)
+    await rejectsWith(store.create({ ...action, position: 0, parentId: parent.id }), 400)
+
+    const child = await store.create({ ...action, position: 1, parentId: parent.id })
+    await rejectsWith(store.update(child.id, { position: 0 }), 400)
+
+    assert.equal((await store.create({ ...action, position: 0 })).position, 0)
   })
 
   it('refuse un emplacement déjà occupé (409)', async () => {
@@ -111,7 +122,7 @@ describe('ButtonStore', () => {
   it('refuse qu\'un dossier non vide devienne une action (409)', async () => {
     const store = await ButtonStore.open(file)
     const parent = await store.create(folder)
-    await store.create({ ...action, parentId: parent.id })
+    await store.create({ ...action, position: 1, parentId: parent.id })
     await rejectsWith(store.update(parent.id, { type: 'action', url: 'https://exemple.fr' }), 409)
   })
 
@@ -119,7 +130,7 @@ describe('ButtonStore', () => {
     const store = await ButtonStore.open(file)
     const parent = await store.create(folder)
     const sub = await store.create({ ...folder, parentId: parent.id })
-    await store.create({ ...action, parentId: sub.id })
+    await store.create({ ...action, position: 1, parentId: sub.id })
     const kept = await store.create({ ...action, position: 2 })
 
     await store.remove(parent.id)
@@ -160,6 +171,12 @@ describe('ButtonStore', () => {
     it('refuse les identifiants et emplacements en double', async () => {
       await assert.rejects(openWith(JSON.stringify({ buttons: [button, { ...button, position: 1 }] })), /identifiant/)
       await assert.rejects(openWith(JSON.stringify({ buttons: [button, { ...button, id: 'b' }] })), /emplacement/)
+    })
+
+    it('refuse un bouton sur l\'emplacement 0 d\'un dossier', async () => {
+      const parent = { id: 'p', parentId: null, ...folder }
+      const content = JSON.stringify({ buttons: [parent, { ...button, parentId: 'p', position: 0 }] })
+      await assert.rejects(openWith(content), /invalide/)
     })
 
     it('refuse un parent qui n\'existe pas', async () => {
