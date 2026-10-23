@@ -50,7 +50,7 @@ Les boutons sont conservés côté serveur dans `server/data/buttons.json` (igno
 | [02 — API des boutons](docs/feature/02-api-boutons.md) | Livré | OverAngelix |
 | [03 — Grille de boutons](docs/feature/03-grille-boutons.md) | Livré | OverAngelix |
 | [04 — Configuration des boutons](docs/feature/04-configuration-boutons.md) | Livré | OverAngelix |
-| [05 — Finitions de la configuration](docs/feature/05-finitions-configuration.md) | À faire | OverAngelix |
+| [05 — Glisser-déposer des boutons](docs/feature/05-glisser-deposer.md) | À faire | OverAngelix |
 
 La liste complète et le détail de chaque feature (TODO, implémentation) sont dans [`docs/feature/`](docs/feature/README.md).
 

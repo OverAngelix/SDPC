@@ -1,4 +1,4 @@
-# Feature 05 — Finitions de la configuration
+# Feature 05 — Glisser-déposer des boutons
 
 | | |
 | --- | --- |
@@ -9,7 +9,7 @@
 
 ## Explication de la feature
 
-Les finitions qui rendent la configuration confortable et sûre :
+Deux améliorations qui rendent la configuration plus confortable et plus sûre :
 
 - **Glisser-déposer** pour déplacer un bouton vers un autre emplacement du même dossier (échange si l'emplacement est occupé ; l'emplacement 0 d'un dossier, réservé au retour, n'est pas une destination).
 - **Confirmation renforcée** avant de supprimer un dossier non vide, avec le nombre de boutons qui seront supprimés.

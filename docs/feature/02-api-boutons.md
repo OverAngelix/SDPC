@@ -9,7 +9,7 @@
 
 ## Explication de la feature
 
-Le serveur conserve la configuration des boutons (le client n'en garde rien) et l'expose en JSON sous `/api/buttons`. Cette API est le contrat sur lequel s'appuient la grille (03), la configuration (04) et les finitions (05).
+Le serveur conserve la configuration des boutons (le client n'en garde rien) et l'expose en JSON sous `/api/buttons`. Cette API est le contrat sur lequel s'appuient la grille (03), la configuration (04) et le glisser-déposer (05).
 
 Un bouton est soit une **action** (redirige vers une URL), soit un **dossier** (contient d'autres boutons, sur plusieurs niveaux). Les boutons d'un même dossier se placent dans les emplacements d'une grille de 7 colonnes × 5 lignes, numérotés de **0 à 34**. Dans un dossier, l'emplacement **0 est réservé au bouton retour** (affiché par le client, comme sur un Stream Deck Elgato) : 35 emplacements utilisables à la racine, 34 dans un dossier.
 
