@@ -103,8 +103,9 @@ Toutes les erreurs ont la même forme :
 | `server/src/errors.ts` | `HttpError` (code, message, détails) |
 | `server/src/app.ts` | `createApp({ store })` : branche les routes, la route 404 JSON et la gestion d'erreurs |
 | `server/src/index.ts` | Ouvre le stockage puis démarre le serveur |
-| `server/src/testing/server.ts` | Serveur de test sur un port libre avec un fichier temporaire |
-| `server/src/**/*.test.ts` | Tests : validation, stockage, routes, santé |
+| `server/test/helpers/server.ts` | Serveur de test sur un port libre avec un fichier temporaire |
+| `server/test/buttons/*.test.ts` | Tests : validation, stockage, routes |
+| `server/test/app.test.ts` | Tests : santé et route inconnue |
 
 ### Vérifier à la main
 
