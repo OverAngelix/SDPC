@@ -15,6 +15,7 @@
         @edit="startEdit"
         @move="move"
         @remove="startRemove"
+        @reserved="refuseReserved"
         @select="select"
       />
     </grid-status>
@@ -97,6 +98,11 @@
     } else {
       startEdit(button)
     }
+  }
+
+  // Lâché sur la tuile de retour : rien n'est envoyé au serveur, on explique le refus
+  function refuseReserved () {
+    notify('La première case d\'un dossier est réservée au bouton retour : on ne peut pas y placer un bouton.')
   }
 
   async function move (button: Button, slot: number) {
