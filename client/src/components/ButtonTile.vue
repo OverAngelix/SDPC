@@ -1,9 +1,9 @@
 <template>
   <v-card
     v-if="button"
+    :aria-label="button.label"
     class="tile d-flex flex-column align-center justify-center pa-2"
     link
-    :title="button.label"
     variant="tonal"
     @click="emit('select', button)"
   >
