@@ -1,6 +1,6 @@
-import type { Button } from '@/api/buttons'
+import type { Button } from '@/interfaces/button'
 import { describe, expect, it } from 'vitest'
-import { buildSlots, COLUMNS, ROWS, SLOTS } from './grid'
+import { buildSlots, COLUMNS, ROWS, SLOTS } from '@/grid'
 
 function makeButton (overrides: Partial<Button>): Button {
   return {
