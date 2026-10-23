@@ -40,11 +40,15 @@ Puis ouvrir <http://localhost:3000>. En développement, le client redirige `/api
 | `server/` | `npm run dev`, `npm run build`, `npm start`, `npm run type-check`, `npm test` |
 | `client/` | `npm run dev`, `npm run build`, `npm run type-check`, `npm run lint`, `npm test` |
 
-## Features mises en place
+## Features
 
 | Feature | Statut | Personne active |
 | --- | --- | --- |
 | [01 — Connexion client ↔ serveur](docs/feature/01-connexion-client-serveur.md) | Livré | OverAngelix |
+| [02 — API des boutons](docs/feature/02-api-boutons.md) | À faire | À définir |
+| [03 — Grille de boutons](docs/feature/03-grille-boutons.md) | À faire | À définir |
+| [04 — Configuration des boutons](docs/feature/04-configuration-boutons.md) | À faire | À définir |
+| [05 — Finitions de la configuration](docs/feature/05-finitions-configuration.md) | À faire | À définir |
 
 La liste complète et le détail de chaque feature (TODO, implémentation) sont dans [`docs/feature/`](docs/feature/README.md).
 
