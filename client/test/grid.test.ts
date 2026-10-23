@@ -1,6 +1,6 @@
 import type { Button } from '@/interfaces/button'
 import { describe, expect, it } from 'vitest'
-import { BACK_SLOT, buildSlots, collectSubtree, COLUMNS, ROWS, SLOTS } from '@/grid'
+import { BACK_SLOT, buildSlots, collectSubtree, COLUMNS, countContent, ROWS, SLOTS } from '@/grid'
 
 function makeButton (overrides: Partial<Button>): Button {
   return {
@@ -101,5 +101,25 @@ describe('collectSubtree', () => {
   it('renvoie le dossier et son contenu sur tous les niveaux', () => {
     expect(collectSubtree(all, 'games')).toEqual(new Set(['games', 'retro', 'mario', 'zelda']))
     expect(collectSubtree(all, 'retro')).toEqual(new Set(['retro', 'mario']))
+  })
+})
+
+describe('countContent', () => {
+  const games = makeButton({ id: 'games', type: 'folder', url: undefined })
+  const retro = makeButton({ id: 'retro', parentId: 'games', position: 1, type: 'folder', url: undefined })
+  const mario = makeButton({ id: 'mario', parentId: 'retro', position: 1 })
+  const zelda = makeButton({ id: 'zelda', parentId: 'games', position: 2 })
+  const empty = makeButton({ id: 'empty', position: 1, type: 'folder', url: undefined })
+  const mail = makeButton({ id: 'mail', position: 2 })
+  const all = [games, retro, mario, zelda, empty, mail]
+
+  it('compte le contenu d\'un dossier sur tous les niveaux, sans le dossier lui-même', () => {
+    expect(countContent(all, 'games')).toBe(3)
+    expect(countContent(all, 'retro')).toBe(1)
+  })
+
+  it('renvoie 0 pour un dossier vide ou une action', () => {
+    expect(countContent(all, 'empty')).toBe(0)
+    expect(countContent(all, 'mail')).toBe(0)
   })
 })

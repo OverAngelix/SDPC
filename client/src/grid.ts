@@ -24,6 +24,11 @@ export function buildSlots (buttons: Button[], parentId: string | null): (Button
   return slots
 }
 
+/** Le nombre de boutons contenus dans un dossier, sous-dossiers compris (0 pour une action ou un dossier vide) */
+export function countContent (buttons: Button[], rootId: string): number {
+  return collectSubtree(buttons, rootId).size - 1
+}
+
 /** L'identifiant du bouton et ceux de tout son contenu (un dossier, ses sous-dossiers, etc.) */
 export function collectSubtree (buttons: Button[], rootId: string): Set<string> {
   const ids = new Set([rootId])
