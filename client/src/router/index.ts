@@ -13,6 +13,13 @@ export default createRouter({
         { path: 'folder/:id', name: 'folder', component: GridPage },
       ],
     },
-    { path: '/config', name: 'config', component: ConfigPage },
+    // Même principe : l'onglet Configuration reste actif dans un dossier
+    {
+      path: '/config',
+      children: [
+        { path: '', name: 'config', component: ConfigPage },
+        { path: 'folder/:id', name: 'config-folder', component: ConfigPage },
+      ],
+    },
   ],
 })
