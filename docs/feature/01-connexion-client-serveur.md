@@ -52,7 +52,7 @@ Tests : `server/test/app.test.ts` (`node:test` lancé par `tsx`), route de sant�
 | `client/src/api/http.ts` | Instance axios partagée (`baseURL` = `VITE_API_URL`, défaut `/api`, `timeout: 5000`) |
 | `client/src/api/health.ts` | `fetchHealth()` : appelle `GET /health` et renvoie `HealthResponse` |
 | `client/src/stores/server.ts` | Store Pinia : `status` (`unknown`, `online`, `offline`), `checkHealth()`, `retry()` (relance manuelle), `startPolling()` / `stopPolling()` (toutes les 15 s) |
-| `client/src/stores/server.test.ts` | Tests du store (Vitest) : en ligne, hors ligne, relance, revérification périodique, chute du serveur |
+| `client/test/stores/server.test.ts` | Tests du store (Vitest) : en ligne, hors ligne, relance, revérification périodique, chute du serveur |
 | `client/src/App.vue` | Démarre la revérification au montage, l'arrête au démontage, affiche l'indicateur cliquable (`v-chip`) |
 | `client/env.d.ts`, `client/.env.example` | Typage et exemple de la variable `VITE_API_URL` |
 | `client/vite.config.mts` | Proxy `/api` vers `http://localhost:4000` |
