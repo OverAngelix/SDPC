@@ -1,7 +1,9 @@
 // Dimensions de la grille : un seul endroit à changer pour la rendre modulable
-export const COLUMNS = 5
-export const ROWS = 7
+export const COLUMNS = 7
+export const ROWS = 5
 export const SLOTS = COLUMNS * ROWS
+// Dans un dossier, cet emplacement est le bouton retour : il ne peut pas recevoir de bouton
+export const BACK_SLOT = 0
 
 export type ButtonType = 'action' | 'folder'
 
