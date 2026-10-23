@@ -19,3 +19,9 @@ export async function updateButton (id: string, patch: ButtonPatch): Promise<But
 export async function deleteButton (id: string): Promise<void> {
   await http.delete(`/buttons/${encodeURIComponent(id)}`)
 }
+
+/** Déplace un bouton dans son dossier ; renvoie les boutons dont l'emplacement a changé (deux en cas d'échange) */
+export async function moveButton (id: string, position: number): Promise<Button[]> {
+  const { data } = await http.post<Button[]>(`/buttons/${encodeURIComponent(id)}/move`, { position })
+  return data
+}

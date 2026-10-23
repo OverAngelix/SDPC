@@ -1,7 +1,7 @@
 import type { Button } from '@/interfaces/button'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { createButton, deleteButton, fetchButtons, updateButton } from '@/api/buttons'
+import { createButton, deleteButton, fetchButtons, moveButton, updateButton } from '@/api/buttons'
 import { SLOTS } from '@/grid'
 import { useButtonsStore } from '@/stores/buttons'
 
@@ -10,12 +10,14 @@ vi.mock('@/api/buttons', () => ({
   createButton: vi.fn(),
   updateButton: vi.fn(),
   deleteButton: vi.fn(),
+  moveButton: vi.fn(),
 }))
 
 const fetchButtonsMock = vi.mocked(fetchButtons)
 const createButtonMock = vi.mocked(createButton)
 const updateButtonMock = vi.mocked(updateButton)
 const deleteButtonMock = vi.mocked(deleteButton)
+const moveButtonMock = vi.mocked(moveButton)
 
 function makeButton (overrides: Partial<Button>): Button {
   return {
@@ -42,6 +44,7 @@ describe('buttons store', () => {
     createButtonMock.mockReset()
     updateButtonMock.mockReset()
     deleteButtonMock.mockReset()
+    moveButtonMock.mockReset()
   })
 
   it('démarre vide, sans chargement ni erreur', () => {
@@ -267,6 +270,60 @@ describe('buttons store', () => {
 
       await expect(store.remove('mail')).rejects.toThrow()
       expect(store.buttons).toEqual([mail])
+    })
+  })
+
+  describe('move', () => {
+    it('déplace un bouton vers un emplacement libre', async () => {
+      fetchButtonsMock.mockResolvedValue([games, mail])
+      const store = useButtonsStore()
+      await store.load()
+      const moved = { ...mail, position: 9 }
+      moveButtonMock.mockResolvedValue([moved])
+
+      await store.move('mail', 9)
+
+      expect(moveButtonMock).toHaveBeenCalledWith('mail', 9)
+      expect(store.buttons).toEqual([games, moved])
+      expect(store.slotsOf(null)[9]).toEqual(moved)
+      expect(store.slotsOf(null)[4]).toBeNull()
+    })
+
+    it('échange deux boutons avec la réponse du serveur', async () => {
+      fetchButtonsMock.mockResolvedValue([games, mail])
+      const store = useButtonsStore()
+      await store.load()
+      const movedMail = { ...mail, position: 0 }
+      const movedGames = { ...games, position: 4 }
+      moveButtonMock.mockResolvedValue([movedMail, movedGames])
+
+      await store.move('mail', 0)
+
+      expect(store.buttons).toEqual([movedGames, movedMail])
+      expect(store.slotsOf(null)[0]).toEqual(movedMail)
+      expect(store.slotsOf(null)[4]).toEqual(movedGames)
+    })
+
+    it('ne change rien quand le serveur n\'a rien déplacé', async () => {
+      fetchButtonsMock.mockResolvedValue([games, mail])
+      const store = useButtonsStore()
+      await store.load()
+      moveButtonMock.mockResolvedValue([])
+
+      await store.move('mail', 4)
+
+      expect(store.buttons).toEqual([games, mail])
+    })
+
+    it('laisse la liste intacte et relance l\'erreur quand le serveur refuse', async () => {
+      fetchButtonsMock.mockResolvedValue([games, mail])
+      const store = useButtonsStore()
+      await store.load()
+      const failure = new Error('Request failed with status code 400')
+      moveButtonMock.mockRejectedValue(failure)
+
+      await expect(store.move('mail', 99)).rejects.toBe(failure)
+      expect(store.buttons).toEqual([games, mail])
     })
   })
 })

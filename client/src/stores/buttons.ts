@@ -1,7 +1,7 @@
 import type { Button, ButtonInput, ButtonPatch } from '@/interfaces/button'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import { createButton, deleteButton, fetchButtons, updateButton } from '@/api/buttons'
+import { createButton, deleteButton, fetchButtons, moveButton, updateButton } from '@/api/buttons'
 import { buildSlots, collectSubtree } from '@/grid'
 
 export const useButtonsStore = defineStore('buttons', () => {
@@ -62,6 +62,13 @@ export const useButtonsStore = defineStore('buttons', () => {
     return updated
   }
 
+  // Si l'emplacement est occupé, les deux boutons échangent leur place : le serveur renvoie les deux
+  async function move (id: string, position: number) {
+    const changed = await moveButton(id, position)
+    buttons.value = buttons.value.map(button => changed.find(candidate => candidate.id === button.id) ?? button)
+    return changed
+  }
+
   async function remove (id: string) {
     await deleteButton(id)
     // Le serveur supprime aussi le contenu d'un dossier
@@ -69,5 +76,5 @@ export const useButtonsStore = defineStore('buttons', () => {
     buttons.value = buttons.value.filter(button => !removed.has(button.id))
   }
 
-  return { buttons, loading, error, loaded, load, slotsOf, pathTo, create, update, remove }
+  return { buttons, loading, error, loaded, load, slotsOf, pathTo, create, update, move, remove }
 })
