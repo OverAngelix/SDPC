@@ -16,6 +16,8 @@ Le client (Vue, port 3000) et le serveur (Express, port 4000) sont deux applicat
 
 La connexion est revérifiée toutes les 15 secondes, et un clic sur la pastille relance la vérification immédiatement.
 
+> **Mise à jour :** la pastille a été retirée de la barre d'application. Le store `server` et la route `GET /api/health` restent en place et testés, mais plus rien ne les appelle depuis l'interface : la section « Vérifier à la main » ci-dessous n'est plus applicable.
+
 Toutes les futures fonctionnalités (lecture et écriture des boutons, des dossiers) passeront par la même instance axios, ce qui évite de réécrire la configuration réseau à chaque feature.
 
 ## TODO
@@ -53,7 +55,7 @@ Tests : `server/test/app.test.ts` (`node:test` lancé par `tsx`), route de sant�
 | `client/src/api/health.ts` | `fetchHealth()` : appelle `GET /health` et renvoie `HealthResponse` |
 | `client/src/stores/server.ts` | Store Pinia : `status` (`unknown`, `online`, `offline`), `checkHealth()`, `retry()` (relance manuelle), `startPolling()` / `stopPolling()` (toutes les 15 s) |
 | `client/test/stores/server.test.ts` | Tests du store (Vitest) : en ligne, hors ligne, relance, revérification périodique, chute du serveur |
-| `client/src/App.vue` | Démarre la revérification au montage, l'arrête au démontage, affiche l'indicateur cliquable (`v-chip`) |
+| `client/src/App.vue` | Barre d'application et onglets (n'affiche plus l'indicateur de connexion, voir la mise à jour plus haut) |
 | `client/env.d.ts`, `client/.env.example` | Typage et exemple de la variable `VITE_API_URL` |
 | `client/vite.config.mts` | Proxy `/api` vers `http://localhost:4000` |
 
