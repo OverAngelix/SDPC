@@ -3,7 +3,7 @@
 | | |
 | --- | --- |
 | **Statut** | À faire |
-| **Personne active** | À définir |
+| **Personne active** | OverAngelix |
 | **Périmètre** | `client/` et `server/` |
 | **Dépend de** | [04 — Configuration des boutons](04-configuration-boutons.md) |
 
