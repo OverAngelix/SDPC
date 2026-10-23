@@ -8,7 +8,11 @@
       :key="button?.id ?? `empty-${index}`"
       :back="back && index === BACK_SLOT"
       :button="button"
+      :editable="editable"
       @back="emit('back')"
+      @create="emit('create', index)"
+      @edit="emit('edit', $event)"
+      @remove="emit('remove', $event)"
       @select="emit('select', $event)"
     />
   </div>
@@ -24,11 +28,17 @@
     slots: (Button | null)[]
     /** Affiche le bouton retour à la première case (dans un dossier) */
     back?: boolean
+    /** Mode configuration : les emplacements libres se remplissent, les boutons se modifient et se suppriment */
+    editable?: boolean
   }>()
 
   const emit = defineEmits<{
     select: [button: Button]
     back: []
+    /** Un emplacement libre est choisi pour y créer un bouton */
+    create: [position: number]
+    edit: [button: Button]
+    remove: [button: Button]
   }>()
 </script>
 
