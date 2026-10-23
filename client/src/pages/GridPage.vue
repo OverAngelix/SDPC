@@ -30,8 +30,6 @@
     </v-alert>
 
     <template v-else-if="store.loaded">
-      <folder-breadcrumb v-if="path && path.length > 0" :path="path" />
-
       <v-alert
         v-if="store.error"
         class="mb-4"
@@ -49,7 +47,7 @@
         Aucun bouton ici. Ajoutez-en depuis l'onglet Configuration.
       </p>
 
-      <button-grid :slots="slots" @select="select" />
+      <button-grid :back="folderId !== null" :slots="slots" @back="goBack" @select="select" />
     </template>
   </v-container>
 </template>
@@ -59,7 +57,6 @@
   import { computed, onMounted } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   import ButtonGrid from '@/components/ButtonGrid.vue'
-  import FolderBreadcrumb from '@/components/FolderBreadcrumb.vue'
   import { useButtonsStore } from '@/stores/buttons'
   import { isHttpUrl } from '@/utils/url'
 
@@ -80,8 +77,15 @@
     if (button.type === 'folder') {
       router.push({ name: 'folder', params: { id: button.id } })
     } else if (button.url && isHttpUrl(button.url)) {
-      window.location.assign(button.url)
+      // Nouvel onglet : la grille reste ouverte. noopener coupe le lien entre les deux onglets
+      window.open(button.url, '_blank', 'noopener,noreferrer')
     }
+  }
+
+  // Le bouton retour (première case d'un dossier) mène au dossier parent, ou à la racine
+  function goBack () {
+    const parent = path.value?.at(-2)
+    router.push(parent ? { name: 'folder', params: { id: parent.id } } : { name: 'grid' })
   }
 
   // Recharge à chaque ouverture de l'onglet : la configuration a pu changer entre-temps
