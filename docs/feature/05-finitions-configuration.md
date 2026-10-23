@@ -11,13 +11,13 @@
 
 Les finitions qui rendent la configuration confortable et sûre :
 
-- **Glisser-déposer** pour déplacer un bouton vers un autre emplacement du même dossier (échange si l'emplacement est occupé).
+- **Glisser-déposer** pour déplacer un bouton vers un autre emplacement du même dossier (échange si l'emplacement est occupé ; l'emplacement 0 d'un dossier, réservé au retour, n'est pas une destination).
 - **Confirmation renforcée** avant de supprimer un dossier non vide, avec le nombre de boutons qui seront supprimés.
 - **Export et import** de la configuration en JSON, pour la sauvegarder ou la transférer.
 
 ## TODO
 
-- [ ] Serveur : route de déplacement (`POST /api/buttons/:id/move`) avec échange d'emplacements
+- [ ] Serveur : route de déplacement (`POST /api/buttons/:id/move`) avec échange d'emplacements (emplacement 0 refusé dans un dossier)
 - [ ] Serveur : `GET /api/config/export` (téléchargement du JSON)
 - [ ] Serveur : `PUT /api/config/import` avec validation complète (mêmes règles que la feature 02, arbre cohérent) et remplacement atomique
 - [ ] Client : glisser-déposer des boutons dans la grille d'édition
