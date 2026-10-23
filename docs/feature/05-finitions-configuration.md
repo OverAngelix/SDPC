@@ -36,7 +36,7 @@ Les finitions qui rendent la configuration confortable et sûre :
 | `client/src/api/config.ts` | Appels d'export et d'import |
 | `client/src/stores/buttons.ts` | Action `move` |
 | `client/src/components/ButtonGrid.vue` | Glisser-déposer en mode édition |
-| `client/src/components/ConfirmDelete.vue` | Confirmation avec le nombre d'éléments supprimés |
+| `client/src/components/ConfirmDelete.vue` | Existe depuis la feature 04 : ajouter le nombre d'éléments supprimés pour un dossier non vide |
 | `client/src/pages/ConfigPage.vue` | Export et import |
 
 ## Questions ouvertes
