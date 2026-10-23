@@ -43,7 +43,7 @@ GET /api/health  →  200  { "status": "ok" }
 
 `server/src/index.ts` démarre l'application ; le port vient de `PORT` (défaut `4000`, voir `server/.env.example`). L'application est séparée du démarrage pour pouvoir être testée sans ouvrir le port 4000.
 
-Tests : `server/src/app.test.ts` (`node:test` lancé par `tsx`), route de santé en 200 et route inconnue en 404. Commande : `npm test` dans `server/`.
+Tests : `server/test/app.test.ts` (`node:test` lancé par `tsx`), route de santé en 200 et route inconnue en 404. Commande : `npm test` dans `server/`.
 
 ### Client
 
