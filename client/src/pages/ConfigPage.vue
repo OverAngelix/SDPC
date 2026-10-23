@@ -3,6 +3,7 @@
     <grid-status :home="{ name: 'config' }" :path="path">
       <p class="text-medium-emphasis text-center mb-4">
         Un emplacement vide permet de créer un bouton, un dossier de configurer son contenu.
+        Glissez un bouton sur un autre emplacement pour le déplacer : s'il est occupé, les deux boutons échangent leur place.
       </p>
 
       <button-grid
@@ -12,6 +13,7 @@
         @back="goBack"
         @create="startCreate"
         @edit="startEdit"
+        @move="move"
         @remove="startRemove"
         @select="select"
       />
@@ -89,6 +91,14 @@
       openFolder(button.id)
     } else {
       startEdit(button)
+    }
+  }
+
+  async function move (button: Button, slot: number) {
+    try {
+      await store.move(button.id, slot)
+    } catch (error) {
+      notify(`Déplacement impossible : ${describeApiError(error).title}`)
     }
   }
 
