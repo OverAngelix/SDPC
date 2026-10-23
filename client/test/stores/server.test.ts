@@ -1,7 +1,7 @@
 import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { fetchHealth } from '@/api/health'
-import { POLL_INTERVAL_MS, useServerStore } from './server'
+import { POLL_INTERVAL_MS, useServerStore } from '@/stores/server'
 
 vi.mock('@/api/health', () => ({ fetchHealth: vi.fn() }))
 
