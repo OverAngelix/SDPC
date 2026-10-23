@@ -14,5 +14,5 @@ app.get('/api/health', (_req: Request, res: Response) => {
 })
 
 app.listen(port, () => {
-  console.log(`Server listening on http://localhost:${port}`)
+  console.log(`Serveur à l'écoute sur http://localhost:${port}`)
 })
