@@ -18,6 +18,8 @@ export default defineConfig({
   },
   test: {
     environment: 'node',
+    // Les tests vivent tous dans test/, comme côté serveur
+    include: ['test/**/*.test.ts'],
   },
   server: {
     port: 3000,

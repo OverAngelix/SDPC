@@ -33,6 +33,6 @@ Installation reproductible : `npm ci` dans chaque dossier.
 
 - Textes visibles par l'utilisateur et documentation en français ; identifiants de code (variables, fonctions, fichiers) en anglais.
 - Tests serveur : tous dans `server/test/`, jamais à côté du code de `src/`. L'arborescence reflète celle de `src/` (`src/buttons/store.ts` → `test/buttons/store.test.ts`) et les outils partagés vont dans `test/helpers/`. Lancés par `npm test` (`node:test` via `tsx`).
-- Tests client : tous dans `client/test/`, jamais à côté du code de `src/`, avec la même règle que le serveur (`src/stores/buttons.ts` → `test/stores/buttons.test.ts`). Lancés par `npm test` (Vitest).
+- Tests client : tous dans `client/test/`, jamais à côté du code de `src/`, avec la même règle que le serveur (`src/stores/buttons.ts` → `test/stores/buttons.test.ts`). Lancés par `npm test` (Vitest, qui ne parcourt que `test/`).
 - Interfaces et types partagés du client : dans `client/src/interfaces/` (un fichier par sujet, ex. `button.ts`), pas dans les fichiers `api/` ni `stores/`.
 - Commits : suivre la nomenclature de la commande `/commit` (`.claude/commands/commit.md`). Un commit par sujet.
