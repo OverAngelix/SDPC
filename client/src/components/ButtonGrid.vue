@@ -14,6 +14,7 @@
 
 <script lang="ts" setup>
   import type { Button } from '@/interfaces/button'
+  import ButtonTile from '@/components/ButtonTile.vue'
   import { COLUMNS, ROWS } from '@/grid'
 
   defineProps<{
