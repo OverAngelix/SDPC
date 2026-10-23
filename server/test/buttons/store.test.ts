@@ -188,4 +188,87 @@ describe('ButtonStore', () => {
       assert.equal(await readFile(join(dir, 'corrompu.json'), 'utf8'), '{pas du json')
     })
   })
+
+  describe('move', () => {
+    it('déplace un bouton vers un emplacement libre', async () => {
+      const store = await ButtonStore.open(file)
+      const youtube = await store.create(action)
+
+      const changed = await store.move(youtube.id, { position: 7 })
+
+      assert.deepEqual(changed, [{ ...youtube, position: 7 }])
+      assert.equal(store.get(youtube.id).position, 7)
+    })
+
+    it('échange deux boutons quand l\'emplacement est occupé', async () => {
+      const store = await ButtonStore.open(file)
+      const youtube = await store.create(action)
+      const music = await store.create(folder)
+
+      const changed = await store.move(youtube.id, { position: music.position })
+
+      assert.deepEqual(changed, [{ ...youtube, position: music.position }, { ...music, position: youtube.position }])
+      assert.equal(store.get(youtube.id).position, 1)
+      assert.equal(store.get(music.id).position, 0)
+    })
+
+    it('ne change rien quand le bouton est déjà à cet emplacement', async () => {
+      const store = await ButtonStore.open(file)
+      const youtube = await store.create(action)
+
+      assert.deepEqual(await store.move(youtube.id, { position: youtube.position }), [])
+      assert.deepEqual(store.get(youtube.id), youtube)
+    })
+
+    it('reste dans le dossier du bouton, sans toucher aux autres dossiers', async () => {
+      const store = await ButtonStore.open(file)
+      const parent = await store.create(folder)
+      const inside = await store.create({ ...action, position: 1, parentId: parent.id })
+      const other = await store.create({ ...action, position: 5, parentId: parent.id })
+      const rootButton = await store.create({ ...action, position: 5 })
+
+      await store.move(inside.id, { position: 5 })
+
+      assert.equal(store.get(inside.id).position, 5)
+      assert.equal(store.get(other.id).position, 1)
+      assert.equal(store.get(rootButton.id).position, 5)
+    })
+
+    it('conserve le déplacement après réouverture, échange compris', async () => {
+      const store = await ButtonStore.open(file)
+      const youtube = await store.create(action)
+      const music = await store.create(folder)
+      await store.move(youtube.id, { position: music.position })
+
+      const reopened = await ButtonStore.open(file)
+      assert.equal(reopened.get(youtube.id).position, 1)
+      assert.equal(reopened.get(music.id).position, 0)
+    })
+
+    it('refuse l\'emplacement 0 dans un dossier et le laisse libre', async () => {
+      const store = await ButtonStore.open(file)
+      const parent = await store.create(folder)
+      const inside = await store.create({ ...action, position: 1, parentId: parent.id })
+
+      await rejectsWith(store.move(inside.id, { position: 0 }), 400)
+      assert.equal(store.get(inside.id).position, 1)
+    })
+
+    it('autorise l\'emplacement 0 à la racine', async () => {
+      const store = await ButtonStore.open(file)
+      const music = await store.create(folder)
+
+      await store.move(music.id, { position: 0 })
+      assert.equal(store.get(music.id).position, 0)
+    })
+
+    it('refuse un emplacement invalide et un bouton inconnu', async () => {
+      const store = await ButtonStore.open(file)
+      const youtube = await store.create(action)
+
+      await rejectsWith(store.move(youtube.id, { position: 35 }), 400)
+      await rejectsWith(store.move(youtube.id, {}), 400)
+      await rejectsWith(store.move('fantome', { position: 3 }), 404)
+    })
+  })
 })

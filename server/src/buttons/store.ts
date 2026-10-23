@@ -3,7 +3,7 @@ import { mkdir, readFile, rename, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 import { HttpError } from '../errors.js'
 import type { Button } from './types.js'
-import { mergeButtonPatch, validateButtonInput } from './validation.js'
+import { mergeButtonPatch, validateButtonInput, validateMoveInput } from './validation.js'
 
 const INVALID_DATA = 'Données invalides'
 
@@ -110,6 +110,26 @@ export class ButtonStore {
     const updated: Button = { id, ...input }
     await this.commit(this.buttons.map(button => button.id === id ? updated : button))
     return updated
+  }
+
+  /**
+   * Déplace un bouton vers un autre emplacement de son dossier. Si l'emplacement est occupé,
+   * les deux boutons échangent leur place. Renvoie les boutons dont l'emplacement a changé.
+   */
+  async move (id: string, body: unknown): Promise<Button[]> {
+    const current = this.get(id)
+    const result = validateMoveInput(current.parentId, body)
+    if (!result.ok) throw new HttpError(400, INVALID_DATA, result.errors)
+
+    const position = result.value
+    if (position === current.position) return []
+
+    const occupant = this.buttons.find(button => button.parentId === current.parentId && button.position === position)
+    const changed: Button[] = [{ ...current, position }]
+    if (occupant !== undefined) changed.push({ ...occupant, position: current.position })
+
+    await this.commit(this.buttons.map(button => changed.find(candidate => candidate.id === button.id) ?? button))
+    return changed
   }
 
   /** Supprime le bouton et, pour un dossier, tout son contenu. */
