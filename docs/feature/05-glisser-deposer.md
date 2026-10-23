@@ -11,7 +11,7 @@
 
 Deux améliorations qui rendent la configuration plus confortable et plus sûre :
 
-- **Glisser-déposer** pour déplacer un bouton vers un autre emplacement du même dossier. Si l'emplacement est libre, le bouton s'y place ; s'il est occupé, **les deux boutons échangent leur place**. L'emplacement 0 d'un dossier, réservé au retour, n'est pas une destination.
+- **Glisser-déposer** pour déplacer un bouton vers un autre emplacement du même dossier. Si l'emplacement est libre, le bouton s'y place ; s'il est occupé, **les deux boutons échangent leur place**. L'emplacement 0 d'un dossier, réservé au retour, n'est pas une destination : le déposer là affiche un message.
 - **Confirmation renforcée** avant de supprimer un dossier non vide, avec le nombre de boutons qui seront supprimés.
 
 ## TODO
@@ -31,7 +31,7 @@ Deux améliorations qui rendent la configuration plus confortable et plus sûre 
 - **Déplacement dans le dossier du bouton seulement.** Un bouton ne change pas de dossier par glisser-déposer : la grille n'affiche qu'un dossier à la fois, il n'y a donc pas de destination d'un autre dossier à viser. Le serveur ne le permet pas non plus (`PATCH` refuse toujours un `parentId` différent, fiche 02). Pour changer de dossier : recréer le bouton dans le dossier voulu.
 - **Échange plutôt que refus** quand l'emplacement est occupé : le bouton déposé prend l'emplacement visé et l'occupant prend l'ancien emplacement du bouton déposé. Les deux écritures n'en font qu'une, le fichier n'est jamais dans un état intermédiaire.
 - **Le serveur renvoie les boutons modifiés** (un seul, ou deux en cas d'échange ; liste vide si le bouton était déjà à cet emplacement). Le store les remplace dans sa liste, sans recharger tous les boutons.
-- **La case 0 d'un dossier n'est pas une destination** : le client ne l'accepte pas (la tuile de retour ne réagit pas au survol) et le serveur répond 400 si on la demande.
+- **La case 0 d'un dossier n'est pas une destination**, mais on ne la laisse pas muette : au survol avec un bouton la tuile de retour passe en rouge, et au lâcher un message explique que la première case est réservée au retour. Rien n'est envoyé au serveur dans ce cas ; s'il recevait la demande, il répondrait 400.
 - **Glisser-déposer natif du navigateur** (HTML5), sans bibliothèque. Il ne fonctionne pas au toucher, ni au clavier : le formulaire de modification de la fiche 04 reste le moyen d'accès sans souris.
 - **Confirmation renforcée sans saisie** : le dialogue de suppression d'un dossier non vide affiche un avertissement avec le nombre de boutons (sous-dossiers compris) et son bouton de confirmation le rappelle (« Supprimer le dossier et ses 3 boutons »). Le nombre est compté à l'ouverture du dialogue (`countContent`).
 - **Export et import de la configuration** : retirés du périmètre de cette feature.
@@ -89,7 +89,7 @@ cd client && npm run dev          # puis http://localhost:3000/config
 
 1. Glisser un bouton vers une case vide : il s'y place, et l'onglet Grille le montre au nouvel emplacement.
 2. Glisser un bouton sur un autre bouton : les deux échangent leur place.
-3. Dans un dossier, survoler la tuile de retour avec un bouton : aucune surbrillance, le dépôt n'a aucun effet.
+3. Dans un dossier, glisser un bouton sur la tuile de retour : elle passe en rouge, et en lâchant un message explique que la case est réservée. Le bouton reste à sa place.
 4. Lâcher un bouton en dehors de la grille ou sur son propre emplacement : rien ne change.
 5. Supprimer un dossier qui contient des boutons (dont un sous-dossier) : la confirmation annonce le nombre total de boutons supprimés.
 
