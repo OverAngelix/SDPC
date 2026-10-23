@@ -1,4 +1,4 @@
-import type { Button } from '@/api/buttons'
+import type { Button } from '@/interfaces/button'
 
 // Dimensions de la grille : un seul endroit à changer pour la rendre modulable
 // (elles reflètent server/src/buttons/types.ts)
