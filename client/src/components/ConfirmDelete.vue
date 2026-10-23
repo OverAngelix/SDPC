@@ -1,47 +1,37 @@
 <template>
-  <v-dialog v-model="open" max-width="440" :persistent="loading">
-    <v-card :title="button?.type === 'folder' ? 'Supprimer ce dossier ?' : 'Supprimer ce bouton ?'">
-      <v-card-text>
-        <v-alert
-          v-if="count > 0"
-          class="mb-4"
-          density="compact"
-          icon="mdi-alert"
-          type="warning"
-          variant="tonal"
-        >
-          Ce dossier contient {{ countText }}, sous-dossiers compris. Ils seront tous supprimés avec lui.
-        </v-alert>
+  <v-dialog v-model="open" max-width="400" :persistent="loading">
+    <v-card class="text-center px-4 py-6">
+      <h2 class="text-h6 mb-4">{{ title }}</h2>
 
-        <p v-if="button?.type === 'folder'">
-          Le dossier « {{ button.label }} » sera supprimé<template v-if="count === 0"> : il est vide</template>.
-        </p>
+      <v-alert
+        v-if="count > 0"
+        class="mb-4"
+        density="compact"
+        type="warning"
+        variant="tonal"
+      >
+        {{ countText }}
+      </v-alert>
 
-        <p v-else>
-          Le bouton « {{ button?.label }} » sera supprimé.
-        </p>
+      <p class="text-medium-emphasis">Cette action est définitive.</p>
 
-        <p class="mt-2">Cette action est définitive.</p>
+      <v-alert
+        v-if="error"
+        class="mt-4 text-start"
+        density="compact"
+        type="error"
+        variant="tonal"
+      >
+        {{ error.title }}
+      </v-alert>
 
-        <v-alert
-          v-if="error"
-          class="mt-4"
-          density="compact"
-          type="error"
-          variant="tonal"
-        >
-          {{ error.title }}
-        </v-alert>
-      </v-card-text>
-
-      <v-card-actions>
-        <v-spacer />
+      <v-card-actions class="justify-center mt-4">
         <v-btn :disabled="loading" text="Annuler" @click="open = false" />
 
         <v-btn
           color="error"
           :loading="loading"
-          :text="confirmText"
+          :text="isFolder ? 'Supprimer le dossier' : 'Supprimer'"
           variant="flat"
           @click="emit('confirm')"
         />
@@ -73,8 +63,9 @@
     confirm: []
   }>()
 
+  const isFolder = computed(() => props.button?.type === 'folder')
   const count = computed(() => props.contentCount ?? 0)
-  const countText = computed(() => `${count.value} bouton${count.value > 1 ? 's' : ''}`)
-  // Le libellé du bouton rappelle ce qui disparaît : on ne confirme pas à l'aveugle
-  const confirmText = computed(() => count.value > 0 ? `Supprimer le dossier et ses ${countText.value}` : 'Supprimer')
+  // Le nom de l'élément est dans le titre : la fenêtre n'a pas besoin d'une phrase de plus
+  const title = computed(() => `Supprimer ${isFolder.value ? 'le dossier' : 'le bouton'} « ${props.button?.label} » ?`)
+  const countText = computed(() => `${count.value} élément${count.value > 1 ? 's' : ''} supprimé${count.value > 1 ? 's' : ''} avec le dossier`)
 </script>

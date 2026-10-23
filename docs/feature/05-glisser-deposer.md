@@ -33,7 +33,7 @@ Deux améliorations qui rendent la configuration plus confortable et plus sûre 
 - **Le serveur renvoie les boutons modifiés** (un seul, ou deux en cas d'échange ; liste vide si le bouton était déjà à cet emplacement). Le store les remplace dans sa liste, sans recharger tous les boutons.
 - **La case 0 d'un dossier n'est pas une destination**, mais on ne la laisse pas muette : au survol avec un bouton la tuile de retour passe en rouge, et au lâcher un message explique que la première case est réservée au retour. Rien n'est envoyé au serveur dans ce cas ; s'il recevait la demande, il répondrait 400.
 - **Glisser-déposer natif du navigateur** (HTML5), sans bibliothèque. Il ne fonctionne pas au toucher, ni au clavier : le formulaire de modification de la fiche 04 reste le moyen d'accès sans souris.
-- **Confirmation renforcée sans saisie** : le dialogue de suppression d'un dossier non vide affiche un avertissement avec le nombre de boutons (sous-dossiers compris) et son bouton de confirmation le rappelle (« Supprimer le dossier et ses 3 boutons »). Le nombre est compté à l'ouverture du dialogue (`countContent`).
+- **Confirmation renforcée sans saisie** : le dialogue de suppression, centré comme le reste de l'application, met le nom de l'élément dans son titre (« Supprimer le dossier « Jeux » ? »). Pour un dossier non vide, un cadre orange donne le nombre d'éléments supprimés avec lui (sous-dossiers compris), sans en lister les noms : la fenêtre garde la même taille quel que soit le contenu. Le bouton rouge reste sobre (« Supprimer le dossier »). Le nombre est compté à l'ouverture du dialogue (`countContent`).
 - **Export et import de la configuration** : retirés du périmètre de cette feature.
 
 ## Implémentation
@@ -69,7 +69,7 @@ ConfigPage
 | `client/src/stores/buttons.ts` | Action `move` |
 | `client/src/grid.ts` | `countContent` : nombre de boutons d'un dossier, sous-dossiers compris |
 | `client/src/components/ButtonGrid.vue` | Glisser-déposer en mode édition, événement `move` |
-| `client/src/components/ConfirmDelete.vue` | Avertissement et libellé avec le nombre de boutons supprimés |
+| `client/src/components/ConfirmDelete.vue` | Dialogue de suppression centré, avec le nombre de boutons supprimés avec un dossier dans un cadre orange |
 | `client/src/pages/ConfigPage.vue` | Déplacement via le store, compte du contenu à supprimer |
 | `server/test/buttons/*.test.ts` | Tests de la validation, du stockage et de la route de déplacement |
 | `client/test/stores/buttons.test.ts` | Tests de l'action `move` |
@@ -91,6 +91,6 @@ cd client && npm run dev          # puis http://localhost:3000/config
 2. Glisser un bouton sur un autre bouton : les deux échangent leur place.
 3. Dans un dossier, glisser un bouton sur la tuile de retour : elle passe en rouge, et en lâchant un message explique que la case est réservée. Le bouton reste à sa place.
 4. Lâcher un bouton en dehors de la grille ou sur son propre emplacement : rien ne change.
-5. Supprimer un dossier qui contient des boutons (dont un sous-dossier) : la confirmation annonce le nombre total de boutons supprimés.
+5. Supprimer un dossier qui contient des boutons (dont un sous-dossier) : la confirmation indique, dans un cadre orange, le nombre d'éléments supprimés avec lui.
 
 Tests : `npm test` dans `client/` et dans `server/`. Le glisser-déposer lui-même n'est pas couvert par des tests automatiques (pas d'environnement DOM côté client) : la logique testable est dans le store, `countContent` et le serveur.
