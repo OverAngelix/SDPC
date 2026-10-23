@@ -11,14 +11,15 @@
 
 Le serveur conserve la configuration des boutons (le client n'en garde rien) et l'expose en JSON sous `/api/buttons`. Cette API est le contrat sur lequel s'appuient la grille (03), la configuration (04) et les finitions (05).
 
-Un bouton est soit une **action** (redirige vers une URL), soit un **dossier** (contient d'autres boutons, sur plusieurs niveaux). Les boutons d'un même dossier se placent dans les emplacements d'une grille de 5 colonnes × 7 lignes, numérotés de **0 à 34**.
+Un bouton est soit une **action** (redirige vers une URL), soit un **dossier** (contient d'autres boutons, sur plusieurs niveaux). Les boutons d'un même dossier se placent dans les emplacements d'une grille de 7 colonnes × 5 lignes, numérotés de **0 à 34**. Dans un dossier, l'emplacement **0 est réservé au bouton retour** (affiché par le client, comme sur un Stream Deck Elgato) : 35 emplacements utilisables à la racine, 34 dans un dossier.
 
 Règle de sécurité : une action ne peut contenir qu'une URL `http` ou `https`. Aucune application locale n'est lancée, aucune commande n'est exécutée, et les schémas comme `javascript:` ou `file:` sont refusés.
 
 ## Décisions
 
-- **Position = index d'emplacement de 0 à 34** dans le dossier parent (ligne = `position / 5` arrondi à l'inférieur, colonne = `position % 5`). Deux boutons d'un même dossier ne peuvent pas partager un emplacement ; deux dossiers différents peuvent utiliser le même numéro.
-- **Grille modulable : plus tard.** Les dimensions (`COLUMNS = 5`, `ROWS = 7`, `SLOTS = 35`) sont définies à un seul endroit (`server/src/buttons/types.ts`), la validation s'y réfère.
+- **Position = index d'emplacement de 0 à 34** dans le dossier parent (ligne = `position / 7` arrondi à l'inférieur, colonne = `position % 7`). Deux boutons d'un même dossier ne peuvent pas partager un emplacement ; deux dossiers différents peuvent utiliser le même numéro.
+- **Emplacement 0 réservé dans un dossier** : un bouton ne peut pas y être placé (400), ni à la création, ni par `PATCH`, ni dans le fichier de données. Le serveur ne stocke pas le retour : c'est le client qui l'affiche. Ainsi aucun bouton ne peut être masqué par lui. À la racine, l'emplacement 0 est libre.
+- **Grille en paysage, modulable plus tard.** Les dimensions (`COLUMNS = 7`, `ROWS = 5`, `SLOTS = 35`) et `BACK_SLOT = 0` sont définies à un seul endroit (`server/src/buttons/types.ts`), la validation s'y réfère.
 - **Stockage dans un fichier JSON** (`server/data/buttons.json`, ignoré par git), sans base de données : pas de compte, un seul utilisateur.
 - **Icône = nom MDI strict** (`mdi-` suivi de minuscules, chiffres et tirets) : le nom finit dans une classe CSS côté client, on n'accepte donc pas de texte libre.
 - **Le dossier parent n'est pas modifiable par `PATCH`** : déplacer un bouton vers un autre dossier est discuté dans la feature 05, avec le glisser-déposer.
@@ -34,7 +35,7 @@ Règle de sécurité : une action ne peut contenir qu'une URL `http` ou `https`.
 - [x] `POST /api/buttons`
 - [x] `PATCH /api/buttons/:id`
 - [x] `DELETE /api/buttons/:id` (supprime aussi le contenu d'un dossier)
-- [x] Validation : libellé, icône, type, URL `http(s)` pour une action et interdite pour un dossier, position entière de 0 à 34, parent existant et de type dossier
+- [x] Validation : libellé, icône, type, URL `http(s)` pour une action et interdite pour un dossier, position entière de 0 à 34 (1 à 34 dans un dossier), parent existant et de type dossier
 - [x] Erreurs JSON homogènes : 400 (données invalides), 404 (introuvable), 409 (emplacement occupé)
 - [x] Tests (`node:test`) : validation, stockage, routes HTTP
 - [x] Fiche mise à jour et README du projet
@@ -49,7 +50,7 @@ type ButtonType = 'action' | 'folder'
 interface Button {
   id: string              // UUID
   parentId: string | null // null = racine
-  position: number        // 0 à 34, unique dans un même dossier
+  position: number        // 0 à 34 (1 à 34 dans un dossier : 0 est le retour), unique dans un même dossier
   label: string           // 50 caractères au plus
   icon: string            // nom d'icône MDI, ex. "mdi-youtube"
   type: ButtonType
@@ -79,7 +80,7 @@ Toutes les erreurs ont la même forme :
 
 | Code | Cas |
 | --- | --- |
-| 400 | Données invalides (détail dans `details`), JSON mal formé (`{ "error": "Requête invalide" }`), parent introuvable ou qui n'est pas un dossier |
+| 400 | Données invalides (détail dans `details`), JSON mal formé (`{ "error": "Requête invalide" }`), parent introuvable ou qui n'est pas un dossier, emplacement 0 dans un dossier |
 | 404 | Bouton ou route introuvable |
 | 409 | Emplacement déjà occupé dans le dossier ; dossier non vide qui deviendrait une action |
 | 500 | Erreur interne (détail seulement dans les journaux du serveur) |
@@ -89,7 +90,7 @@ Toutes les erreurs ont la même forme :
 `server/data/buttons.json`, au format `{ "buttons": [ ... ] }`. Le chemin se règle avec `DATA_FILE` (relatif à `server/`, voir `server/.env.example`).
 
 - Au démarrage, le fichier est créé s'il n'existe pas.
-- Un fichier illisible ou incohérent (JSON invalide, bouton invalide, identifiant ou emplacement en double, parent inexistant) fait échouer le démarrage avec un message clair, sans être écrasé.
+- Un fichier illisible ou incohérent (JSON invalide, bouton invalide, identifiant ou emplacement en double, emplacement 0 dans un dossier, parent inexistant) fait échouer le démarrage avec un message clair, sans être écrasé.
 - Chaque modification est écrite dans un fichier temporaire puis renommée, et les écritures se font l'une après l'autre.
 
 ### Fichiers
