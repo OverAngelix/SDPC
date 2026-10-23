@@ -8,7 +8,7 @@ Une fiche par feature : explication, TODO, implémentation et personne active. N
 | 02 | [API des boutons](02-api-boutons.md) | Livré | OverAngelix |
 | 03 | [Grille de boutons](03-grille-boutons.md) | Livré | OverAngelix |
 | 04 | [Configuration des boutons](04-configuration-boutons.md) | Livré | OverAngelix |
-| 05 | [Glisser-déposer des boutons](05-glisser-deposer.md) | À faire | OverAngelix |
+| 05 | [Glisser-déposer des boutons](05-glisser-deposer.md) | Livré | OverAngelix |
 
 Ordre de réalisation : 02 → 03 → 04 → 05 (chaque feature dépend de la précédente).
 

@@ -66,6 +66,7 @@ interface Button {
 | GET | `/api/buttons/:id` | Un bouton | 200, 404 |
 | POST | `/api/buttons` | Crée un bouton (le serveur attribue l'`id`). `parentId` vaut `null` s'il est absent | 201, 400, 409 |
 | PATCH | `/api/buttons/:id` | Modifie des champs (`label`, `icon`, `type`, `position`, `url`) | 200, 400, 404, 409 |
+| POST | `/api/buttons/:id/move` | Déplace le bouton vers `{ "position": n }` dans son dossier, en échangeant avec l'occupant éventuel (feature 05). Renvoie les boutons dont l'emplacement a changé | 200, 400, 404 |
 | DELETE | `/api/buttons/:id` | Supprime le bouton et, pour un dossier, tout son contenu | 204, 404 |
 
 Les champs inconnus sont ignorés. Une route `/api/...` inconnue répond 404 en JSON.
