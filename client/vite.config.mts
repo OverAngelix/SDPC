@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { fileURLToPath, URL } from 'node:url'
 import Vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vite'
@@ -14,6 +15,9 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('src', import.meta.url)),
     },
+  },
+  test: {
+    environment: 'node',
   },
   server: {
     port: 3000,
