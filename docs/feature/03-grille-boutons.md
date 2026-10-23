@@ -3,7 +3,7 @@
 | | |
 | --- | --- |
 | **Statut** | À faire |
-| **Personne active** | À définir |
+| **Personne active** | OverAngelix |
 | **Périmètre** | `client/` |
 | **Dépend de** | [02 — API des boutons](02-api-boutons.md) |
 
