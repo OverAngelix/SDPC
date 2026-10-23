@@ -25,11 +25,12 @@ Technologies imposées : Node, Vue 3 et Vuetify.
 
 ## Commandes
 
-Serveur (`server/`) : `npm run dev` (rechargement), `npm run build`, `npm start`, `npm run type-check`.
-Client (`client/`) : `npm run dev`, `npm run build`, `npm run type-check`, `npm run lint`.
+Serveur (`server/`) : `npm run dev` (rechargement), `npm run build`, `npm start`, `npm run type-check`, `npm test`.
+Client (`client/`) : `npm run dev`, `npm run build`, `npm run type-check`, `npm run lint`, `npm test`.
 Installation reproductible : `npm ci` dans chaque dossier.
 
 ## Conventions
 
 - Textes visibles par l'utilisateur et documentation en français ; identifiants de code (variables, fonctions, fichiers) en anglais.
+- Tests serveur : tous dans `server/test/`, jamais à côté du code de `src/`. L'arborescence reflète celle de `src/` (`src/buttons/store.ts` → `test/buttons/store.test.ts`) et les outils partagés vont dans `test/helpers/`. Lancés par `npm test` (`node:test` via `tsx`).
 - Commits : suivre la nomenclature de la commande `/commit` (`.claude/commands/commit.md`). Un commit par sujet.
