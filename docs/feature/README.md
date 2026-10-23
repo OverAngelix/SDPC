@@ -5,10 +5,10 @@ Une fiche par feature : explication, TODO, implémentation et personne active. N
 | N° | Feature | Statut | Personne active |
 | --- | --- | --- | --- |
 | 01 | [Connexion client ↔ serveur](01-connexion-client-serveur.md) | Livré | OverAngelix |
-| 02 | [API des boutons](02-api-boutons.md) | Livré | À définir |
-| 03 | [Grille de boutons](03-grille-boutons.md) | À faire | À définir |
-| 04 | [Configuration des boutons](04-configuration-boutons.md) | À faire | À définir |
-| 05 | [Finitions de la configuration](05-finitions-configuration.md) | À faire | À définir |
+| 02 | [API des boutons](02-api-boutons.md) | Livré | OverAngelix |
+| 03 | [Grille de boutons](03-grille-boutons.md) | À faire | OverAngelix |
+| 04 | [Configuration des boutons](04-configuration-boutons.md) | À faire | OverAngelix |
+| 05 | [Finitions de la configuration](05-finitions-configuration.md) | À faire | OverAngelix |
 
 Ordre de réalisation : 02 → 03 → 04 → 05 (chaque feature dépend de la précédente).
 
