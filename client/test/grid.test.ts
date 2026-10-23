@@ -1,6 +1,6 @@
 import type { Button } from '@/interfaces/button'
 import { describe, expect, it } from 'vitest'
-import { buildSlots, COLUMNS, ROWS, SLOTS } from '@/grid'
+import { BACK_SLOT, buildSlots, COLUMNS, ROWS, SLOTS } from '@/grid'
 
 function makeButton (overrides: Partial<Button>): Button {
   return {
@@ -16,10 +16,14 @@ function makeButton (overrides: Partial<Button>): Button {
 }
 
 describe('constantes de la grille', () => {
-  it('fait 5 colonnes sur 7 lignes, soit 35 emplacements', () => {
-    expect(COLUMNS).toBe(5)
-    expect(ROWS).toBe(7)
+  it('fait 7 colonnes sur 5 lignes, soit 35 emplacements', () => {
+    expect(COLUMNS).toBe(7)
+    expect(ROWS).toBe(5)
     expect(SLOTS).toBe(35)
+  })
+
+  it('place le retour à la première case', () => {
+    expect(BACK_SLOT).toBe(0)
   })
 })
 
@@ -53,6 +57,22 @@ describe('buildSlots', () => {
     expect(buildSlots(buttons, null)[1]).toBe(root)
     expect(buildSlots(buttons, 'folder')[1]).toBe(inFolder)
     expect(buildSlots(buttons, 'folder')[2]).toBeNull()
+  })
+
+  it('utilise les 35 emplacements à la racine, y compris le premier', () => {
+    const first = makeButton({ id: 'first', position: BACK_SLOT })
+    expect(buildSlots([first], null)[BACK_SLOT]).toBe(first)
+  })
+
+  it('réserve le premier emplacement d\'un dossier au retour', () => {
+    const intruder = makeButton({ id: 'intruder', parentId: 'folder', position: BACK_SLOT })
+    const next = makeButton({ id: 'next', parentId: 'folder', position: 1 })
+
+    const slots = buildSlots([intruder, next], 'folder')
+
+    expect(slots).toHaveLength(SLOTS)
+    expect(slots[BACK_SLOT]).toBeNull()
+    expect(slots[1]).toBe(next)
   })
 
   it('ignore un emplacement hors de la grille', () => {
