@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { after, before, describe, it } from 'node:test'
-import { startTestServer } from './testing/server.js'
+import { startTestServer } from './helpers/server.js'
 
 describe('GET /api/health', () => {
   let server: Awaited<ReturnType<typeof startTestServer>>

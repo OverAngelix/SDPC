@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { after, before, beforeEach, describe, it } from 'node:test'
-import { startTestServer } from '../testing/server.js'
+import { startTestServer } from '../helpers/server.js'
 
 const action = { position: 0, label: 'YouTube', icon: 'mdi-youtube', type: 'action', url: 'https://www.youtube.com' }
 const folder = { position: 1, label: 'Musique', icon: 'mdi-folder', type: 'folder' }

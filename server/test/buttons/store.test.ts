@@ -3,8 +3,8 @@ import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, it } from 'node:test'
-import { HttpError } from '../errors.js'
-import { ButtonStore } from './store.js'
+import { HttpError } from '../../src/errors.js'
+import { ButtonStore } from '../../src/buttons/store.js'
 
 const action = { position: 0, label: 'YouTube', icon: 'mdi-youtube', type: 'action', url: 'https://www.youtube.com' }
 const folder = { position: 1, label: 'Musique', icon: 'mdi-folder', type: 'folder' }

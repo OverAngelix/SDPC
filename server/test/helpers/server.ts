@@ -3,8 +3,8 @@ import type { AddressInfo } from 'node:net'
 import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { createApp } from '../app.js'
-import { ButtonStore } from '../buttons/store.js'
+import { createApp } from '../../src/app.js'
+import { ButtonStore } from '../../src/buttons/store.js'
 
 /** Démarre l'application sur un port libre, avec un fichier de données temporaire. */
 export async function startTestServer () {
