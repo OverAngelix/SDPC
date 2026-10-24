@@ -2,7 +2,8 @@
   <v-card
     v-if="back || button"
     :aria-label="label"
-    class="tile d-flex flex-column align-center justify-center pa-2"
+    class="tile tile-live d-flex flex-column align-center justify-center pa-2"
+    :class="[effect && `tile-${effect}`, { 'tile-launch': launching }]"
     :color="color"
     link
     variant="tonal"
@@ -43,6 +44,7 @@
     v-else-if="editable"
     aria-label="Ajouter un bouton"
     class="tile tile-empty d-flex align-center justify-center text-medium-emphasis"
+    :class="effect && `tile-${effect}`"
     link
     variant="text"
     @click="emit('create')"
@@ -50,12 +52,12 @@
     <v-icon icon="mdi-plus" size="20cqw" />
   </v-card>
 
-  <div v-else class="tile tile-empty" />
+  <div v-else class="tile tile-empty" :class="effect && `tile-${effect}`" />
 </template>
 
 <script lang="ts" setup>
   import type { Button } from '@/interfaces/button'
-  import { computed } from 'vue'
+  import { computed, onBeforeUnmount, ref } from 'vue'
   import { colorOf, DEFAULT_COLOR } from '@/utils/colors'
 
   const props = defineProps<{
@@ -65,6 +67,8 @@
     back?: boolean
     /** Mode configuration : un emplacement libre propose la création, un bouton sa modification et sa suppression */
     editable?: boolean
+    /** Effet ponctuel : la case vient d'être posée (pop) ou son dépôt est refusé (shake) */
+    effect?: 'pop' | 'shake'
   }>()
 
   const emit = defineEmits<{
@@ -84,11 +88,27 @@
   })
   const isFolder = computed(() => !props.back && props.button?.type === 'folder')
 
+  // Lancement d'une action : l'animation joue pendant que l'onglet s'ouvre, sans jamais le retarder
+  const LAUNCH_MS = 500
+  const launching = ref(false)
+  let launchTimer: ReturnType<typeof setTimeout> | undefined
+
+  function launch () {
+    clearTimeout(launchTimer)
+    launching.value = true
+    launchTimer = setTimeout(() => {
+      launching.value = false
+    }, LAUNCH_MS)
+  }
+
+  onBeforeUnmount(() => clearTimeout(launchTimer))
+
   function onClick () {
     if (props.back) {
       emit('back')
     } else if (props.button) {
       emit('select', props.button)
+      if (props.button.type === 'action' && !props.editable) launch()
     }
   }
 </script>
@@ -99,6 +119,102 @@
     container-type: size;
     min-width: 0;
     position: relative;
+    /* Apparition en vague : --wave est la diagonale de la case, posée par la grille. `backwards` rend
+       la main aux états survol et appui une fois l'animation finie */
+    animation: tile-enter 0.3s ease-out backwards;
+    animation-delay: calc(var(--wave, 0) * 35ms);
+  }
+
+  /* Cases qui réagissent sous le doigt, comme les touches d'un vrai Stream Deck */
+  .tile-live {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .tile-live:hover {
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+  }
+
+  .tile-live:active {
+    transform: scale(0.93);
+    box-shadow: none;
+    transition-duration: 0.05s;
+  }
+
+  .tile-launch {
+    animation: tile-launch 0.5s ease-out;
+  }
+
+  .tile-pop {
+    animation: tile-pop 0.45s cubic-bezier(0.3, 1.6, 0.5, 1);
+  }
+
+  .tile-shake {
+    animation: tile-shake 0.4s ease-in-out;
+  }
+
+  @keyframes tile-enter {
+    from {
+      opacity: 0;
+      transform: translateY(14px) scale(0.85);
+    }
+  }
+
+  @keyframes tile-launch {
+    0% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(var(--v-theme-primary), 0.6);
+    }
+    35% {
+      transform: scale(0.9);
+    }
+    65% {
+      transform: scale(1.08);
+    }
+    100% {
+      transform: scale(1);
+      box-shadow: 0 0 0 18px rgba(var(--v-theme-primary), 0);
+    }
+  }
+
+  @keyframes tile-pop {
+    0% {
+      transform: scale(0.6);
+      opacity: 0.4;
+    }
+    60% {
+      transform: scale(1.12);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes tile-shake {
+    20%, 60% {
+      transform: translateX(-7px);
+    }
+    40%, 80% {
+      transform: translateX(7px);
+    }
+  }
+
+  /* Le système demande moins de mouvement : plus aucune animation ni transformation */
+  @media (prefers-reduced-motion: reduce) {
+    .tile,
+    .tile-live,
+    .tile-launch,
+    .tile-pop,
+    .tile-shake {
+      animation: none;
+      transition: none;
+    }
+
+    .tile-live:hover,
+    .tile-live:active {
+      transform: none;
+    }
   }
 
   .tile-label {

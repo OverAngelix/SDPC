@@ -7,6 +7,7 @@
       </p>
 
       <button-grid
+        :key="folderId ?? 'root'"
         :back="folderId !== null"
         editable
         :slots="slots"

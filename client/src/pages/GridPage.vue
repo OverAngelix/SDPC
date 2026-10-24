@@ -5,7 +5,13 @@
         Aucun bouton ici. Ajoutez-en depuis l'onglet Configuration.
       </p>
 
-      <button-grid :back="folderId !== null" :slots="slots" @back="goBack" @select="select" />
+      <button-grid
+        :key="folderId ?? 'root'"
+        :back="folderId !== null"
+        :slots="slots"
+        @back="goBack"
+        @select="select"
+      />
     </grid-status>
   </v-container>
 </template>

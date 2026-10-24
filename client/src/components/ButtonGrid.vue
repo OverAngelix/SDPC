@@ -15,6 +15,8 @@
       }"
       :draggable="editable && button !== null"
       :editable="editable"
+      :effect="effectOf(button, index)"
+      :style="{ '--wave': wave(index) }"
       @back="emit('back')"
       @create="emit('create', index)"
       @dragend="resetDrag"
@@ -31,9 +33,9 @@
 
 <script lang="ts" setup>
   import type { Button } from '@/interfaces/button'
-  import { ref } from 'vue'
+  import { onBeforeUnmount, ref, watch } from 'vue'
   import ButtonTile from '@/components/ButtonTile.vue'
-  import { BACK_SLOT, COLUMNS, ROWS } from '@/grid'
+  import { BACK_SLOT, COLUMNS, placedIds, ROWS } from '@/grid'
 
   const props = defineProps<{
     /** Un élément par emplacement, dans l'ordre : le bouton ou null */
@@ -64,6 +66,48 @@
   // La case 0 d'un dossier est le retour : elle ne reçoit aucun bouton
   function isReserved (index: number) {
     return props.back && index === BACK_SLOT
+  }
+
+  // Effets ponctuels : les boutons qui viennent d'être posés, et la tuile de retour dont le dépôt est refusé
+  const EFFECT_MS = 500
+  const placed = ref<Set<string>>(new Set())
+  const refused = ref(false)
+  let placedTimer: ReturnType<typeof setTimeout> | undefined
+  let refusedTimer: ReturnType<typeof setTimeout> | undefined
+
+  // Création, déplacement et échange. Un changement de dossier remplace la grille entière (clé de la page), il ne passe pas ici
+  watch(() => props.slots, (next, previous) => {
+    const ids = placedIds(previous, next)
+    if (ids.length === 0) return
+    clearTimeout(placedTimer)
+    placed.value = new Set(ids)
+    placedTimer = setTimeout(() => {
+      placed.value = new Set()
+    }, EFFECT_MS)
+  })
+
+  onBeforeUnmount(() => {
+    clearTimeout(placedTimer)
+    clearTimeout(refusedTimer)
+  })
+
+  function effectOf (button: Button | null, index: number) {
+    if (button !== null && placed.value.has(button.id)) return 'pop'
+    if (refused.value && isReserved(index)) return 'shake'
+    return undefined
+  }
+
+  // Les cases apparaissent en vague, de la case en haut à gauche vers celle en bas à droite
+  function wave (index: number) {
+    return (index % COLUMNS) + Math.floor(index / COLUMNS)
+  }
+
+  function refuse () {
+    clearTimeout(refusedTimer)
+    refused.value = true
+    refusedTimer = setTimeout(() => {
+      refused.value = false
+    }, EFFECT_MS)
   }
 
   function resetDrag () {
@@ -103,6 +147,7 @@
     event.preventDefault()
     resetDrag()
     if (isReserved(index)) {
+      refuse()
       emit('reserved', button)
     } else if (index !== button.position) {
       emit('move', button, index)
