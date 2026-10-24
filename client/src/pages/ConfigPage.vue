@@ -25,7 +25,7 @@
       :button="editing"
       :parent-id="folderId"
       :position="position"
-      @saved="notify"
+      @saved="onSaved"
     />
 
     <confirm-delete
@@ -52,9 +52,11 @@
   import { useFolderNavigation } from '@/composables/folderNavigation'
   import { countContent } from '@/grid'
   import { useButtonsStore } from '@/stores/buttons'
+  import { useSettingsStore } from '@/stores/settings'
   import { describeApiError } from '@/utils/apiError'
 
   const store = useButtonsStore()
+  const settings = useSettingsStore()
   const { folderId, path, slots, openFolder, goBack } = useFolderNavigation({ root: 'config', folder: 'config-folder' })
 
   const formOpen = ref(false)
@@ -102,13 +104,16 @@
 
   // Lâché sur la tuile de retour : rien n'est envoyé au serveur, on explique le refus
   function refuseReserved () {
+    settings.play('refuse')
     notify('La première case d\'un dossier est réservée au bouton retour : on ne peut pas y placer un bouton.')
   }
 
   async function move (button: Button, slot: number) {
     try {
       await store.move(button.id, slot)
+      settings.play('move')
     } catch (error) {
+      settings.play('refuse')
       notify(`Déplacement impossible : ${describeApiError(error).title}`)
     }
   }
@@ -120,12 +125,19 @@
     try {
       await store.remove(removing.value.id)
       removeOpen.value = false
+      settings.play('delete')
       notify('Bouton supprimé.')
     } catch (error) {
       removeError.value = describeApiError(error)
     } finally {
       removeLoading.value = false
     }
+  }
+
+  // Une création sonne comme une création ; une modification, plus discrète, comme un déplacement
+  function onSaved (text: string) {
+    settings.play(editing.value === null ? 'create' : 'move')
+    notify(text)
   }
 
   function notify (text: string) {

@@ -1,6 +1,7 @@
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useButtonsStore } from '@/stores/buttons'
+import { useSettingsStore } from '@/stores/settings'
 
 /**
  * Le dossier affiché selon l'URL (`:id`, la racine sinon) et la navigation entre dossiers.
@@ -10,6 +11,7 @@ export function useFolderNavigation (routes: { root: string, folder: string }) {
   const route = useRoute()
   const router = useRouter()
   const store = useButtonsStore()
+  const settings = useSettingsStore()
 
   // null : la racine
   const folderId = computed(() => typeof route.params.id === 'string' ? route.params.id : null)
@@ -21,11 +23,13 @@ export function useFolderNavigation (routes: { root: string, folder: string }) {
   const isEmpty = computed(() => slots.value.every(slot => slot === null))
 
   function openFolder (id: string) {
+    settings.play('open')
     router.push({ name: routes.folder, params: { id } })
   }
 
   // Le bouton retour (première case d'un dossier) mène au dossier parent, ou à la racine
   function goBack () {
+    settings.play('back')
     const parent = path.value?.at(-2)
     router.push(parent ? { name: routes.folder, params: { id: parent.id } } : { name: routes.root })
   }

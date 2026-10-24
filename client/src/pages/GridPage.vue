@@ -17,15 +17,18 @@
   import GridStatus from '@/components/GridStatus.vue'
   import { useFolderNavigation } from '@/composables/folderNavigation'
   import { useButtonsStore } from '@/stores/buttons'
+  import { useSettingsStore } from '@/stores/settings'
   import { isHttpUrl } from '@/utils/url'
 
   const store = useButtonsStore()
+  const settings = useSettingsStore()
   const { folderId, path, slots, isEmpty, openFolder, goBack } = useFolderNavigation({ root: 'grid', folder: 'folder' })
 
   function select (button: Button) {
     if (button.type === 'folder') {
       openFolder(button.id)
     } else if (button.url && isHttpUrl(button.url)) {
+      settings.play('launch')
       // Nouvel onglet : la grille reste ouverte. noopener coupe le lien entre les deux onglets
       window.open(button.url, '_blank', 'noopener,noreferrer')
     }
