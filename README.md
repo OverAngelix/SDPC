@@ -1,11 +1,11 @@
 # SDPC — Stream Deck pour PC
 
-Un Stream Deck logiciel pour PC, dans l'esprit des Stream Deck d'Elgato : une grille de boutons (6 colonnes × 4 lignes, 4 × 6 en portrait) servant de raccourcis.
+Un Stream Deck logiciel pour PC, dans l'esprit des Stream Deck d'Elgato : une grille de boutons (7 colonnes × 4 lignes, 4 × 7 en portrait) servant de raccourcis.
 
 - Un **bouton** a une icône et un libellé configurables.
 - Un bouton est soit une **action**, soit un **dossier**.
 - **Action** : redirige vers une URL, dans un nouvel onglet. Aucune application locale n'est lancée, aucune commande n'est exécutée.
-- **Dossier** : un clic remplace la grille par celle du dossier (plusieurs niveaux de profondeur) . Le retour occupe la première case de la grille du dossier, comme sur un Stream Deck Elgato : 24 emplacements utilisables à la racine, 23 dans un dossier.
+- **Dossier** : un clic remplace la grille par celle du dossier (plusieurs niveaux de profondeur) . Le retour occupe la première case de la grille du dossier, comme sur un Stream Deck Elgato : 28 emplacements utilisables à la racine, 27 dans un dossier.
 
 ## Stack
 

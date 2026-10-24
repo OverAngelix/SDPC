@@ -11,13 +11,13 @@ Une fiche par feature : explication, TODO, implémentation et personne active. N
 | 05 | [Glisser-déposer des boutons](05-glisser-deposer.md) | Livré | OverAngelix |
 | 06 | [UX : couleurs et effets « juicy »](06-ux-couleurs-effets.md) | Livré | OverAngelix |
 | 07 | [Responsive : grille adaptée au téléphone](07-responsive.md) | Livré | OverAngelix |
-| 08 | [Grille de 24 cases (6 × 4, 4 × 6 en portrait)](08-grille-24-cases.md) | Livré | OverAngelix |
+| 08 | [Grille de 28 cases (7 × 4, 4 × 7 en portrait)](08-grille-28-cases.md) | Livré | OverAngelix |
 
 Ordre de réalisation : 02 → 03 → 04 → 05 → 06 → 07 → 08 (chaque feature dépend de la précédente).
 
 ## Plus tard
 
-- **Grille modulable** : nombre de colonnes et de lignes configurable (aujourd'hui fixe : 6 × 4, 4 × 6 en portrait, emplacements 0 à 23 ; l'emplacement 0 d'un dossier est le retour).
+- **Grille modulable** : nombre de colonnes et de lignes configurable (aujourd'hui fixe : 7 × 4, 4 × 7 en portrait, emplacements 0 à 27 ; l'emplacement 0 d'un dossier est le retour).
 - Plein écran ou mode kiosque pour la grille, thèmes.
 - Creation de compte
 - Base de données au lieu de json
