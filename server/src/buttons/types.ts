@@ -7,6 +7,10 @@ export const BACK_SLOT = 0
 
 export type ButtonType = 'action' | 'folder'
 
+/** Noms de couleurs Vuetify : le serveur ne stocke que le nom, le rendu s'adapte au thème. */
+export const BUTTON_COLORS = ['grey', 'red', 'orange', 'amber', 'green', 'teal', 'cyan', 'blue', 'purple', 'pink'] as const
+export type ButtonColor = typeof BUTTON_COLORS[number]
+
 export interface Button {
   id: string
   /** null : le bouton est à la racine */
@@ -17,6 +21,8 @@ export interface Button {
   /** Nom d'icône MDI, ex. "mdi-youtube" */
   icon: string
   type: ButtonType
+  /** Couleur de la case ; absente (boutons antérieurs) = gris */
+  color?: ButtonColor
   /** Actions uniquement : URL http(s) vers laquelle rediriger */
   url?: string
 }

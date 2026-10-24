@@ -38,6 +38,21 @@ describe('/api/buttons', () => {
     assert.deepEqual(read.body, created.body)
   })
 
+  it('POST et PATCH acceptent une couleur, 400 si elle est hors palette', async () => {
+    const created = await call('POST', '', { ...action, color: 'orange' })
+    assert.equal(created.status, 201)
+    assert.equal(created.body.color, 'orange')
+
+    const patched = await call('PATCH', `/${created.body.id}`, { color: 'cyan' })
+    assert.equal(patched.status, 200)
+    assert.equal(patched.body.color, 'cyan')
+
+    const invalid = await call('PATCH', `/${created.body.id}`, { color: 'rouge' })
+    assert.equal(invalid.status, 400)
+    assert.match(invalid.body.details[0], /^color/)
+    assert.equal((await call('POST', '', { ...action, position: 5, color: '#fff' })).status, 400)
+  })
+
   it('GET liste tous les boutons ou filtre par dossier', async () => {
     const parent = (await call('POST', '', folder)).body
     const child = (await call('POST', '', { ...action, position: 1, parentId: parent.id })).body

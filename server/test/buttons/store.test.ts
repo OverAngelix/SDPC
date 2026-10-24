@@ -99,6 +99,16 @@ describe('ButtonStore', () => {
     assert.deepEqual((await ButtonStore.open(file)).get(created.id), updated)
   })
 
+  it('conserve la couleur d\'un bouton, à la création et à la modification', async () => {
+    const store = await ButtonStore.open(file)
+    const created = await store.create({ ...action, color: 'teal' })
+    assert.equal(created.color, 'teal')
+    const updated = await store.update(created.id, { color: 'pink' })
+    assert.equal(updated.color, 'pink')
+    assert.equal((await ButtonStore.open(file)).get(created.id).color, 'pink')
+    await rejectsWith(store.update(created.id, { color: 'rouge' }), 400)
+  })
+
   it('autorise un bouton à garder son propre emplacement', async () => {
     const store = await ButtonStore.open(file)
     const created = await store.create(action)
@@ -166,6 +176,12 @@ describe('ButtonStore', () => {
     it('refuse un bouton invalide', async () => {
       await assert.rejects(openWith(JSON.stringify({ buttons: [{ ...button, url: 'javascript:alert(1)' }] })), /invalide/)
       await assert.rejects(openWith(JSON.stringify({ buttons: [{ ...button, id: undefined }] })), /invalide/)
+    })
+
+    it('refuse une couleur inconnue mais relit un bouton sans couleur', async () => {
+      await assert.rejects(openWith(JSON.stringify({ buttons: [{ ...button, color: 'rouge' }] })), /invalide/)
+      const store = await openWith(JSON.stringify({ buttons: [button] }))
+      assert.equal(store.get('a').color, undefined)
     })
 
     it('refuse les identifiants et emplacements en double', async () => {

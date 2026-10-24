@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
 import type { Button } from '../../src/buttons/types.js'
+import { BUTTON_COLORS } from '../../src/buttons/types.js'
 import { mergeButtonPatch, validateButtonInput, validateMoveInput } from '../../src/buttons/validation.js'
 
 const action = { position: 0, label: 'YouTube', icon: 'mdi-youtube', type: 'action', url: 'https://www.youtube.com' }
@@ -92,6 +93,25 @@ describe('validateButtonInput', () => {
     assert.match(errorsOf({ ...folder, url: 'https://exemple.fr' })[0], /^url/)
   })
 
+  it('accepte chacune des 10 couleurs et la couleur absente', () => {
+    for (const color of BUTTON_COLORS) {
+      assert.deepEqual(validateButtonInput({ ...action, color }), { ok: true, value: { parentId: null, ...action, color } })
+    }
+    assert.equal(BUTTON_COLORS.length, 10)
+    const without = validateButtonInput(action)
+    assert.ok(without.ok)
+    assert.equal('color' in without.value, false)
+    const nul = validateButtonInput({ ...action, color: null })
+    assert.ok(nul.ok)
+    assert.equal('color' in nul.value, false)
+  })
+
+  it('refuse une couleur hors de la palette', () => {
+    for (const color of ['', 'rouge', 'Red', '#ff0000', 'red; x', 42, {}]) {
+      assert.match(errorsOf({ ...action, color })[0], /^color/)
+    }
+  })
+
   it('refuse un parentId invalide', () => {
     assert.match(errorsOf({ ...action, parentId: 12 })[0], /^parentId/)
     assert.match(errorsOf({ ...action, parentId: '' })[0], /^parentId/)
@@ -110,6 +130,17 @@ describe('mergeButtonPatch', () => {
   it('applique les champs fournis et garde les autres', () => {
     const result = mergeButtonPatch(current, { label: 'YT', position: 4 })
     assert.deepEqual(result, { ok: true, value: { parentId: null, ...action, label: 'YT', position: 4 } })
+  })
+
+  it('change la couleur, la garde quand le patch n\'en parle pas, refuse une couleur inconnue', () => {
+    const red: Button = { ...current, color: 'red' }
+    const recolored = mergeButtonPatch(red, { color: 'blue' })
+    assert.ok(recolored.ok)
+    assert.equal(recolored.value.color, 'blue')
+    const kept = mergeButtonPatch(red, { label: 'YT' })
+    assert.ok(kept.ok)
+    assert.equal(kept.value.color, 'red')
+    assert.equal(mergeButtonPatch(red, { color: 'rouge' }).ok, false)
   })
 
   it('accepte un patch vide', () => {

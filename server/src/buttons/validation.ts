@@ -1,5 +1,5 @@
-import type { Button, ButtonInput, ButtonType } from './types.js'
-import { BACK_SLOT, SLOTS } from './types.js'
+import type { Button, ButtonColor, ButtonInput, ButtonType } from './types.js'
+import { BACK_SLOT, BUTTON_COLORS, SLOTS } from './types.js'
 
 export const LABEL_MAX_LENGTH = 50
 export const URL_MAX_LENGTH = 2048
@@ -35,6 +35,14 @@ function parseIcon (value: unknown): Parsed<string> {
 function parseType (value: unknown): Parsed<ButtonType> {
   const type = BUTTON_TYPES.find(candidate => candidate === value)
   return type === undefined ? { error: 'type : "action" ou "folder" attendu' } : { value: type }
+}
+
+function parseColor (value: unknown): Parsed<ButtonColor | undefined> {
+  if (value === undefined || value === null) return { value: undefined }
+  const color = BUTTON_COLORS.find(candidate => candidate === value)
+  return color === undefined
+    ? { error: `color : l'une de ces couleurs attendue (${BUTTON_COLORS.join(', ')})` }
+    : { value: color }
 }
 
 function parsePosition (value: unknown): Parsed<number> {
@@ -77,12 +85,13 @@ export function validateButtonInput (body: unknown): ValidationResult<ButtonInpu
   const label = parseLabel(body.label)
   const icon = parseIcon(body.icon)
   const type = parseType(body.type)
+  const color = parseColor(body.color)
   const position = parsePosition(body.position)
   const parentId = parseParentId(body.parentId)
   const url = parseUrl(body.url, 'value' in type ? type.value : undefined)
 
-  const errors = [label, icon, type, position, parentId, url].flatMap(field => 'error' in field ? [field.error] : [])
-  if ('error' in label || 'error' in icon || 'error' in type || 'error' in position || 'error' in parentId || 'error' in url) {
+  const errors = [label, icon, type, color, position, parentId, url].flatMap(field => 'error' in field ? [field.error] : [])
+  if ('error' in label || 'error' in icon || 'error' in type || 'error' in color || 'error' in position || 'error' in parentId || 'error' in url) {
     return { ok: false, errors }
   }
   if (parentId.value !== null && position.value === BACK_SLOT) {
@@ -97,6 +106,7 @@ export function validateButtonInput (body: unknown): ValidationResult<ButtonInpu
       label: label.value,
       icon: icon.value,
       type: type.value,
+      ...(color.value === undefined ? {} : { color: color.value }),
       ...(url.value === undefined ? {} : { url: url.value }),
     },
   }
@@ -119,6 +129,7 @@ export function mergeButtonPatch (current: Button, patch: unknown): ValidationRe
     label: patch.label ?? current.label,
     icon: patch.icon ?? current.icon,
     type: patch.type ?? current.type,
+    color: patch.color ?? current.color,
     // Un bouton qui devient dossier perd son URL, sauf si la requête en fournit une (alors refusée)
     url: patch.url === undefined && patch.type === 'folder' ? undefined : patch.url ?? current.url,
   }
