@@ -4,8 +4,19 @@
       <v-app-bar-title>SDPC</v-app-bar-title>
 
       <v-tabs>
-        <v-tab prepend-icon="mdi-view-grid" text="Grille" to="/" />
-        <v-tab prepend-icon="mdi-cog" text="Configuration" to="/config" />
+        <v-tab
+          aria-label="Grille"
+          prepend-icon="mdi-view-grid"
+          :text="xs ? undefined : 'Grille'"
+          to="/"
+        />
+
+        <v-tab
+          aria-label="Configuration"
+          prepend-icon="mdi-cog"
+          :text="xs ? undefined : 'Configuration'"
+          to="/config"
+        />
       </v-tabs>
 
       <v-spacer />
@@ -26,7 +37,20 @@
 </template>
 
 <script lang="ts" setup>
+  import { useDisplay } from 'vuetify'
   import { useSettingsStore } from '@/stores/settings'
 
   const settings = useSettingsStore()
+  // Téléphone : les onglets se réduisent à leur icône pour que la barre tienne sur une ligne
+  const { xs } = useDisplay()
 </script>
+
+<style>
+  /* Téléphone couché : la page prend toute la largeur, la grille défile en hauteur au lieu de rétrécir
+     (voir ButtonGrid) ; la largeur maximale du conteneur Vuetify la bornerait à 700 px */
+  @media (orientation: landscape) and (max-height: 500px) {
+    .v-container {
+      max-width: 100%;
+    }
+  }
+</style>
