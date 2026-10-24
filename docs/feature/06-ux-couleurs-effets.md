@@ -32,7 +32,8 @@ Rendre la grille plus agréable à utiliser, comme les touches d'un vrai Stream 
 ## Décisions
 
 - **Dix couleurs nommées, pas de sélecteur libre.** Une palette fixe garde une grille cohérente et lisible en thème clair comme en thème sombre. Les noms sont ceux de Vuetify (`grey`, `red`, `orange`, `amber`, `green`, `teal`, `cyan`, `blue`, `purple`, `pink`) : le serveur ne stocke que le nom, jamais un code couleur, et le rendu s'adapte au thème.
-- **Le gris est la couleur par défaut.** C'est l'aspect actuel de la grille. Un bouton sans `color` (créé avant cette feature) s'affiche en gris : aucune migration du fichier de données.
+- **Cases pleines, texte et icônes en blanc.** Une teinte légère (variante « tonal » de Vuetify) colorait aussi l'icône et le libellé, qui se fondaient dans le fond : la case entière porte la couleur, le contenu reste blanc.
+- **Le gris est la couleur par défaut**, en gris foncé (`grey-darken-2`) pour garder un texte blanc lisible. Un bouton sans `color` (créé avant cette feature) s'affiche en gris : aucune migration du fichier de données.
 - **`color` est facultatif côté serveur** (comme `url` pour un dossier) et refusé s'il n'est pas dans la liste. Le formulaire l'envoie toujours.
 - **Aucun fichier audio** : les sons sont synthétisés à la volée avec l'API Web Audio (oscillateurs et enveloppes courtes). Pas de poids ajouté, pas de licence à gérer, et chaque son est décrit par des données (notes, durées), donc testable.
 - **Le son démarre sur un geste de l'utilisateur** (clic, glisser) : les navigateurs interdisent l'audio automatique, le contexte audio n'est créé qu'à la première lecture.
@@ -46,7 +47,7 @@ Rendre la grille plus agréable à utiliser, comme les touches d'un vrai Stream 
 
 ```
 Formulaire (ColorPicker) → color ∈ 10 noms → POST/PATCH /api/buttons → le serveur valide, stocke le nom
-ButtonTile → colorOf(button) → teinte Vuetify (gris = aucune teinte, aspect d'origine)
+ButtonTile → colorOf(button) → solidColor → case pleine Vuetify, texte blanc (gris = grey-darken-2)
 
 Geste de l'utilisateur → useSettingsStore().play(nom) → si le son est activé : playSound(nom)
   → contexte audio créé à la première lecture → scheduleTones : oscillateurs + enveloppes courtes
@@ -83,12 +84,12 @@ Chaque son est une liste de notes (`SOUNDS` dans `client/src/utils/sounds.ts`) :
 | `client/src/interfaces/button.ts` | `ButtonColor`, `color` dans `Button` et `ButtonPatch` |
 | `client/src/interfaces/sound.ts` | `SoundName`, `Tone` |
 | `client/src/interfaces/buttonForm.ts` | `color` dans les valeurs du formulaire |
-| `client/src/utils/colors.ts` | Palette et libellés, `DEFAULT_COLOR`, `colorOf` |
+| `client/src/utils/colors.ts` | Palette et libellés, `DEFAULT_COLOR`, `colorOf`, `solidColor` |
 | `client/src/utils/sounds.ts` | `SOUNDS`, `scheduleTones`, `playSound` |
 | `client/src/stores/settings.ts` | Préférence « son », `play` |
 | `client/src/grid.ts` | `placedIds` : cases créées, déplacées ou échangées |
 | `client/src/components/ColorPicker.vue` | Choix de la couleur dans le formulaire |
-| `client/src/components/ButtonTile.vue` | Teinte et animations CSS de la case |
+| `client/src/components/ButtonTile.vue` | Case pleine colorée et animations CSS |
 | `client/src/components/ButtonGrid.vue` | Effets « pop » et « shake », vague d'apparition |
 | `client/src/App.vue` | Bouton son |
 | `client/src/composables/folderNavigation.ts`, `client/src/pages/*.vue` | Sons branchés sur les gestes |
@@ -109,7 +110,7 @@ cd server && npm run dev
 cd client && npm run dev          # puis http://localhost:3000/config
 ```
 
-1. Créer un bouton, choisir une couleur : la case est teintée dans la configuration et dans l'onglet Grille. Un bouton plus ancien reste gris.
+1. Créer un bouton, choisir une couleur : la case est pleine, texte blanc, dans la configuration et dans l'onglet Grille. Un bouton plus ancien reste gris.
 2. Survoler une case (elle se soulève), appuyer (elle s'enfonce), cliquer une action dans l'onglet Grille (pulsation et son, l'onglet s'ouvre sans attendre).
 3. Ouvrir un dossier : les cases apparaissent en vague, avec un son montant ; le retour joue le son inverse.
 4. Dans la configuration, créer, déplacer, échanger, supprimer : chaque geste a son son, la case posée fait un « pop ». Lâcher un bouton sur la tuile de retour : elle se secoue, son de refus.

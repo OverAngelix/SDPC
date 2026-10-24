@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { BUTTON_COLORS, colorOf, DEFAULT_COLOR } from '@/utils/colors'
+import { BUTTON_COLORS, colorOf, DEFAULT_COLOR, solidColor } from '@/utils/colors'
 
 describe('BUTTON_COLORS', () => {
   it('propose 10 couleurs distinctes, avec un libellé', () => {
@@ -23,5 +23,17 @@ describe('colorOf', () => {
     expect(colorOf({})).toBe('grey')
     expect(colorOf(null)).toBe('grey')
     expect(colorOf(undefined)).toBe('grey')
+  })
+})
+
+describe('solidColor', () => {
+  it('assombrit le gris pour que le texte blanc reste lisible', () => {
+    expect(solidColor('grey')).toBe('grey-darken-2')
+  })
+
+  it('garde le nom des autres couleurs', () => {
+    for (const { value } of BUTTON_COLORS.filter(color => color.value !== DEFAULT_COLOR)) {
+      expect(solidColor(value)).toBe(value)
+    }
   })
 })

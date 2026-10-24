@@ -6,7 +6,7 @@
     :class="[effect && `tile-${effect}`, { 'tile-launch': launching }]"
     :color="color"
     link
-    variant="tonal"
+    variant="flat"
     @click="onClick"
   >
     <v-icon class="tile-icon" :icon="icon" size="38cqw" />
@@ -58,7 +58,7 @@
 <script lang="ts" setup>
   import type { Button } from '@/interfaces/button'
   import { computed, onBeforeUnmount, ref } from 'vue'
-  import { colorOf, DEFAULT_COLOR } from '@/utils/colors'
+  import { colorOf, DEFAULT_COLOR, solidColor } from '@/utils/colors'
 
   const props = defineProps<{
     /** null : emplacement libre, affiché vide pour que la grille garde sa forme */
@@ -81,11 +81,8 @@
 
   const icon = computed(() => props.back ? 'mdi-arrow-left' : props.button?.icon)
   const label = computed(() => props.back ? 'Retour' : props.button?.label)
-  // Le gris est l'aspect neutre de Vuetify (aucune teinte) ; la tuile de retour reste toujours neutre
-  const color = computed(() => {
-    const value = props.back ? DEFAULT_COLOR : colorOf(props.button)
-    return value === DEFAULT_COLOR ? undefined : value
-  })
+  // Case pleine, texte et icônes en blanc ; la tuile de retour est toujours grise
+  const color = computed(() => solidColor(props.back ? DEFAULT_COLOR : colorOf(props.button)))
   const isFolder = computed(() => !props.back && props.button?.type === 'folder')
 
   // Lancement d'une action : l'animation joue pendant que l'onglet s'ouvre, sans jamais le retarder

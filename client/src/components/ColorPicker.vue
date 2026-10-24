@@ -1,46 +1,74 @@
 <template>
   <div>
-    <div class="text-caption text-medium-emphasis mb-1">Couleur</div>
+    <div class="text-body-2 text-medium-emphasis mb-2">Couleur</div>
 
-    <v-btn-toggle
-      v-model="model"
-      class="color-list"
-      density="compact"
-      mandatory
-      rounded="lg"
-      variant="outlined"
-    >
-      <v-btn
+    <div aria-label="Couleur" class="swatches" role="radiogroup">
+      <button
         v-for="color in BUTTON_COLORS"
         :key="color.value"
+        :aria-checked="color.value === model"
         :aria-label="color.label"
-        class="color-swatch"
+        class="swatch"
+        :class="[`bg-${solidColor(color.value)}`, { 'swatch-selected': color.value === model }]"
+        role="radio"
         :title="color.label"
-        :value="color.value"
+        type="button"
+        @click="model = color.value"
       >
-        <v-icon
-          :color="color.value"
-          :icon="color.value === model ? 'mdi-check-circle' : 'mdi-circle'"
-        />
-      </v-btn>
-    </v-btn-toggle>
+        <v-icon v-if="color.value === model" color="white" icon="mdi-check" size="20" />
+      </button>
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
   import type { ButtonColor } from '@/interfaces/button'
-  import { BUTTON_COLORS } from '@/utils/colors'
+  import { BUTTON_COLORS, solidColor } from '@/utils/colors'
 
   const model = defineModel<ButtonColor>({ required: true })
 </script>
 
 <style scoped>
-  .color-list {
+  .swatches {
+    display: flex;
     flex-wrap: wrap;
-    height: auto;
+    gap: 12px;
   }
 
-  .color-swatch {
-    min-width: 40px;
+  .swatch {
+    align-items: center;
+    border-radius: 50%;
+    cursor: pointer;
+    display: inline-flex;
+    height: 36px;
+    justify-content: center;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    width: 36px;
+  }
+
+  .swatch:hover {
+    transform: scale(1.12);
+  }
+
+  /* Anneau écarté de la pastille : visible sur fond clair comme sombre */
+  .swatch-selected {
+    box-shadow:
+      0 0 0 3px rgb(var(--v-theme-surface)),
+      0 0 0 5px rgb(var(--v-theme-on-surface));
+  }
+
+  .swatch:focus-visible {
+    outline: 2px solid rgb(var(--v-theme-primary));
+    outline-offset: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .swatch {
+      transition: none;
+    }
+
+    .swatch:hover {
+      transform: none;
+    }
   }
 </style>
