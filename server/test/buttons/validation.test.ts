@@ -58,18 +58,18 @@ describe('validateButtonInput', () => {
     assert.match(errorsOf({ ...action, type: 'script' })[0], /^type/)
   })
 
-  it('refuse un emplacement hors de 0 à 23', () => {
-    for (const position of [-1, 24, 1.5, '3', null, undefined]) {
+  it('refuse un emplacement hors de 0 à 27', () => {
+    for (const position of [-1, 28, 1.5, '3', null, undefined]) {
       assert.match(errorsOf({ ...action, position })[0], /^position/)
     }
     assert.equal(validateButtonInput({ ...action, position: 0 }).ok, true)
-    assert.equal(validateButtonInput({ ...action, position: 23 }).ok, true)
+    assert.equal(validateButtonInput({ ...action, position: 27 }).ok, true)
   })
 
   it('réserve l\'emplacement 0 au retour dans un dossier', () => {
     assert.match(errorsOf({ ...action, position: 0, parentId: 'abc' })[0], /^position.*réservé/)
     assert.equal(validateButtonInput({ ...action, position: 1, parentId: 'abc' }).ok, true)
-    // À la racine, les 24 emplacements sont utilisables
+    // À la racine, les 28 emplacements sont utilisables
     assert.equal(validateButtonInput({ ...action, position: 0 }).ok, true)
   })
 
@@ -189,12 +189,12 @@ describe('mergeButtonPatch', () => {
 })
 
 describe('validateMoveInput', () => {
-  it('accepte un emplacement de 0 à 23 à la racine', () => {
+  it('accepte un emplacement de 0 à 27 à la racine', () => {
     assert.deepEqual(validateMoveInput(null, { position: 0 }), { ok: true, value: 0 })
-    assert.deepEqual(validateMoveInput(null, { position: 23 }), { ok: true, value: 23 })
+    assert.deepEqual(validateMoveInput(null, { position: 27 }), { ok: true, value: 27 })
   })
 
-  it('accepte un emplacement de 1 à 23 dans un dossier', () => {
+  it('accepte un emplacement de 1 à 27 dans un dossier', () => {
     assert.deepEqual(validateMoveInput('abc', { position: 1 }), { ok: true, value: 1 })
   })
 
@@ -205,7 +205,7 @@ describe('validateMoveInput', () => {
   })
 
   it('refuse un emplacement absent, hors grille ou qui n\'est pas un entier', () => {
-    for (const body of [{}, { position: -1 }, { position: 24 }, { position: 1.5 }, { position: '3' }, { position: null }]) {
+    for (const body of [{}, { position: -1 }, { position: 28 }, { position: 1.5 }, { position: '3' }, { position: null }]) {
       assert.equal(validateMoveInput(null, body).ok, false, JSON.stringify(body))
     }
   })
