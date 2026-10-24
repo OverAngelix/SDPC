@@ -39,10 +39,12 @@
 
           <color-picker v-model="values.color" class="mt-4" />
 
+          <!-- Un dossier n'a pas d'URL : le champ garde sa place, invisible, pour que le dialogue ne change pas de taille -->
           <v-text-field
-            v-if="values.type === 'action'"
             v-model="values.url"
             class="mt-4"
+            :class="{ 'url-hidden': values.type !== 'action' }"
+            :disabled="values.type !== 'action'"
             :error-messages="shown.url"
             label="URL"
             placeholder="https://"
@@ -175,6 +177,10 @@
     /* Le dialogue ne dépasse jamais la fenêtre (dvh : la barre d'adresse mobile ne la fausse pas) */
     max-height: calc(100vh - 48px);
     max-height: calc(100dvh - 48px);
+  }
+
+  .url-hidden {
+    visibility: hidden;
   }
 
   .form-card-full {

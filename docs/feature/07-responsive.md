@@ -45,7 +45,7 @@ Sur téléphone, la grille de 7 colonnes × 5 lignes est écrasée : en portrait
 - **Confirmation de suppression inchangée.** C'est un petit dialogue centré, déjà lisible sur téléphone : seul le formulaire, long, passe en plein écran.
 - **Cases d'édition : le contenu descend sous les boutons Modifier et Supprimer** sur petit écran, sinon ils recouvrent l'icône d'une case de 70 px.
 - **Téléphone couché : la grille défile.** En paysage et sous 500 px de hauteur, la page prend toute la largeur et la grille garde de grandes cases, quitte à défiler (au lieu de tenir en hauteur avec des cases de ~50 px). Le conteneur Vuetify, plafonné à 700 px, est levé dans ce cas.
-- **Formulaire compact sur ordinateur aussi.** Dialogue de 720 px, type et libellé sur une ligne, sélecteur d'icônes sur deux lignes à défilement horizontal, sans compteur ni indice : il tient sans défiler dès ~600 px de hauteur de fenêtre. Plus bas, seul le contenu défile et les boutons Déplacer, Annuler et Enregistrer restent visibles.
+- **Formulaire compact sur ordinateur aussi.** Dialogue de 720 px, type et libellé sur une ligne, sélecteur d'icônes sur deux lignes à défilement horizontal avec des flèches pour le signaler, sans compteur ni indice : il tient sans défiler dès ~600 px de hauteur de fenêtre. Le champ URL d'un dossier reste en place, invisible, pour que le dialogue garde la même taille en passant d'Action à Dossier. Plus bas, seul le contenu défile et les boutons Déplacer, Annuler et Enregistrer restent visibles.
 - **Les icônes grandissent avec la case.** Elles sont déjà dimensionnées en unités de conteneur (`cqw`) : agrandir les cases suffit à agrandir les icônes, sans taille supplémentaire à maintenir.
 
 ## Implémentation
