@@ -10,6 +10,7 @@
       :button="button"
       :class="{
         'tile-dragging': button !== null && button === dragged,
+        'tile-moving': button !== null && button === moving,
         'tile-drop': index === overIndex && !isReserved(index),
         'tile-forbidden': index === overIndex && isReserved(index),
       }"
@@ -45,6 +46,8 @@
     back?: boolean
     /** Mode configuration : les emplacements libres se remplissent, les boutons se modifient et se suppriment */
     editable?: boolean
+    /** Déplacement au doigt : le bouton en attente de sa destination, marqué dans la grille */
+    moving?: Button | null
   }>()
 
   const emit = defineEmits<{
@@ -196,6 +199,12 @@
 
   .tile-dragging {
     opacity: 0.4;
+  }
+
+  /* Déplacement au doigt : le bouton choisi attend un emplacement */
+  .tile-moving {
+    outline: 2px dashed rgb(var(--v-theme-primary));
+    outline-offset: 2px;
   }
 
   .tile-drop {

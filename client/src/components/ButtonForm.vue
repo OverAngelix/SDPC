@@ -56,6 +56,14 @@
         </v-card-text>
 
         <v-card-actions>
+          <v-btn
+            v-if="button"
+            :disabled="saving"
+            prepend-icon="mdi-cursor-move"
+            text="Déplacer"
+            @click="emit('move', button)"
+          />
+
           <v-spacer />
           <v-btn :disabled="saving" text="Annuler" @click="open = false" />
 
@@ -103,6 +111,8 @@
   const emit = defineEmits<{
     /** Le serveur a enregistré le bouton ; le message est à afficher à l'utilisateur */
     saved: [message: string]
+    /** L'utilisateur veut déplacer le bouton modifié : le dialogue est à fermer, la destination se choisit ensuite dans la grille */
+    move: [button: Button]
   }>()
 
   // Icône proposée par défaut, tant que l'utilisateur n'en a pas choisi une autre
