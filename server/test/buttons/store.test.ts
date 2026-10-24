@@ -282,7 +282,7 @@ describe('ButtonStore', () => {
       const store = await ButtonStore.open(file)
       const youtube = await store.create(action)
 
-      await rejectsWith(store.move(youtube.id, { position: 35 }), 400)
+      await rejectsWith(store.move(youtube.id, { position: 24 }), 400)
       await rejectsWith(store.move(youtube.id, {}), 400)
       await rejectsWith(store.move('fantome', { position: 3 }), 404)
     })
