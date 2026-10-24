@@ -16,13 +16,13 @@ function makeButton (overrides: Partial<Button>): Button {
 }
 
 describe('constantes de la grille', () => {
-  it('fait 6 colonnes sur 4 lignes en paysage, soit 24 emplacements', () => {
-    expect(LANDSCAPE_SHAPE).toEqual({ columns: 6, rows: 4 })
-    expect(SLOTS).toBe(24)
+  it('fait 7 colonnes sur 4 lignes en paysage, soit 28 emplacements', () => {
+    expect(LANDSCAPE_SHAPE).toEqual({ columns: 7, rows: 4 })
+    expect(SLOTS).toBe(28)
   })
 
-  it('fait 4 colonnes sur 6 lignes en portrait : les mêmes 24 emplacements', () => {
-    expect(PORTRAIT_SHAPE).toEqual({ columns: 4, rows: 6 })
+  it('fait 4 colonnes sur 7 lignes en portrait : les mêmes 28 emplacements', () => {
+    expect(PORTRAIT_SHAPE).toEqual({ columns: 4, rows: 7 })
     expect(PORTRAIT_SHAPE.columns * PORTRAIT_SHAPE.rows).toBe(SLOTS)
   })
 
@@ -32,7 +32,7 @@ describe('constantes de la grille', () => {
 })
 
 describe('buildSlots', () => {
-  it('renvoie 24 emplacements vides pour un dossier sans bouton', () => {
+  it('renvoie 28 emplacements vides pour un dossier sans bouton', () => {
     const slots = buildSlots([], null)
     expect(slots).toHaveLength(SLOTS)
     expect(slots.every(slot => slot === null)).toBe(true)
@@ -40,7 +40,7 @@ describe('buildSlots', () => {
 
   it('place chaque bouton à son emplacement', () => {
     const first = makeButton({ id: 'first', position: 0 })
-    const last = makeButton({ id: 'last', position: 23 })
+    const last = makeButton({ id: 'last', position: 27 })
     const middle = makeButton({ id: 'middle', position: 17 })
 
     const slots = buildSlots([last, first, middle], null)
@@ -48,7 +48,7 @@ describe('buildSlots', () => {
     expect(slots).toHaveLength(SLOTS)
     expect(slots[0]).toBe(first)
     expect(slots[17]).toBe(middle)
-    expect(slots[23]).toBe(last)
+    expect(slots[27]).toBe(last)
     expect(slots.filter(slot => slot !== null)).toHaveLength(3)
   })
 
@@ -63,7 +63,7 @@ describe('buildSlots', () => {
     expect(buildSlots(buttons, 'folder')[2]).toBeNull()
   })
 
-  it('utilise les 24 emplacements à la racine, y compris le premier', () => {
+  it('utilise les 28 emplacements à la racine, y compris le premier', () => {
     const first = makeButton({ id: 'first', position: BACK_SLOT })
     expect(buildSlots([first], null)[BACK_SLOT]).toBe(first)
   })
@@ -166,10 +166,10 @@ describe('gridShape', () => {
 
 describe('waveStep', () => {
   it('compte la diagonale de la case, selon le nombre de colonnes', () => {
-    expect(waveStep(0, 6)).toBe(0)
-    expect(waveStep(7, 6)).toBe(2)
-    expect(waveStep(23, 6)).toBe(8)
-    expect(waveStep(7, 4)).toBe(4)
-    expect(waveStep(23, 4)).toBe(8)
+    expect(waveStep(0, 7)).toBe(0)
+    expect(waveStep(8, 7)).toBe(2)
+    expect(waveStep(27, 7)).toBe(9)
+    expect(waveStep(9, 4)).toBe(3)
+    expect(waveStep(27, 4)).toBe(9)
   })
 })

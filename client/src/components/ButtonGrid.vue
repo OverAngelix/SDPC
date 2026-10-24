@@ -63,7 +63,7 @@
     reserved: [button: Button]
   }>()
 
-  // 6 × 4 en paysage, 4 × 6 en portrait : les mêmes emplacements, rangés selon l'orientation de l'écran
+  // 7 × 4 en paysage, 4 × 7 en portrait : les mêmes emplacements, rangés selon l'orientation de l'écran
   const shape = useGridShape()
 
   // Glisser-déposer : le bouton en cours de déplacement et l'emplacement survolé
@@ -189,7 +189,7 @@
   /* Téléphone : moins de marges, cases plus serrées donc plus grandes */
   @media (max-width: 599px) {
     .grid {
-      --reserve: 130px;
+      --reserve: 84px;
       --gap: 6px;
     }
   }
