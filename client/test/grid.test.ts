@@ -1,6 +1,6 @@
 import type { Button } from '@/interfaces/button'
 import { describe, expect, it } from 'vitest'
-import { BACK_SLOT, buildSlots, collectSubtree, COLUMNS, countContent, ROWS, SLOTS } from '@/grid'
+import { BACK_SLOT, buildSlots, collectSubtree, COLUMNS, countContent, placedIds, ROWS, SLOTS } from '@/grid'
 
 function makeButton (overrides: Partial<Button>): Button {
   return {
@@ -121,5 +121,34 @@ describe('countContent', () => {
   it('renvoie 0 pour un dossier vide ou une action', () => {
     expect(countContent(all, 'empty')).toBe(0)
     expect(countContent(all, 'mail')).toBe(0)
+  })
+})
+
+describe('placedIds', () => {
+  const a = makeButton({ id: 'a', position: 0 })
+  const b = makeButton({ id: 'b', position: 1 })
+  const slots = (...buttons: Button[]) => buildSlots(buttons, null)
+
+  it('signale un bouton créé', () => {
+    expect(placedIds(slots(a), slots(a, b))).toEqual(['b'])
+  })
+
+  it('signale un bouton déplacé vers un emplacement libre', () => {
+    expect(placedIds(slots(a, b), slots(a, { ...b, position: 9 }))).toEqual(['b'])
+  })
+
+  it('signale les deux boutons d\'un échange', () => {
+    const swapped = slots({ ...a, position: 1 }, { ...b, position: 0 })
+    expect(placedIds(slots(a, b), swapped)).toEqual(['b', 'a'])
+  })
+
+  it('ne signale rien quand rien ne bouge, ni après une suppression ou une modification', () => {
+    expect(placedIds(slots(a, b), slots(a, b))).toEqual([])
+    expect(placedIds(slots(a, b), slots(a))).toEqual([])
+    expect(placedIds(slots(a, b), slots({ ...a, label: 'Autre' }, b))).toEqual([])
+  })
+
+  it('ne signale rien au premier remplissage d\'une grille vide', () => {
+    expect(placedIds(slots(), slots(a, b))).toEqual([])
   })
 })

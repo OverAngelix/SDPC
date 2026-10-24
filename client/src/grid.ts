@@ -44,3 +44,28 @@ export function collectSubtree (buttons: Button[], rootId: string): Set<string> 
   }
   return ids
 }
+
+/**
+ * Les identifiants des boutons qui viennent d'apparaître ou de changer d'emplacement entre deux états
+ * d'un même dossier (création, déplacement, échange). Vide au premier affichage : une grille qui se
+ * remplit après son chargement ne fait pas sauter toutes ses cases.
+ */
+export function placedIds (before: (Button | null)[], after: (Button | null)[]): string[] {
+  if (before.every(slot => slot === null)) {
+    return []
+  }
+
+  const previous = new Map<string, number>()
+  for (const [index, button] of before.entries()) {
+    if (button !== null) {
+      previous.set(button.id, index)
+    }
+  }
+  const placed: string[] = []
+  for (const [index, button] of after.entries()) {
+    if (button !== null && previous.get(button.id) !== index) {
+      placed.push(button.id)
+    }
+  }
+  return placed
+}
