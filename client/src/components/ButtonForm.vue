@@ -1,8 +1,13 @@
 <template>
-  <v-dialog v-model="open" max-width="560" :persistent="saving">
-    <v-form novalidate @submit.prevent="submit">
-      <v-card :title="button ? 'Modifier le bouton' : 'Nouveau bouton'">
-        <v-card-text>
+  <v-dialog
+    v-model="open"
+    :fullscreen="xs"
+    max-width="560"
+    :persistent="saving"
+  >
+    <v-form :class="{ 'h-100': xs }" novalidate @submit.prevent="submit">
+      <v-card :class="{ 'h-100 d-flex flex-column': xs }" :title="button ? 'Modifier le bouton' : 'Nouveau bouton'">
+        <v-card-text :class="{ 'flex-grow-1 overflow-y-auto': xs }">
           <v-btn-toggle
             v-model="values.type"
             class="mb-4"
@@ -72,12 +77,16 @@
   import type { Button, ButtonType } from '@/interfaces/button'
   import type { ButtonFormValues } from '@/interfaces/buttonForm'
   import { computed, reactive, ref, watch } from 'vue'
+  import { useDisplay } from 'vuetify'
   import ColorPicker from '@/components/ColorPicker.vue'
   import IconPicker from '@/components/IconPicker.vue'
   import { useButtonsStore } from '@/stores/buttons'
   import { describeApiError } from '@/utils/apiError'
   import { LABEL_MAX_LENGTH, toButtonInput, toButtonPatch, validateButtonForm } from '@/utils/buttonForm'
   import { colorOf, DEFAULT_COLOR } from '@/utils/colors'
+
+  // Téléphone : le formulaire occupe tout l'écran, ses champs défilent au-dessus du clavier
+  const { xs } = useDisplay()
 
   // Dialogue ouvert ou fermé
   const open = defineModel<boolean>({ required: true })
