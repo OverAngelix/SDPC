@@ -26,7 +26,7 @@ export const useButtonsStore = defineStore('buttons', () => {
     }
   }
 
-  // Les 35 emplacements d'un dossier (null = la racine)
+  // Les 24 emplacements d'un dossier (null = la racine)
   function slotsOf (parentId: string | null) {
     return buildSlots(buttons.value, parentId)
   }

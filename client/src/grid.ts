@@ -3,14 +3,14 @@ import type { GridShape } from '@/interfaces/grid'
 
 // Forme de la grille : un seul endroit à changer pour la rendre modulable
 // (le nombre d'emplacements reflète server/src/buttons/types.ts). En portrait, les mêmes
-// emplacements se rangent en 5 colonnes sur 7 lignes : plus larges, donc plus faciles à toucher
-export const LANDSCAPE_SHAPE: GridShape = { columns: 7, rows: 5 }
-export const PORTRAIT_SHAPE: GridShape = { columns: 5, rows: 7 }
+// emplacements se rangent en 4 colonnes sur 6 lignes : plus larges, donc plus faciles à toucher
+export const LANDSCAPE_SHAPE: GridShape = { columns: 6, rows: 4 }
+export const PORTRAIT_SHAPE: GridShape = { columns: 4, rows: 6 }
 export const SLOTS = LANDSCAPE_SHAPE.columns * LANDSCAPE_SHAPE.rows
 // Dans un dossier, cet emplacement est le bouton retour, comme sur un Stream Deck Elgato
 export const BACK_SLOT = 0
 
-/** La forme de la grille : en portrait (écran plus haut que large), 5 colonnes sur 7 lignes ; sinon 7 sur 5 */
+/** La forme de la grille : en portrait (écran plus haut que large), 4 colonnes sur 6 lignes ; sinon 6 sur 4 */
 export function gridShape (portrait: boolean): GridShape {
   return portrait ? PORTRAIT_SHAPE : LANDSCAPE_SHAPE
 }

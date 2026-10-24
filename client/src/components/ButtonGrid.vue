@@ -63,7 +63,7 @@
     reserved: [button: Button]
   }>()
 
-  // 7 × 5 en paysage, 5 × 7 en portrait : les mêmes emplacements, rangés selon l'orientation de l'écran
+  // 6 × 4 en paysage, 4 × 6 en portrait : les mêmes emplacements, rangés selon l'orientation de l'écran
   const shape = useGridShape()
 
   // Glisser-déposer : le bouton en cours de déplacement et l'emplacement survolé
@@ -166,18 +166,23 @@
   .grid {
     /* Hauteur prise par la barre d'application et les marges autour de la grille */
     --reserve: 200px;
+    --gap: 12px;
+    /* Taille maximale d'une case : sur un grand écran, la grille garde à peu près la place qu'elle avait
+       avec plus de cases, sans que celles-ci ne grandissent démesurément */
+    --tile-max: 124px;
+    --max-width: calc(var(--columns) * var(--tile-max) + (var(--columns) - 1) * var(--gap));
     display: grid;
     grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
-    gap: 12px;
+    gap: var(--gap);
     margin-inline: auto;
     /* La grille entière tient dans la hauteur de l'écran (dvh : la barre d'adresse mobile ne la fausse pas),
        sans dépasser la largeur disponible */
-    max-width: min(100%, calc((100vh - var(--reserve)) * var(--columns) / var(--rows)));
+    max-width: min(100%, var(--max-width), calc((100vh - var(--reserve)) * var(--columns) / var(--rows)));
   }
 
   @supports (height: 100dvh) {
     .grid {
-      max-width: min(100%, calc((100dvh - var(--reserve)) * var(--columns) / var(--rows)));
+      max-width: min(100%, var(--max-width), calc((100dvh - var(--reserve)) * var(--columns) / var(--rows)));
     }
   }
 
@@ -185,7 +190,7 @@
   @media (max-width: 599px) {
     .grid {
       --reserve: 130px;
-      gap: 6px;
+      --gap: 6px;
     }
   }
 
