@@ -10,7 +10,7 @@ Une fiche par feature : explication, TODO, implémentation et personne active. N
 | 04 | [Configuration des boutons](04-configuration-boutons.md) | Livré | OverAngelix |
 | 05 | [Glisser-déposer des boutons](05-glisser-deposer.md) | Livré | OverAngelix |
 | 06 | [UX : couleurs et effets « juicy »](06-ux-couleurs-effets.md) | Livré | OverAngelix |
-| 07 | [Responsive : grille adaptée au téléphone](07-responsive.md) | À faire | OverAngelix |
+| 07 | [Responsive : grille adaptée au téléphone](07-responsive.md) | Livré | OverAngelix |
 
 Ordre de réalisation : 02 → 03 → 04 → 05 → 06 → 07 (chaque feature dépend de la précédente).
 
