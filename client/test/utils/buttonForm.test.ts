@@ -3,8 +3,8 @@ import { describe, expect, it } from 'vitest'
 import { ICON_PATTERN, LABEL_MAX_LENGTH, toButtonInput, toButtonPatch, URL_MAX_LENGTH, validateButtonForm } from '@/utils/buttonForm'
 import { COMMON_ICONS } from '@/utils/icons'
 
-const action: ButtonFormValues = { type: 'action', label: 'YouTube', icon: 'mdi-youtube', url: 'https://www.youtube.com' }
-const folder: ButtonFormValues = { type: 'folder', label: 'Jeux', icon: 'mdi-folder', url: '' }
+const action: ButtonFormValues = { type: 'action', label: 'YouTube', icon: 'mdi-youtube', color: 'red', url: 'https://www.youtube.com' }
+const folder: ButtonFormValues = { type: 'folder', label: 'Jeux', icon: 'mdi-folder', color: 'grey', url: '' }
 
 describe('validateButtonForm', () => {
   it('accepte une action et un dossier valides', () => {
@@ -54,7 +54,7 @@ describe('validateButtonForm', () => {
   })
 
   it('cumule les erreurs de plusieurs champs', () => {
-    const errors = validateButtonForm({ type: 'action', label: '', icon: 'x', url: '' })
+    const errors = validateButtonForm({ type: 'action', label: '', icon: 'x', color: 'grey', url: '' })
     expect(errors).toHaveProperty('label')
     expect(errors).toHaveProperty('icon')
     expect(errors).toHaveProperty('url')
@@ -69,19 +69,20 @@ describe('toButtonInput et toButtonPatch', () => {
       type: 'action',
       label: 'YouTube',
       icon: 'mdi-youtube',
+      color: 'red',
       url: 'https://www.youtube.com',
     })
   })
 
   it('n\'envoie pas d\'URL pour un dossier, même saisie avant un changement de type', () => {
     const input = toButtonInput({ ...folder, url: 'https://example.com' }, null, 0)
-    expect(input).toEqual({ parentId: null, position: 0, type: 'folder', label: 'Jeux', icon: 'mdi-folder' })
+    expect(input).toEqual({ parentId: null, position: 0, type: 'folder', label: 'Jeux', icon: 'mdi-folder', color: 'grey' })
     expect('url' in input).toBe(false)
     expect('url' in toButtonPatch({ ...folder, url: 'https://example.com' })).toBe(false)
   })
 
   it('ne touche ni au dossier parent ni à l\'emplacement en modification', () => {
-    expect(toButtonPatch(action)).toEqual({ type: 'action', label: 'YouTube', icon: 'mdi-youtube', url: 'https://www.youtube.com' })
+    expect(toButtonPatch(action)).toEqual({ type: 'action', label: 'YouTube', icon: 'mdi-youtube', color: 'red', url: 'https://www.youtube.com' })
   })
 })
 

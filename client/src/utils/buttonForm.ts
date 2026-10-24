@@ -43,11 +43,12 @@ export function toButtonInput (values: ButtonFormValues, parentId: string | null
 }
 
 /** Les champs à envoyer pour modifier un bouton : pas d'URL pour un dossier */
-export function toButtonPatch (values: ButtonFormValues): Pick<ButtonInput, 'type' | 'label' | 'icon' | 'url'> {
+export function toButtonPatch (values: ButtonFormValues): Pick<ButtonInput, 'type' | 'label' | 'icon' | 'color' | 'url'> {
   return {
     type: values.type,
     label: values.label.trim(),
     icon: values.icon,
+    color: values.color,
     ...(values.type === 'action' ? { url: values.url.trim() } : {}),
   }
 }

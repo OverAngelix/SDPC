@@ -1,10 +1,11 @@
-import type { ButtonType } from '@/interfaces/button'
+import type { ButtonColor, ButtonType } from '@/interfaces/button'
 
 /** Valeurs saisies dans le formulaire d'un bouton */
 export interface ButtonFormValues {
   type: ButtonType
   label: string
   icon: string
+  color: ButtonColor
   url: string
 }
 

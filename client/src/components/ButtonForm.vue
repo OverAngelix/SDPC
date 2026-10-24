@@ -24,6 +24,8 @@
 
           <icon-picker v-model="values.icon" :error-messages="shown.icon" />
 
+          <color-picker v-model="values.color" class="mt-4" />
+
           <v-text-field
             v-if="values.type === 'action'"
             v-model="values.url"
@@ -70,10 +72,12 @@
   import type { Button, ButtonType } from '@/interfaces/button'
   import type { ButtonFormValues } from '@/interfaces/buttonForm'
   import { computed, reactive, ref, watch } from 'vue'
+  import ColorPicker from '@/components/ColorPicker.vue'
   import IconPicker from '@/components/IconPicker.vue'
   import { useButtonsStore } from '@/stores/buttons'
   import { describeApiError } from '@/utils/apiError'
   import { LABEL_MAX_LENGTH, toButtonInput, toButtonPatch, validateButtonForm } from '@/utils/buttonForm'
+  import { colorOf, DEFAULT_COLOR } from '@/utils/colors'
 
   // Dialogue ouvert ou fermé
   const open = defineModel<boolean>({ required: true })
@@ -97,7 +101,7 @@
 
   const store = useButtonsStore()
 
-  const values = reactive<ButtonFormValues>({ type: 'action', label: '', icon: DEFAULT_ICONS.action, url: '' })
+  const values = reactive<ButtonFormValues>({ type: 'action', label: '', icon: DEFAULT_ICONS.action, color: DEFAULT_COLOR, url: '' })
   const saving = ref(false)
   // Les erreurs de saisie n'apparaissent qu'après une première tentative d'envoi
   const submitted = ref(false)
@@ -110,8 +114,8 @@
   watch(open, isOpen => {
     if (!isOpen) return
     Object.assign(values, props.button
-      ? { type: props.button.type, label: props.button.label, icon: props.button.icon, url: props.button.url ?? '' }
-      : { type: 'action', label: '', icon: DEFAULT_ICONS.action, url: '' })
+      ? { type: props.button.type, label: props.button.label, icon: props.button.icon, color: colorOf(props.button), url: props.button.url ?? '' }
+      : { type: 'action', label: '', icon: DEFAULT_ICONS.action, color: DEFAULT_COLOR, url: '' })
     submitted.value = false
     serverError.value = null
   })
