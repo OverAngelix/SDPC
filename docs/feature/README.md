@@ -10,14 +10,14 @@ Une fiche par feature : explication, TODO, implémentation et personne active. N
 | 04 | [Configuration des boutons](04-configuration-boutons.md) | Livré | OverAngelix |
 | 05 | [Glisser-déposer des boutons](05-glisser-deposer.md) | Livré | OverAngelix |
 | 06 | [UX : couleurs et effets « juicy »](06-ux-couleurs-effets.md) | Livré | OverAngelix |
+| 07 | [Responsive : grille adaptée au téléphone](07-responsive.md) | À faire | OverAngelix |
 
-Ordre de réalisation : 02 → 03 → 04 → 05 → 06 (chaque feature dépend de la précédente).
+Ordre de réalisation : 02 → 03 → 04 → 05 → 06 → 07 (chaque feature dépend de la précédente).
 
 ## Plus tard
 
 - **Grille modulable** : nombre de colonnes et de lignes configurable (aujourd'hui fixe : 7 × 5, emplacements 0 à 34 ; l'emplacement 0 d'un dossier est le retour).
 - Plein écran ou mode kiosque pour la grille, thèmes.
-- Responsive
 - Creation de compte
 - Base de données au lieu de json
 - Rendre commun les types
