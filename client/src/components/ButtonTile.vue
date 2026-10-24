@@ -3,6 +3,7 @@
     v-if="back || button"
     :aria-label="label"
     class="tile d-flex flex-column align-center justify-center pa-2"
+    :color="color"
     link
     variant="tonal"
     @click="onClick"
@@ -55,6 +56,7 @@
 <script lang="ts" setup>
   import type { Button } from '@/interfaces/button'
   import { computed } from 'vue'
+  import { colorOf, DEFAULT_COLOR } from '@/utils/colors'
 
   const props = defineProps<{
     /** null : emplacement libre, affiché vide pour que la grille garde sa forme */
@@ -75,6 +77,11 @@
 
   const icon = computed(() => props.back ? 'mdi-arrow-left' : props.button?.icon)
   const label = computed(() => props.back ? 'Retour' : props.button?.label)
+  // Le gris est l'aspect neutre de Vuetify (aucune teinte) ; la tuile de retour reste toujours neutre
+  const color = computed(() => {
+    const value = props.back ? DEFAULT_COLOR : colorOf(props.button)
+    return value === DEFAULT_COLOR ? undefined : value
+  })
   const isFolder = computed(() => !props.back && props.button?.type === 'folder')
 
   function onClick () {
