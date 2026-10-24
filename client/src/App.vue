@@ -46,6 +46,16 @@
 </script>
 
 <style>
+  /* Pages Grille et Configuration : la grille est centrée dans l'écran sous la barre d'application
+     (si elle est plus haute que l'écran, la page défile normalement) */
+  .page-centered {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: calc(100vh - var(--v-layout-top, 56px));
+    min-height: calc(100dvh - var(--v-layout-top, 56px));
+  }
+
   /* Téléphone couché : la page prend toute la largeur, la grille défile en hauteur au lieu de rétrécir
      (voir ButtonGrid) ; la largeur maximale du conteneur Vuetify la bornerait à 700 px */
   @media (orientation: landscape) and (max-height: 500px) {

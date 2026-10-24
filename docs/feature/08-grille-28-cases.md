@@ -30,6 +30,7 @@ Cette feature **remplace les valeurs des fiches 02 à 07** : emplacements 0 à 2
 - **Sur ordinateur, des cases limitées à 124 px.** Sans limite, le calcul fondé sur la hauteur de l'écran agrandirait trop les cases. La taille maximale (`--tile-max` dans `ButtonGrid.vue`) donne une grille d'environ 940 px de large pour 530 px de haut, au format d'un écran 16:9.
 - **Pas de correspondance ligne à ligne entre ordinateur et téléphone.** Une ligne de 7 cases sur ordinateur ne devient pas un nombre entier de lignes de 4 : l'ordre de lecture est conservé (de gauche à droite, de haut en bas), pas l'emplacement visuel. C'est le prix de ne pas défiler.
 - **Aucune migration.** Le fichier de données actuel n'a aucun bouton au-delà de l'emplacement 20. Un fichier qui en aurait à partir de 28 serait refusé à la lecture, comme toute position invalide (règle existante du serveur).
+- **Grille centrée dans l'écran, en hauteur comme en largeur.** Les pages Grille et Configuration occupent toute la hauteur sous la barre d'application et centrent leur contenu (classe `page-centered`, `App.vue`) ; si le contenu est plus haut que l'écran (Configuration en portrait, avec son texte d'explication), la page défile normalement.
 - **La case 0 d'un dossier reste le retour**, en haut à gauche dans les deux formes.
 - **Les formes restent déduites de `SLOTS`** : 7 × 4 = 4 × 7 = 28. Seules les constantes changent, le code de la feature 07 (détection de l'orientation, vague, dimensionnement) est inchangé.
 

@@ -1,5 +1,5 @@
 <template>
-  <v-container class="pa-2 pa-sm-4">
+  <v-container class="page-centered pa-2 pa-sm-4">
     <grid-status :home="{ name: 'config' }" :path="path">
       <p class="text-medium-emphasis text-center mb-4">
         Un emplacement vide permet de créer un bouton, un dossier de configurer son contenu.

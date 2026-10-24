@@ -172,6 +172,7 @@
     --tile-max: 124px;
     --max-width: calc(var(--columns) * var(--tile-max) + (var(--columns) - 1) * var(--gap));
     display: grid;
+    width: 100%;
     grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
     gap: var(--gap);
     margin-inline: auto;
