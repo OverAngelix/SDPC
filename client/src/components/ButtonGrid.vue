@@ -161,12 +161,37 @@
 
 <style scoped>
   .grid {
+    /* Hauteur prise par la barre d'application et les marges autour de la grille */
+    --reserve: 200px;
     display: grid;
     grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
     gap: 12px;
     margin-inline: auto;
-    /* La grille entière tient dans la hauteur de l'écran, sans dépasser la largeur disponible */
-    max-width: min(100%, calc((100vh - 200px) * var(--columns) / var(--rows)));
+    /* La grille entière tient dans la hauteur de l'écran (dvh : la barre d'adresse mobile ne la fausse pas),
+       sans dépasser la largeur disponible */
+    max-width: min(100%, calc((100vh - var(--reserve)) * var(--columns) / var(--rows)));
+  }
+
+  @supports (height: 100dvh) {
+    .grid {
+      max-width: min(100%, calc((100dvh - var(--reserve)) * var(--columns) / var(--rows)));
+    }
+  }
+
+  /* Téléphone : moins de marges, cases plus serrées donc plus grandes */
+  @media (max-width: 599px) {
+    .grid {
+      --reserve: 130px;
+      gap: 6px;
+    }
+  }
+
+  /* Téléphone couché : la hauteur est trop courte pour y faire tenir la grille, on la laisse défiler
+     plutôt que de réduire les cases à quelques pixels */
+  @media (orientation: landscape) and (max-height: 500px) {
+    .grid {
+      max-width: 100%;
+    }
   }
 
   .tile-dragging {

@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class="pa-2 pa-sm-4">
     <grid-status :home="{ name: 'grid' }" :path="path">
       <p v-if="isEmpty" class="text-medium-emphasis text-center mb-4">
         Aucun bouton ici. Ajoutez-en depuis l'onglet Configuration.

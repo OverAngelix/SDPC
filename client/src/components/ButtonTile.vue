@@ -127,9 +127,12 @@
     transition: transform 0.15s ease, box-shadow 0.15s ease;
   }
 
-  .tile-live:hover {
-    transform: translateY(-3px) scale(1.04);
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+  /* Au doigt, le survol resterait collé après un toucher : il est réservé aux appareils qui survolent */
+  @media (hover: hover) {
+    .tile-live:hover {
+      transform: translateY(-3px) scale(1.04);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+    }
   }
 
   .tile-live:active {
@@ -215,7 +218,7 @@
   }
 
   .tile-label {
-    font-size: clamp(0.65rem, 11cqw, 1rem);
+    font-size: clamp(0.75rem, 11cqw, 1rem);
     line-height: 1.15;
     max-width: 100%;
     overflow-wrap: anywhere;
@@ -239,6 +242,18 @@
     left: 2px;
     display: flex;
     opacity: 0.7;
+  }
+
+  /* Au doigt : boutons Modifier et Supprimer plus faciles à toucher, sans masquer le badge dossier */
+  @media (pointer: coarse) {
+    .tile-actions {
+      opacity: 1;
+    }
+
+    .tile-actions :deep(.v-btn) {
+      width: 26px;
+      height: 26px;
+    }
   }
 
   .tile-empty {
