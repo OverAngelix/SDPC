@@ -3,7 +3,7 @@
     v-if="back || button"
     :aria-label="label"
     class="tile tile-live d-flex flex-column align-center justify-center pa-2"
-    :class="[effect && `tile-${effect}`, { 'tile-launch': launching }]"
+    :class="[effect && `tile-${effect}`, { 'tile-launch': launching, 'tile-editing': editable && !back }]"
     :color="color"
     link
     variant="flat"
@@ -242,6 +242,14 @@
     left: 2px;
     display: flex;
     opacity: 0.7;
+  }
+
+  /* Téléphone : la case est trop petite pour que les boutons Modifier et Supprimer ne recouvrent pas l'icône,
+     le contenu descend sous eux */
+  @media (max-width: 599px) {
+    .tile-editing {
+      padding-top: 30px !important;
+    }
   }
 
   /* Au doigt : boutons Modifier et Supprimer plus faciles à toucher, sans masquer le badge dossier */
