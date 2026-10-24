@@ -13,27 +13,25 @@
       >
         <!-- Seul le contenu défile : les boutons du bas restent toujours visibles -->
         <v-card-text class="flex-grow-1 overflow-y-auto">
-          <div class="d-flex flex-wrap ga-4 mb-2">
-            <v-btn-toggle
-              v-model="values.type"
-              color="primary"
-              divided
-              mandatory
-            >
-              <v-btn prepend-icon="mdi-open-in-new" text="Action" value="action" />
-              <v-btn prepend-icon="mdi-folder" text="Dossier" value="folder" />
-            </v-btn-toggle>
+          <v-btn-toggle
+            v-model="values.type"
+            class="mb-4"
+            color="primary"
+            divided
+            mandatory
+          >
+            <v-btn prepend-icon="mdi-open-in-new" text="Action" value="action" />
+            <v-btn prepend-icon="mdi-folder" text="Dossier" value="folder" />
+          </v-btn-toggle>
 
-            <v-text-field
-              v-model="values.label"
-              autofocus
-              class="label-field"
-              :error-messages="shown.label"
-              :hide-details="!shown.label"
-              label="Libellé"
-              :maxlength="LABEL_MAX_LENGTH"
-            />
-          </div>
+          <v-text-field
+            v-model="values.label"
+            autofocus
+            :error-messages="shown.label"
+            :hide-details="!shown.label"
+            label="Libellé"
+            :maxlength="LABEL_MAX_LENGTH"
+          />
 
           <icon-picker v-model="values.icon" class="mt-2" :error-messages="shown.icon" />
 
@@ -185,9 +183,5 @@
 
   .form-card-full {
     max-height: none;
-  }
-
-  .label-field {
-    flex: 1 1 240px;
   }
 </style>
