@@ -9,8 +9,9 @@ Une fiche par feature : explication, TODO, implémentation et personne active. N
 | 03 | [Grille de boutons](03-grille-boutons.md) | Livré | OverAngelix |
 | 04 | [Configuration des boutons](04-configuration-boutons.md) | Livré | OverAngelix |
 | 05 | [Glisser-déposer des boutons](05-glisser-deposer.md) | Livré | OverAngelix |
+| 06 | [UX : couleurs et effets « juicy »](06-ux-couleurs-effets.md) | En cours | OverAngelix |
 
-Ordre de réalisation : 02 → 03 → 04 → 05 (chaque feature dépend de la précédente).
+Ordre de réalisation : 02 → 03 → 04 → 05 → 06 (chaque feature dépend de la précédente).
 
 ## Plus tard
 
@@ -19,3 +20,8 @@ Ordre de réalisation : 02 → 03 → 04 → 05 (chaque feature dépend de la pr
 - Responsive
 - Creation de compte
 - Base de données au lieu de json
+- Rendre commun les types
+- I18n
+- Dark theme, white theme et theme PC
+- Deploiement serveur OVH
+- configuration de l'app -> desactive son et visuel sonore, themes (dark, light, device)
