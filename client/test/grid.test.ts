@@ -1,6 +1,6 @@
 import type { Button } from '@/interfaces/button'
 import { describe, expect, it } from 'vitest'
-import { BACK_SLOT, buildSlots, collectSubtree, COLUMNS, countContent, placedIds, ROWS, SLOTS } from '@/grid'
+import { BACK_SLOT, buildSlots, collectSubtree, countContent, gridShape, LANDSCAPE_SHAPE, placedIds, PORTRAIT_SHAPE, SLOTS, waveStep } from '@/grid'
 
 function makeButton (overrides: Partial<Button>): Button {
   return {
@@ -16,10 +16,14 @@ function makeButton (overrides: Partial<Button>): Button {
 }
 
 describe('constantes de la grille', () => {
-  it('fait 7 colonnes sur 5 lignes, soit 35 emplacements', () => {
-    expect(COLUMNS).toBe(7)
-    expect(ROWS).toBe(5)
+  it('fait 7 colonnes sur 5 lignes en paysage, soit 35 emplacements', () => {
+    expect(LANDSCAPE_SHAPE).toEqual({ columns: 7, rows: 5 })
     expect(SLOTS).toBe(35)
+  })
+
+  it('fait 5 colonnes sur 7 lignes en portrait : les mêmes 35 emplacements', () => {
+    expect(PORTRAIT_SHAPE).toEqual({ columns: 5, rows: 7 })
+    expect(PORTRAIT_SHAPE.columns * PORTRAIT_SHAPE.rows).toBe(SLOTS)
   })
 
   it('place le retour à la première case', () => {
@@ -150,5 +154,22 @@ describe('placedIds', () => {
 
   it('ne signale rien au premier remplissage d\'une grille vide', () => {
     expect(placedIds(slots(), slots(a, b))).toEqual([])
+  })
+})
+
+describe('gridShape', () => {
+  it('choisit la forme selon l\'orientation', () => {
+    expect(gridShape(true)).toBe(PORTRAIT_SHAPE)
+    expect(gridShape(false)).toBe(LANDSCAPE_SHAPE)
+  })
+})
+
+describe('waveStep', () => {
+  it('compte la diagonale de la case, selon le nombre de colonnes', () => {
+    expect(waveStep(0, 7)).toBe(0)
+    expect(waveStep(8, 7)).toBe(2)
+    expect(waveStep(34, 7)).toBe(10)
+    expect(waveStep(8, 5)).toBe(4)
+    expect(waveStep(34, 5)).toBe(10)
   })
 })

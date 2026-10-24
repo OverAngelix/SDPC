@@ -1,12 +1,24 @@
 import type { Button } from '@/interfaces/button'
+import type { GridShape } from '@/interfaces/grid'
 
-// Dimensions de la grille : un seul endroit à changer pour la rendre modulable
-// (elles reflètent server/src/buttons/types.ts)
-export const COLUMNS = 7
-export const ROWS = 5
-export const SLOTS = COLUMNS * ROWS
+// Forme de la grille : un seul endroit à changer pour la rendre modulable
+// (le nombre d'emplacements reflète server/src/buttons/types.ts). En portrait, les mêmes
+// emplacements se rangent en 5 colonnes sur 7 lignes : plus larges, donc plus faciles à toucher
+export const LANDSCAPE_SHAPE: GridShape = { columns: 7, rows: 5 }
+export const PORTRAIT_SHAPE: GridShape = { columns: 5, rows: 7 }
+export const SLOTS = LANDSCAPE_SHAPE.columns * LANDSCAPE_SHAPE.rows
 // Dans un dossier, cet emplacement est le bouton retour, comme sur un Stream Deck Elgato
 export const BACK_SLOT = 0
+
+/** La forme de la grille : en portrait (écran plus haut que large), 5 colonnes sur 7 lignes ; sinon 7 sur 5 */
+export function gridShape (portrait: boolean): GridShape {
+  return portrait ? PORTRAIT_SHAPE : LANDSCAPE_SHAPE
+}
+
+/** Rang d'une case dans la vague d'apparition : sa diagonale, de la case en haut à gauche vers celle en bas à droite */
+export function waveStep (index: number, columns: number): number {
+  return (index % columns) + Math.floor(index / columns)
+}
 
 /**
  * Range les boutons d'un dossier dans les emplacements de la grille.

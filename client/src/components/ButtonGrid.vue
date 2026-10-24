@@ -1,7 +1,7 @@
 <template>
   <div
     class="grid"
-    :style="{ '--columns': COLUMNS, '--rows': ROWS }"
+    :style="{ '--columns': shape.columns, '--rows': shape.rows }"
   >
     <button-tile
       v-for="(button, index) in slots"
@@ -35,7 +35,8 @@
   import type { Button } from '@/interfaces/button'
   import { onBeforeUnmount, ref, watch } from 'vue'
   import ButtonTile from '@/components/ButtonTile.vue'
-  import { BACK_SLOT, COLUMNS, placedIds, ROWS } from '@/grid'
+  import { useGridShape } from '@/composables/gridShape'
+  import { BACK_SLOT, placedIds, waveStep } from '@/grid'
 
   const props = defineProps<{
     /** Un élément par emplacement, dans l'ordre : le bouton ou null */
@@ -58,6 +59,9 @@
     /** Un bouton est lâché sur la tuile de retour, qui ne peut pas le recevoir */
     reserved: [button: Button]
   }>()
+
+  // 7 × 5 en paysage, 5 × 7 en portrait : les mêmes emplacements, rangés selon l'orientation de l'écran
+  const shape = useGridShape()
 
   // Glisser-déposer : le bouton en cours de déplacement et l'emplacement survolé
   const dragged = ref<Button | null>(null)
@@ -99,7 +103,7 @@
 
   // Les cases apparaissent en vague, de la case en haut à gauche vers celle en bas à droite
   function wave (index: number) {
-    return (index % COLUMNS) + Math.floor(index / COLUMNS)
+    return waveStep(index, shape.value.columns)
   }
 
   function refuse () {
