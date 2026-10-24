@@ -4,10 +4,9 @@
       v-model="model"
       autocomplete="off"
       :error-messages="errorMessages"
-      hint="Choisir une icône ci-dessous ou saisir un nom d'icône MDI"
+      :hide-details="!errorMessages"
       label="Icône"
-      persistent-hint
-      placeholder="mdi-youtube"
+      placeholder="Choisir ci-dessous ou saisir un nom d'icône MDI (mdi-youtube)"
       :prepend-inner-icon="preview"
     />
 
@@ -42,11 +41,13 @@
 </script>
 
 <style scoped>
+  /* Deux lignes qui défilent horizontalement : le sélecteur reste bas dans le formulaire */
   .icon-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2px;
-    max-height: 168px;
-    overflow-y: auto;
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(2, 48px);
+    grid-auto-columns: 48px;
+    overflow-x: auto;
+    padding-bottom: 4px;
   }
 </style>

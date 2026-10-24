@@ -2,32 +2,40 @@
   <v-dialog
     v-model="open"
     :fullscreen="xs"
-    max-width="560"
+    max-width="720"
     :persistent="saving"
   >
     <v-form :class="{ 'h-100': xs }" novalidate @submit.prevent="submit">
-      <v-card :class="{ 'h-100 d-flex flex-column': xs }" :title="button ? 'Modifier le bouton' : 'Nouveau bouton'">
-        <v-card-text :class="{ 'flex-grow-1 overflow-y-auto': xs }">
-          <v-btn-toggle
-            v-model="values.type"
-            class="mb-4"
-            color="primary"
-            divided
-            mandatory
-          >
-            <v-btn prepend-icon="mdi-open-in-new" text="Action" value="action" />
-            <v-btn prepend-icon="mdi-folder" text="Dossier" value="folder" />
-          </v-btn-toggle>
+      <v-card
+        class="form-card d-flex flex-column"
+        :class="{ 'h-100 form-card-full': xs }"
+        :title="button ? 'Modifier le bouton' : 'Nouveau bouton'"
+      >
+        <!-- Seul le contenu défile : les boutons du bas restent toujours visibles -->
+        <v-card-text class="flex-grow-1 overflow-y-auto">
+          <div class="d-flex flex-wrap ga-4 mb-2">
+            <v-btn-toggle
+              v-model="values.type"
+              color="primary"
+              divided
+              mandatory
+            >
+              <v-btn prepend-icon="mdi-open-in-new" text="Action" value="action" />
+              <v-btn prepend-icon="mdi-folder" text="Dossier" value="folder" />
+            </v-btn-toggle>
 
-          <v-text-field
-            v-model="values.label"
-            autofocus
-            :counter="LABEL_MAX_LENGTH"
-            :error-messages="shown.label"
-            label="Libellé"
-          />
+            <v-text-field
+              v-model="values.label"
+              autofocus
+              class="label-field"
+              :error-messages="shown.label"
+              :hide-details="!shown.label"
+              label="Libellé"
+              :maxlength="LABEL_MAX_LENGTH"
+            />
+          </div>
 
-          <icon-picker v-model="values.icon" :error-messages="shown.icon" />
+          <icon-picker v-model="values.icon" class="mt-2" :error-messages="shown.icon" />
 
           <color-picker v-model="values.color" class="mt-4" />
 
@@ -161,3 +169,19 @@
     }
   }
 </script>
+
+<style scoped>
+  .form-card {
+    /* Le dialogue ne dépasse jamais la fenêtre (dvh : la barre d'adresse mobile ne la fausse pas) */
+    max-height: calc(100vh - 48px);
+    max-height: calc(100dvh - 48px);
+  }
+
+  .form-card-full {
+    max-height: none;
+  }
+
+  .label-field {
+    flex: 1 1 240px;
+  }
+</style>
