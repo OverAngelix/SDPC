@@ -1,9 +1,9 @@
 <template>
   <v-app>
     <v-app-bar density="comfortable">
-      <v-app-bar-title>SDPC</v-app-bar-title>
+      <v-app-bar-title v-if="!xs">SDPC</v-app-bar-title>
 
-      <v-tabs>
+      <v-tabs v-if="auth.user">
         <v-tab
           aria-label="Grille"
           prepend-icon="mdi-view-grid"
@@ -21,6 +21,8 @@
 
       <v-spacer />
 
+      <span v-if="auth.user && !xs" class="text-body-2 text-medium-emphasis me-2">{{ auth.user.email }}</span>
+
       <v-btn
         :aria-label="settings.soundEnabled ? 'Couper le son' : 'Activer le son'"
         :aria-pressed="settings.soundEnabled"
@@ -28,19 +30,55 @@
         :title="settings.soundEnabled ? 'Couper le son' : 'Activer le son'"
         @click="settings.toggleSound()"
       />
+
+      <v-btn
+        v-if="auth.user"
+        aria-label="Se déconnecter"
+        icon="mdi-logout"
+        title="Se déconnecter"
+        @click="signOut"
+      />
     </v-app-bar>
 
     <v-main>
       <router-view />
     </v-main>
+
+    <v-snackbar v-model="signOutFailed" color="error" timeout="5000">
+      Déconnexion impossible : le serveur est injoignable.
+    </v-snackbar>
   </v-app>
 </template>
 
 <script lang="ts" setup>
+  import { ref, watch } from 'vue'
+  import { useRoute, useRouter } from 'vue-router'
   import { useDisplay } from 'vuetify'
+  import { guardRoute } from '@/router/guard'
+  import { useAuthStore } from '@/stores/auth'
   import { useSettingsStore } from '@/stores/settings'
 
+  const auth = useAuthStore()
   const settings = useSettingsStore()
+  const route = useRoute()
+  const router = useRouter()
+  const signOutFailed = ref(false)
+
+  // Déconnexion (ici ou session perdue, voir api/http.ts) : retour à la page de connexion
+  watch(() => auth.user, user => {
+    if (user === null) {
+      const destination = guardRoute(route, false)
+      if (destination !== true) router.replace(destination)
+    }
+  })
+
+  async function signOut () {
+    try {
+      await auth.signOut()
+    } catch {
+      signOutFailed.value = true
+    }
+  }
   // Téléphone : les onglets se réduisent à leur icône pour que la barre tienne sur une ligne
   const { xs } = useDisplay()
 </script>
