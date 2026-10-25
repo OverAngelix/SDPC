@@ -18,5 +18,19 @@ export const MIGRATIONS: readonly string[] = [
   -- Deux NULL étant différents pour SQLite, la racine a son propre index d'unicité
   CREATE UNIQUE INDEX buttons_slot ON buttons (parent_id, position) WHERE parent_id IS NOT NULL;
   CREATE UNIQUE INDEX buttons_root_slot ON buttons (position) WHERE parent_id IS NULL;
+  `,  // 2 : comptes et sessions
+  `
+  CREATE TABLE users (
+    id            TEXT PRIMARY KEY,
+    email         TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    created_at    TEXT NOT NULL
+  );
+  CREATE TABLE sessions (
+    token_hash TEXT PRIMARY KEY,
+    user_id    TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    expires_at TEXT NOT NULL
+  );
+  CREATE INDEX sessions_user ON sessions (user_id);
   `,
 ]
