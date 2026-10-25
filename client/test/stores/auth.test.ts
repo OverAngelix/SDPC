@@ -2,8 +2,10 @@ import type { Credentials, User } from '@/interfaces/auth'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { fetchMe, login, logout, register } from '@/api/auth'
+import { fetchSettings } from '@/api/settings'
 import { useAuthStore } from '@/stores/auth'
 import { useButtonsStore } from '@/stores/buttons'
+import { useSettingsStore } from '@/stores/settings'
 
 vi.mock('@/api/auth', () => ({
   fetchMe: vi.fn(),
@@ -11,6 +13,8 @@ vi.mock('@/api/auth', () => ({
   register: vi.fn(),
   logout: vi.fn(),
 }))
+vi.mock('@/api/settings', () => ({ fetchSettings: vi.fn(), updateSettings: vi.fn() }))
+vi.mock('@/utils/sounds', () => ({ playSound: vi.fn() }))
 vi.mock('@/api/buttons', () => ({
   fetchButtons: vi.fn(),
   createButton: vi.fn(),
@@ -23,6 +27,9 @@ const fetchMeMock = vi.mocked(fetchMe)
 const loginMock = vi.mocked(login)
 const registerMock = vi.mocked(register)
 const logoutMock = vi.mocked(logout)
+const fetchSettingsMock = vi.mocked(fetchSettings)
+
+const darkSettings = { soundEnabled: false, volume: 30, effectsEnabled: false, theme: 'dark' as const }
 
 const jean: User = { id: 'u1', email: 'jean@exemple.fr' }
 const credentials: Credentials = { email: 'jean@exemple.fr', password: 'motdepasse' }
@@ -105,5 +112,59 @@ describe('auth store', () => {
 
     await expect(auth.signOut()).rejects.toThrow('réseau')
     expect(auth.user).toEqual(jean)
+  })
+
+  describe('réglages', () => {
+    it('restore, signIn et signUp chargent les réglages du compte', async () => {
+      fetchSettingsMock.mockResolvedValue(darkSettings)
+      fetchMeMock.mockResolvedValue(jean)
+      loginMock.mockResolvedValue(jean)
+      registerMock.mockResolvedValue(jean)
+      const settings = useSettingsStore()
+      const auth = useAuthStore()
+
+      await auth.restore()
+      expect(settings.theme).toBe('dark')
+
+      settings.reset()
+      await auth.signIn(credentials)
+      expect(settings.volume).toBe(30)
+
+      settings.reset()
+      await auth.signUp(credentials)
+      expect(settings.effectsEnabled).toBe(false)
+    })
+
+    it('un échec de chargement ne bloque pas la connexion : valeurs par défaut', async () => {
+      fetchSettingsMock.mockRejectedValue(new Error('500'))
+      loginMock.mockResolvedValue(jean)
+      const auth = useAuthStore()
+
+      await auth.signIn(credentials)
+
+      expect(auth.user).toEqual(jean)
+      expect(useSettingsStore().theme).toBe('system')
+    })
+
+    it('restore sans session ne charge rien', async () => {
+      fetchMeMock.mockRejectedValue(new Error('401'))
+      await useAuthStore().restore()
+      expect(fetchSettingsMock).not.toHaveBeenCalled()
+    })
+
+    it('signOut remet les réglages par défaut', async () => {
+      fetchSettingsMock.mockResolvedValue(darkSettings)
+      loginMock.mockResolvedValue(jean)
+      logoutMock.mockResolvedValue()
+      const auth = useAuthStore()
+      const settings = useSettingsStore()
+      await auth.signIn(credentials)
+      expect(settings.theme).toBe('dark')
+
+      await auth.signOut()
+
+      expect(settings.theme).toBe('system')
+      expect(settings.volume).toBe(100)
+    })
   })
 })
