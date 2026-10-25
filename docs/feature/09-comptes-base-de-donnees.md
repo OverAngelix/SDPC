@@ -23,9 +23,8 @@ Cette feature **remplace** la règle « pas de compte utilisateur » et « confi
 - [x] Serveur : dépendance SQLite (voir les décisions), ouverture de la base, mode WAL, clés étrangères activées
 - [x] Serveur : migrations numérotées (`PRAGMA user_version`), lancées au démarrage ; table `buttons`
 - [x] Serveur : `ButtonStore` réécrit sur SQLite ; mêmes méthodes, mêmes règles, mêmes erreurs (400, 404, 409) ; la file d'écriture et le fichier temporaire disparaissent
-- [x] Serveur : script d'import `data/buttons.json` → base (`npm run import-json [fichier]`), en une transaction, relançable sans effet
 - [x] Serveur : variable `DATABASE_FILE` à la place de `DATA_FILE` (`.env`, `.env.example`), fichiers `data/*.db*` ignorés par git
-- [x] Tests serveur : base (migrations, clés étrangères, unicité), import, store ; les tests existants (`store`, `router`) restent verts
+- [x] Tests serveur : base (migrations, clés étrangères, unicité), store ; les tests existants (`store`, `router`) restent verts
 
 ### Étape 2 — Comptes et sessions (serveur)
 
@@ -67,7 +66,6 @@ Cette feature **remplace** la règle « pas de compte utilisateur » et « confi
 - **Une seule feature, livrée en étapes.** Chaque étape est un commit distinct et laisse l'application fonctionnelle : l'étape 1 change seulement le stockage, les étapes 2 à 4 ajoutent les comptes.
 - **Pilote SQLite : `better-sqlite3`** (synchrone, éprouvé, binaires précompilés). Alternative écartée : `node:sqlite`, sans dépendance mais encore marqué expérimental dans Node. Les appels synchrones conviennent à SQLite local ; le store garde ses méthodes `async` pour ne pas changer les routes et pour que PostgreSQL puisse les remplacer.
 - **Échange de deux boutons : passage par l'emplacement -1.** L'index d'unicité refuse deux boutons sur le même emplacement, même un instant, et SQLite ne permet pas de le différer. Le déplacement se fait donc en trois mises à jour dans une transaction (le bouton déplacé en -1, l'occupant à l'ancienne place, puis le bouton à sa place).
-- **L'import n'ignore que les identifiants déjà présents.** `INSERT OR IGNORE` ignorerait aussi un emplacement déjà pris : un bouton disparaîtrait sans message. Un conflit d'emplacement annule tout l'import.
 - **Schéma des boutons** : `id` (UUID), `user_id`, `parent_id` (clé étrangère vers `buttons`, `ON DELETE CASCADE`), `position`, `label`, `icon`, `type`, `color`, `url`. La suppression en cascade remplace la boucle de suppression des enfants du store actuel. L'unicité d'un emplacement est un index unique sur `(user_id, parent_id, position)` ; comme SQLite considère deux `NULL` comme différents, la racine (`parent_id` nul) a son propre index partiel. Les règles métier (parent dossier, emplacement 0 réservé, positions 0 à 27) restent dans `validation.ts` : la base n'est qu'un filet de sécurité.
 - **Identifiant de connexion : l'e-mail**, enregistré en minuscules. Pas de pseudo : il faudra un e-mail pour réinitialiser un mot de passe plus tard.
 - **Sessions côté serveur plutôt que JWT.** Un cookie opaque, stocké haché en base, se révoque (déconnexion, compte supprimé) ; un JWT non. Cookie `httpOnly` (illisible par le JavaScript de la page), `SameSite=Lax` (protège des requêtes forgées depuis un autre site, la seule écriture se fait en JSON). Durée : 30 jours. Lecture du cookie écrite à la main (une fonction) pour ne pas ajouter de dépendance.
@@ -76,7 +74,7 @@ Cette feature **remplace** la règle « pas de compte utilisateur » et « confi
 - **Un identifiant d'un autre compte renvoie 404.** On ne révèle pas l'existence d'un bouton qui n'est pas à soi.
 - **Message de connexion unique** (« E-mail ou mot de passe incorrect ») pour ne pas révéler si une adresse a un compte. L'inscription, elle, indique qu'une adresse est déjà prise : c'est inévitable sans vérification par e-mail.
 - **Même origine en développement et en production.** Le proxy de Vite sert déjà `/api` depuis le port 3000, donc le cookie reste sur une seule origine. CORS n'est ouvert qu'à `CLIENT_ORIGIN` si elle est définie (ouvert à tous aujourd'hui, ce qui est incompatible avec les cookies).
-- **Reprise des boutons existants.** Un script explicite (`npm run import-json -- <e-mail>`) rattache le contenu de `data/buttons.json` à un compte existant ; pas de migration automatique silencieuse. Le fichier JSON n'est pas supprimé.
+- **Pas de reprise de l'ancien `data/buttons.json`.** Il ne contenait que des boutons d'essai : on repart de zéro. La migration qui ajoute `user_id` (étape 3) vide donc la table `buttons`, faute de propriétaire à leur donner. Le fichier JSON n'est plus lu ; il peut être supprimé.
 - **Les réglages locaux (sons, thème) restent dans le navigateur.** Ils ne passent pas en base ; ils pourront être rattachés au compte avec la future page de configuration de l'application.
 - **Hors périmètre, prévu pour la feature 10** : réinitialisation de mot de passe et vérification par e-mail (il faut un envoi de courriel), changement de mot de passe ou d'e-mail, suppression de compte, connexion via un tiers (Google, GitHub), rôles et administration, PostgreSQL, partage d'une grille entre personnes, mode sans connexion (session Storage) ?
 
@@ -148,8 +146,6 @@ L'étape 1 crée `buttons` sans `user_id` ; l'étape 3 l'ajoute par une nouvelle
 | --- | --- |
 | `server/src/db/database.ts` | Ouverture de la base, pragmas, lancement des migrations |
 | `server/src/db/migrations.ts` | Migrations numérotées (`buttons`, puis `users` et `sessions`, puis `user_id`) |
-| `server/src/db/importJson.ts` | Lecture et import de l'ancien `buttons.json` |
-| `server/src/scripts/importJson.ts` | Commande `npm run import-json` |
 | `server/src/buttons/store.ts` | Store SQLite, filtré par `userId` à partir de l'étape 3 |
 | `server/src/auth/store.ts` | Comptes et sessions |
 | `server/src/auth/password.ts` | Hachage et vérification (scrypt) |
@@ -181,4 +177,3 @@ cd client && npm run dev
 3. Créer un dossier et une action, redémarrer le serveur : les boutons sont toujours là.
 4. Se déconnecter, créer un second compte dans une fenêtre privée : sa grille est vide.
 5. Mauvais mot de passe : message unique ; au-delà de quelques essais, l'attente est imposée.
-6. `npm run import-json -- <e-mail>` : les anciens boutons apparaissent dans le compte indiqué.

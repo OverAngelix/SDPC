@@ -7,7 +7,6 @@
   "scripts": {
     "start": "node dist/index.js",
     "dev": "tsx watch src/index.ts",
-    "import-json": "tsx src/scripts/importJson.ts",
     "build": "tsc -p tsconfig.build.json",
     "test": "tsx --test \"test/**/*.test.ts\"",
     "type-check": "tsc --noEmit"
