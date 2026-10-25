@@ -48,5 +48,14 @@ export const MIGRATIONS: readonly string[] = [
   );
   CREATE UNIQUE INDEX buttons_slot ON buttons (user_id, parent_id, position) WHERE parent_id IS NOT NULL;
   CREATE UNIQUE INDEX buttons_root_slot ON buttons (user_id, position) WHERE parent_id IS NULL;
+  `,  // 4 : réglages de l'application, par personne (la ligne n'existe qu'après le premier enregistrement)
+  `
+  CREATE TABLE user_settings (
+    user_id         TEXT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    sound_enabled   INTEGER NOT NULL DEFAULT 1 CHECK (sound_enabled IN (0, 1)),
+    volume          INTEGER NOT NULL DEFAULT 100 CHECK (volume BETWEEN 0 AND 100),
+    effects_enabled INTEGER NOT NULL DEFAULT 1 CHECK (effects_enabled IN (0, 1)),
+    theme           TEXT NOT NULL DEFAULT 'system' CHECK (theme IN ('light', 'dark', 'system'))
+  );
   `,
 ]
