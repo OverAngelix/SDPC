@@ -26,6 +26,14 @@ export const useButtonsStore = defineStore('buttons', () => {
     }
   }
 
+  // Déconnexion : plus rien de la grille précédente
+  function reset () {
+    buttons.value = []
+    loading.value = false
+    error.value = false
+    loaded.value = false
+  }
+
   // Les 28 emplacements d'un dossier (null = la racine)
   function slotsOf (parentId: string | null) {
     return buildSlots(buttons.value, parentId)
@@ -76,5 +84,5 @@ export const useButtonsStore = defineStore('buttons', () => {
     buttons.value = buttons.value.filter(button => !removed.has(button.id))
   }
 
-  return { buttons, loading, error, loaded, load, slotsOf, pathTo, create, update, move, remove }
+  return { buttons, loading, error, loaded, load, reset, slotsOf, pathTo, create, update, move, remove }
 })
