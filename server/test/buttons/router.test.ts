@@ -115,11 +115,9 @@ describe('/api/buttons', () => {
     assert.equal((await call('POST', '')).status, 400)
   })
 
-  it('les modifications sont écrites dans le fichier de données', async () => {
+  it('les modifications sont écrites dans la base', async () => {
     const created = (await call('POST', '', action)).body
-    const { readFile } = await import('node:fs/promises')
-    const saved = JSON.parse(await readFile(server.file, 'utf8'))
-    assert.deepEqual(saved.buttons, [created])
+    assert.deepEqual(server.store.list(), [created])
   })
 
   it('POST /:id/move déplace un bouton (200) et renvoie les boutons modifiés', async () => {

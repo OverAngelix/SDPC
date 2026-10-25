@@ -1,86 +1,57 @@
 import { randomUUID } from 'node:crypto'
-import { mkdir, readFile, rename, writeFile } from 'node:fs/promises'
-import { dirname } from 'node:path'
+import type { Db } from '../db/database.js'
 import { HttpError } from '../errors.js'
-import type { Button } from './types.js'
+import type { Button, ButtonColor } from './types.js'
 import { mergeButtonPatch, validateButtonInput, validateMoveInput } from './validation.js'
 
 const INVALID_DATA = 'Données invalides'
+const COLUMNS = 'id, parent_id, position, label, icon, type, color, url'
+// L'ordre de création fait l'ordre de la liste (rowid croissant, inchangé par un UPDATE)
+const BY_CREATION = 'ORDER BY rowid'
 
-function isMissingFile (error: unknown): boolean {
-  return error instanceof Error && 'code' in error && error.code === 'ENOENT'
+interface ButtonRow {
+  id: string
+  parent_id: string | null
+  position: number
+  label: string
+  icon: string
+  type: Button['type']
+  color: string | null
+  url: string | null
 }
 
-/** Relit le fichier de données et refuse tout contenu incohérent plutôt que de l'écraser. */
-function parseFile (raw: string, file: string): Button[] {
-  const fail = (reason: string): never => {
-    throw new Error(`Fichier de données invalide (${file}) : ${reason}`)
+function toButton (row: ButtonRow): Button {
+  const button: Button = {
+    id: row.id,
+    parentId: row.parent_id,
+    position: row.position,
+    label: row.label,
+    icon: row.icon,
+    type: row.type,
   }
-
-  let content: unknown
-  try {
-    content = JSON.parse(raw)
-  } catch {
-    return fail('JSON illisible')
-  }
-  const list = typeof content === 'object' && content !== null && 'buttons' in content ? content.buttons : undefined
-  if (!Array.isArray(list)) return fail('tableau "buttons" attendu')
-
-  const buttons = list.map((item: unknown): Button => {
-    const result = validateButtonInput(item)
-    const id = typeof item === 'object' && item !== null && 'id' in item ? item.id : undefined
-    if (!result.ok || typeof id !== 'string' || id === '') return fail(`bouton invalide ${JSON.stringify(item)}`)
-    return { id, ...result.value }
-  })
-
-  const ids = new Set<string>()
-  const slots = new Set<string>()
-  for (const button of buttons) {
-    const slot = `${button.parentId}:${button.position}`
-    if (ids.has(button.id)) fail(`identifiant en double "${button.id}"`)
-    if (slots.has(slot)) fail(`emplacement occupé deux fois (${slot})`)
-    ids.add(button.id)
-    slots.add(slot)
-  }
-  for (const button of buttons) {
-    if (button.parentId !== null && buttons.find(parent => parent.id === button.parentId)?.type !== 'folder') {
-      fail(`le parent "${button.parentId}" de "${button.id}" n'est pas un dossier existant`)
-    }
-  }
-  return buttons
+  // Les valeurs ont été validées à l'écriture
+  if (row.color !== null) button.color = row.color as ButtonColor
+  if (row.url !== null) button.url = row.url
+  return button
 }
 
 export class ButtonStore {
-  private buttons: Button[]
-  private writing: Promise<void> = Promise.resolve()
-
-  private constructor (private readonly file: string, buttons: Button[]) {
-    this.buttons = buttons
-  }
-
-  /** Ouvre le fichier de données, le crée vide s'il n'existe pas. */
-  static async open (file: string): Promise<ButtonStore> {
-    let raw: string
-    try {
-      raw = await readFile(file, 'utf8')
-    } catch (error) {
-      if (!isMissingFile(error)) throw error
-      const store = new ButtonStore(file, [])
-      await store.persist()
-      return store
-    }
-    return new ButtonStore(file, parseFile(raw, file))
-  }
+  constructor (private readonly db: Db) {}
 
   /** Sans filtre : tous les boutons. Avec `parentId` : le contenu d'un dossier (null = racine). */
   list (parentId?: string | null): Button[] {
-    return parentId === undefined ? [...this.buttons] : this.buttons.filter(button => button.parentId === parentId)
+    const rows = parentId === undefined
+      ? this.db.prepare(`SELECT ${COLUMNS} FROM buttons ${BY_CREATION}`).all()
+      : parentId === null
+        ? this.db.prepare(`SELECT ${COLUMNS} FROM buttons WHERE parent_id IS NULL ${BY_CREATION}`).all()
+        : this.db.prepare(`SELECT ${COLUMNS} FROM buttons WHERE parent_id = ? ${BY_CREATION}`).all(parentId)
+    return (rows as ButtonRow[]).map(toButton)
   }
 
   get (id: string): Button {
-    const button = this.buttons.find(candidate => candidate.id === id)
-    if (button === undefined) throw new HttpError(404, 'Bouton introuvable')
-    return button
+    const row = this.db.prepare(`SELECT ${COLUMNS} FROM buttons WHERE id = ?`).get(id) as ButtonRow | undefined
+    if (row === undefined) throw new HttpError(404, 'Bouton introuvable')
+    return toButton(row)
   }
 
   async create (body: unknown): Promise<Button> {
@@ -92,7 +63,9 @@ export class ButtonStore {
     this.assertSlotFree(input.parentId, input.position)
 
     const button: Button = { id: randomUUID(), ...input }
-    await this.commit([...this.buttons, button])
+    this.db.prepare(`INSERT INTO buttons (${COLUMNS}) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`).run(
+      button.id, button.parentId, button.position, button.label, button.icon, button.type, button.color ?? null, button.url ?? null,
+    )
     return button
   }
 
@@ -108,7 +81,9 @@ export class ButtonStore {
     }
 
     const updated: Button = { id, ...input }
-    await this.commit(this.buttons.map(button => button.id === id ? updated : button))
+    this.db.prepare('UPDATE buttons SET position = ?, label = ?, icon = ?, type = ?, color = ?, url = ? WHERE id = ?').run(
+      updated.position, updated.label, updated.icon, updated.type, updated.color ?? null, updated.url ?? null, id,
+    )
     return updated
   }
 
@@ -124,67 +99,41 @@ export class ButtonStore {
     const position = result.value
     if (position === current.position) return []
 
-    const occupant = this.buttons.find(button => button.parentId === current.parentId && button.position === position)
+    const occupant = this.list(current.parentId).find(button => button.position === position)
+    const setPosition = this.db.prepare('UPDATE buttons SET position = ? WHERE id = ?')
+    this.db.transaction(() => {
+      if (occupant === undefined) {
+        setPosition.run(position, id)
+        return
+      }
+      // L'index d'unicité interdit deux boutons sur le même emplacement, même un instant : l'échange passe par -1
+      setPosition.run(-1, id)
+      setPosition.run(current.position, occupant.id)
+      setPosition.run(position, id)
+    })()
+
     const changed: Button[] = [{ ...current, position }]
     if (occupant !== undefined) changed.push({ ...occupant, position: current.position })
-
-    await this.commit(this.buttons.map(button => changed.find(candidate => candidate.id === button.id) ?? button))
     return changed
   }
 
-  /** Supprime le bouton et, pour un dossier, tout son contenu. */
+  /** Supprime le bouton et, pour un dossier, tout son contenu (suppression en cascade de la base). */
   async remove (id: string): Promise<void> {
     this.get(id)
-
-    const removed = new Set([id])
-    let grew = true
-    while (grew) {
-      grew = false
-      for (const button of this.buttons) {
-        if (button.parentId !== null && removed.has(button.parentId) && !removed.has(button.id)) {
-          removed.add(button.id)
-          grew = true
-        }
-      }
-    }
-    await this.commit(this.buttons.filter(button => !removed.has(button.id)))
+    this.db.prepare('DELETE FROM buttons WHERE id = ?').run(id)
   }
 
   private assertParentIsFolder (parentId: string | null): void {
     if (parentId === null) return
-    const parent = this.buttons.find(button => button.id === parentId)
+    const parent = this.db.prepare('SELECT type FROM buttons WHERE id = ?').get(parentId) as { type: string } | undefined
     if (parent?.type !== 'folder') {
       throw new HttpError(400, INVALID_DATA, ['parentId : dossier introuvable'])
     }
   }
 
   private assertSlotFree (parentId: string | null, position: number): void {
-    if (this.buttons.some(button => button.parentId === parentId && button.position === position)) {
+    if (this.list(parentId).some(button => button.position === position)) {
       throw new HttpError(409, 'Emplacement déjà occupé', [`position : l'emplacement ${position} est pris dans ce dossier`])
     }
-  }
-
-  private async commit (next: Button[]): Promise<void> {
-    const previous = this.buttons
-    this.buttons = next
-    try {
-      await this.persist()
-    } catch (error) {
-      if (this.buttons === next) this.buttons = previous
-      throw error
-    }
-  }
-
-  // Écritures en file d'attente, chacune sérialise l'état courant ; fichier temporaire puis renommage
-  private persist (): Promise<void> {
-    const write = async () => {
-      await mkdir(dirname(this.file), { recursive: true })
-      const temporary = `${this.file}.tmp`
-      await writeFile(temporary, `${JSON.stringify({ buttons: this.buttons }, null, 2)}\n`)
-      await rename(temporary, this.file)
-    }
-    const result = this.writing.then(write)
-    this.writing = result.catch(() => {})
-    return result
   }
 }
