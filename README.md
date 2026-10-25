@@ -6,6 +6,16 @@ Un Stream Deck logiciel pour PC, dans l'esprit des Stream Deck d'Elgato : une gr
 - Un bouton est soit une **action**, soit un **dossier**.
 - **Action** : redirige vers une URL, dans un nouvel onglet. Aucune application locale n'est lancée, aucune commande n'est exécutée.
 - **Dossier** : un clic remplace la grille par celle du dossier (plusieurs niveaux de profondeur) . Le retour occupe la première case de la grille du dossier, comme sur un Stream Deck Elgato : 28 emplacements utilisables à la racine, 27 dans un dossier.
+- **Compte** : chaque personne a son compte (e-mail et mot de passe) et sa propre grille.
+
+## Utilisation
+
+L'écran principal est la grille. Le menu **Mon compte** de la barre du haut (un burger sur téléphone) donne accès à :
+
+- **Grille** et **Configuration de la grille** : lancer ses raccourcis, ou créer, modifier, déplacer et supprimer les boutons ;
+- **Configuration de l'application** : son (actif ou non, volume), effets visuels (survol, animations), thème (clair, sombre, celui de l'appareil). Ces réglages sont enregistrés sur le compte et suivent la personne d'un appareil à l'autre ;
+- **Effacer la grille** : supprime tous les boutons du compte, après confirmation ;
+- **Déconnexion**.
 
 ## Stack
 
@@ -54,6 +64,10 @@ Les comptes et les boutons sont conservés côté serveur dans une base SQLite, 
 | [04 — Configuration des boutons](docs/feature/04-configuration-boutons.md) | Livré | OverAngelix |
 | [05 — Glisser-déposer des boutons](docs/feature/05-glisser-deposer.md) | Livré | OverAngelix |
 | [06 — UX : couleurs et effets « juicy »](docs/feature/06-ux-couleurs-effets.md) | Livré | OverAngelix |
+| [07 — Responsive : grille adaptée au téléphone](docs/feature/07-responsive.md) | Livré | OverAngelix |
+| [08 — Grille de 28 cases (7 × 4, 4 × 7 en portrait)](docs/feature/08-grille-28-cases.md) | Livré | OverAngelix |
+| [09 — Comptes utilisateur et base de données SQLite](docs/feature/09-comptes-base-de-donnees.md) | Livré | OverAngelix |
+| [11 — Menu « Mon compte » et réglages de l'application](docs/feature/11-menu-compte-reglages.md) | Livré | OverAngelix |
 
 La liste complète et le détail de chaque feature (TODO, implémentation) sont dans [`docs/feature/`](docs/feature/README.md).
 

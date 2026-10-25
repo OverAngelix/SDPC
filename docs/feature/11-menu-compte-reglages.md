@@ -2,7 +2,7 @@
 
 | | |
 | --- | --- |
-| **Statut** | À faire (plan à valider) |
+| **Statut** | Livré |
 | **Personne active** | OverAngelix |
 | **Périmètre** | `server/` (réglages du compte, effacement de la grille) et `client/` |
 | **Dépend de** | [09 — Comptes utilisateur et base de données SQLite](09-comptes-base-de-donnees.md) |
@@ -80,10 +80,10 @@ Les réglages de l'application sont **enregistrés sur le compte** (table `user_
 
 ### Étape 6 — Documentation
 
-- [ ] `CLAUDE.md` et `README.md` : la configuration de la grille s'ouvre depuis le menu du compte ; réglages enregistrés sur le compte
-- [ ] README des features : ligne 11, retrait des réglages de « Plus tard »
-- [ ] Fiche 09 : la décision « les réglages restent dans le navigateur » renvoie vers cette feature
-- [ ] Fiche mise à jour, vérification manuelle (voir plus bas)
+- [x] `CLAUDE.md` et `README.md` : la configuration de la grille s'ouvre depuis le menu du compte ; réglages enregistrés sur le compte
+- [x] README des features : ligne 11, retrait des réglages de « Plus tard »
+- [x] Fiche 09 : la décision « les réglages restent dans le navigateur » renvoie vers cette feature
+- [x] Fiche mise à jour, vérification manuelle (voir plus bas)
 
 ## Décisions (proposées)
 
@@ -178,7 +178,7 @@ CREATE TABLE user_settings (
 
 ### Validation
 
-- [ ] Type-check, lint, tests et build sans erreur côté serveur et côté client
+- [x] Type-check, lint, tests (149 serveur, 127 client) et build sans erreur côté serveur et côté client ; menu, réglages et effacement vérifiés dans Chrome (ordinateur et écran de 390 px)
 - [ ] Parcours vérifié sur ordinateur : menu déroulant, les quatre entrées, aller et retour entre la grille et sa configuration
 - [ ] Parcours vérifié sur téléphone, en portrait et en paysage : burger, tiroir, déconnexion en bas, fenêtre des réglages en plein écran
 - [ ] Les réglages suivent le compte d'un appareil à l'autre et ne sont pas partagés entre deux comptes
