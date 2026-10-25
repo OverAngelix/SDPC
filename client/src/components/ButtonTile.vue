@@ -3,7 +3,7 @@
     v-if="back || button"
     :aria-label="label"
     class="tile tile-live d-flex flex-column align-center justify-center pa-2"
-    :class="[effect && `tile-${effect}`, { 'tile-launch': launching, 'tile-editing': editable && !back }]"
+    :class="[effect && `tile-${effect}`, { 'tile-launch': launching, 'tile-editing': editable && !back, 'tile-still': !settings.effectsEnabled }]"
     :color="color"
     link
     variant="flat"
@@ -44,7 +44,7 @@
     v-else-if="editable"
     aria-label="Ajouter un bouton"
     class="tile tile-empty d-flex align-center justify-center text-medium-emphasis"
-    :class="effect && `tile-${effect}`"
+    :class="[effect && `tile-${effect}`, { 'tile-still': !settings.effectsEnabled }]"
     link
     variant="text"
     @click="emit('create')"
@@ -52,12 +52,13 @@
     <v-icon icon="mdi-plus" size="20cqw" />
   </v-card>
 
-  <div v-else class="tile tile-empty" :class="effect && `tile-${effect}`" />
+  <div v-else class="tile tile-empty" :class="[effect && `tile-${effect}`, { 'tile-still': !settings.effectsEnabled }]" />
 </template>
 
 <script lang="ts" setup>
   import type { Button } from '@/interfaces/button'
   import { computed, onBeforeUnmount, ref } from 'vue'
+  import { useSettingsStore } from '@/stores/settings'
   import { colorOf, DEFAULT_COLOR, solidColor } from '@/utils/colors'
 
   const props = defineProps<{
@@ -70,6 +71,8 @@
     /** Effet ponctuel : la case vient d'être posée (pop) ou son dépôt est refusé (shake) */
     effect?: 'pop' | 'shake'
   }>()
+
+  const settings = useSettingsStore()
 
   const emit = defineEmits<{
     select: [button: Button]
@@ -198,6 +201,18 @@
     40%, 80% {
       transform: translateX(7px);
     }
+  }
+
+  /* Effets coupés dans les réglages : la case ne bouge plus (ni apparition, ni survol, ni appui, ni lancement) */
+  .tile.tile-still {
+    animation: none;
+    transition: none;
+  }
+
+  .tile.tile-still:hover,
+  .tile.tile-still:active {
+    box-shadow: none;
+    transform: none;
   }
 
   /* Le système demande moins de mouvement : plus aucune animation ni transformation */

@@ -39,12 +39,12 @@ Les réglages de l'application sont **enregistrés sur le compte** (table `user_
 
 ### Étape 2 — Réglages de l'application (client)
 
-- [ ] Interface `Settings`, appels `GET` et `PATCH /api/settings`
-- [ ] Store `settings` : son actif, **volume**, **effets**, **thème**, chargés avec la session au démarrage et après une connexion, enregistrés à chaque changement (voir les décisions)
-- [ ] Sons : `playSound` applique le volume (les volumes de base des notes sont multipliés)
-- [ ] Effets : désactivés par une classe sur la page ; **survol** et animations des cases (apparition en vague, lancement, appui, secousse) se coupent comme avec `prefers-reduced-motion`
-- [ ] Thème : appliqué à Vuetify au démarrage et à chaque changement, `system` suit l'appareil
-- [ ] Tests client : valeurs par défaut, chargement, enregistrement, retour à la valeur précédente quand le serveur refuse, volume des notes
+- [x] Interface `Settings`, appels `GET` et `PATCH /api/settings`
+- [x] Store `settings` : son actif, **volume**, **effets**, **thème**, chargés avec la session au démarrage et après une connexion, enregistrés à chaque changement (voir les décisions)
+- [x] Sons : `playSound` applique le volume (les volumes de base des notes sont multipliés)
+- [x] Effets : désactivés par une classe sur la page ; **survol** et animations des cases (apparition en vague, lancement, appui, secousse) se coupent comme avec `prefers-reduced-motion`
+- [x] Thème : appliqué à Vuetify au démarrage et à chaque changement, `system` suit l'appareil
+- [x] Tests client : valeurs par défaut, chargement, enregistrement, retour à la valeur précédente quand le serveur refuse, volume des notes
 
 ### Étape 3 — Barre d'application et menu du compte (client)
 
@@ -83,6 +83,7 @@ Les réglages de l'application sont **enregistrés sur le compte** (table `user_
 - **Menu déroulant sur ordinateur, tiroir sur téléphone, même contenu.** Un composant unique décrit la liste des entrées, les deux conteneurs ne font que l'afficher (`v-menu` à partir de 600 px, `v-navigation-drawer` en dessous, seuil `xs` déjà utilisé par l'application). Le tiroir s'ouvre à droite, du côté du bouton, et **Déconnexion** est ancrée en bas (zone `append`) ; le menu déroulant la place en dernier, après un séparateur.
 - **L'adresse e-mail passe dans le menu.** Elle n'occupe plus la barre (déjà trop chargée sur téléphone) ; le bouton de la barre s'appelle « Mon compte » sur ordinateur (icône de personne et texte) et reste un burger sur téléphone.
 - **Réglages sur le compte, table `user_settings`.** Une ligne par personne : `user_id` (clé primaire, clé étrangère vers `users`, suppression en cascade), `sound_enabled`, `volume`, `effects_enabled`, `theme`, avec les valeurs par défaut en base. La ligne n'est créée qu'au premier enregistrement : sans ligne, le serveur renvoie les valeurs par défaut. Colonnes plutôt qu'un bloc JSON : la base refuse elle-même une valeur hors plage (`CHECK`), et ajouter un réglage plus tard est une migration simple.
+- **Effets : une classe `tile-still` posée par chaque case** (qui lit le réglage) plutôt qu'une classe globale sur la page : le CSS des composants est limité à ses propres éléments, et une règle globale sur un descendant n'est pas fiable (vérifié dans Chrome : `:global(.x) .y` perd le `.y`).
 - **Les réglages se chargent avec la session.** Le routeur attend déjà de savoir si une session est ouverte avant d'afficher une page ; il attend aussi les réglages, pour que le thème soit le bon dès le premier affichage. Avant la connexion (pages Connexion et Créer un compte), les valeurs par défaut s'appliquent : thème de l'appareil, son et effets actifs. À la déconnexion, on y revient.
 - **Un réglage s'applique tout de suite, puis s'enregistre.** Le changement est visible et audible immédiatement ; le `PATCH` suit. Si le serveur refuse ou ne répond pas, la valeur précédente revient et la fenêtre affiche le message. Le curseur du volume n'enregistre qu'au relâchement (un appel par réglage, pas un par pixel).
 - **L'ancienne préférence du son dans le navigateur (`sdpc.sound`) est abandonnée**, sans reprise : le son est actif par défaut sur le compte. Elle disparaît du code ; son éventuelle valeur dans `localStorage` n'est plus lue.

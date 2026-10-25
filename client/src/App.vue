@@ -28,7 +28,7 @@
         :aria-pressed="settings.soundEnabled"
         :icon="settings.soundEnabled ? 'mdi-volume-high' : 'mdi-volume-off'"
         :title="settings.soundEnabled ? 'Couper le son' : 'Activer le son'"
-        @click="settings.toggleSound()"
+        @click="settings.change({ soundEnabled: !settings.soundEnabled })"
       />
 
       <v-btn
@@ -53,7 +53,7 @@
 <script lang="ts" setup>
   import { ref, watch } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
-  import { useDisplay } from 'vuetify'
+  import { useDisplay, useTheme } from 'vuetify'
   import { guardRoute } from '@/router/guard'
   import { useAuthStore } from '@/stores/auth'
   import { useSettingsStore } from '@/stores/settings'
@@ -63,6 +63,10 @@
   const route = useRoute()
   const router = useRouter()
   const signOutFailed = ref(false)
+  const theme = useTheme()
+
+  // Thème du compte (les effets sont lus par les cases elles-mêmes, voir ButtonTile)
+  watch(() => settings.theme, name => theme.change(name), { immediate: true })
 
   // Déconnexion (ici ou session perdue, voir api/http.ts) : retour à la page de connexion
   watch(() => auth.user, user => {

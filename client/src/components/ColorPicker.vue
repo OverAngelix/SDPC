@@ -9,7 +9,7 @@
         :aria-checked="color.value === model"
         :aria-label="color.label"
         class="swatch"
-        :class="[`bg-${solidColor(color.value)}`, { 'swatch-selected': color.value === model }]"
+        :class="[`bg-${solidColor(color.value)}`, { 'swatch-selected': color.value === model, 'swatch-still': !settings.effectsEnabled }]"
         role="radio"
         :title="color.label"
         type="button"
@@ -23,9 +23,11 @@
 
 <script lang="ts" setup>
   import type { ButtonColor } from '@/interfaces/button'
+  import { useSettingsStore } from '@/stores/settings'
   import { BUTTON_COLORS, solidColor } from '@/utils/colors'
 
   const model = defineModel<ButtonColor>({ required: true })
+  const settings = useSettingsStore()
 </script>
 
 <style scoped>
@@ -62,6 +64,16 @@
     outline-offset: 4px;
   }
 
+  /* Effets coupés dans les réglages */
+  .swatch.swatch-still {
+    transition: none;
+  }
+
+  .swatch.swatch-still:hover {
+    transform: none;
+  }
+
+  /* Le système demande moins de mouvement */
   @media (prefers-reduced-motion: reduce) {
     .swatch {
       transition: none;
