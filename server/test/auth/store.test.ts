@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { beforeEach, afterEach, describe, it } from 'node:test'
-import { AuthStore, SESSION_DAYS, SHORT_SESSION_HOURS } from '../../src/auth/store.js'
+import { AuthStore, SESSION_DAYS } from '../../src/auth/store.js'
 import type { Db } from '../../src/db/database.js'
 import { MEMORY_DATABASE, openDatabase } from '../../src/db/database.js'
 import { HttpError } from '../../src/errors.js'
@@ -87,9 +87,9 @@ describe('AuthStore', () => {
       assert.notEqual(auth.createSession(user.id), auth.createSession(user.id))
     })
 
-    it('expire après la durée prévue et purge les sessions expirées', async () => {
+    it('dure 90 jours, puis expire et purge les sessions expirées', async () => {
       const user = await auth.register(credentials)
-      const token = auth.createSession(user.id, true)
+      const token = auth.createSession(user.id)
 
       clock.now += (SESSION_DAYS * 24 * 60 * 60 * 1000) - 1000
       assert.deepEqual(auth.userForSession(token), user)
@@ -98,16 +98,6 @@ describe('AuthStore', () => {
 
       auth.createSession(user.id)
       assert.equal((db.prepare('SELECT count(*) AS n FROM sessions').get() as { n: number }).n, 1)
-    })
-
-    it('dure 24 h sans « se souvenir de moi », 30 jours avec', async () => {
-      const user = await auth.register(credentials)
-      const short = auth.createSession(user.id)
-      const remembered = auth.createSession(user.id, true)
-
-      clock.now += SHORT_SESSION_HOURS * 60 * 60 * 1000
-      assert.equal(auth.userForSession(short), undefined)
-      assert.deepEqual(auth.userForSession(remembered), user)
     })
 
     it('disparaît avec le compte', async () => {

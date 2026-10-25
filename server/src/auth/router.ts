@@ -3,7 +3,7 @@ import { Router } from 'express'
 import { HttpError } from '../errors.js'
 import type { LoginLimiter } from './loginLimiter.js'
 import { requireAuth, SESSION_COOKIE, sessionToken } from './middleware.js'
-import { REMEMBERED_SESSION_MS } from './store.js'
+import { SESSION_MS } from './store.js'
 import type { AuthStore } from './store.js'
 
 export interface AuthRouterOptions {
@@ -16,15 +16,13 @@ export function authRouter (auth: AuthStore, limiter: LoginLimiter, { secureCook
 
   const cookieOptions: CookieOptions = { httpOnly: true, sameSite: 'lax', secure: secureCookie, path: '/' }
 
-  // « Se souvenir de moi » (`remember: true` dans le corps) : cookie de 30 jours ; sinon cookie de session, perdu à la fermeture du navigateur
-  function startSession (res: Response, userId: string, body: unknown): void {
-    const remember = typeof body === 'object' && body !== null && 'remember' in body && body.remember === true
-    res.cookie(SESSION_COOKIE, auth.createSession(userId, remember), remember ? { ...cookieOptions, maxAge: REMEMBERED_SESSION_MS } : cookieOptions)
+  function startSession (res: Response, userId: string): void {
+    res.cookie(SESSION_COOKIE, auth.createSession(userId), { ...cookieOptions, maxAge: SESSION_MS })
   }
 
   router.post('/register', async (req, res) => {
     const user = await auth.register(req.body)
-    startSession(res, user.id, req.body)
+    startSession(res, user.id)
     res.status(201).json(user)
   })
 
@@ -41,7 +39,7 @@ export function authRouter (auth: AuthStore, limiter: LoginLimiter, { secureCook
     try {
       const user = await auth.login(req.body)
       limiter.reset(key)
-      startSession(res, user.id, req.body)
+      startSession(res, user.id)
       res.json(user)
     } catch (error) {
       if (error instanceof HttpError && error.status === 401) limiter.recordFailure(key)
