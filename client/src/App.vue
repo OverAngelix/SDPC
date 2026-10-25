@@ -29,6 +29,8 @@
       <router-view />
     </v-main>
 
+    <settings-dialog v-if="auth.user" v-model="settingsOpen" />
+
     <v-snackbar v-model="signOutFailed" color="error" timeout="5000">
       Déconnexion impossible : le serveur est injoignable.
     </v-snackbar>
@@ -42,6 +44,7 @@
   import { useTheme } from 'vuetify'
   import AccountDrawer from '@/components/AccountDrawer.vue'
   import AccountMenu from '@/components/AccountMenu.vue'
+  import SettingsDialog from '@/components/SettingsDialog.vue'
   import { guardRoute } from '@/router/guard'
   import { useAuthStore } from '@/stores/auth'
   import { useSettingsStore } from '@/stores/settings'
@@ -53,6 +56,7 @@
   const signOutFailed = ref(false)
   // Tiroir du compte (téléphone) : ouvert par le burger de la barre, affiché hors de la barre
   const drawer = ref(false)
+  const settingsOpen = ref(false)
   const theme = useTheme()
 
   // Thème du compte (les effets sont lus par les cases elles-mêmes, voir ButtonTile)
@@ -71,6 +75,7 @@
 
   function onAccountAction (action: AccountAction) {
     if (action === 'grid') router.push(onConfig.value ? '/' : '/config')
+    else if (action === 'settings') settingsOpen.value = true
     else signOut()
   }
 

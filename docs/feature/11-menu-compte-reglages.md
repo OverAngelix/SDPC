@@ -57,11 +57,11 @@ Les réglages de l'application sont **enregistrés sur le compte** (table `user_
 
 ### Étape 4 — Fenêtre « Configuration de l'application » (client)
 
-- [ ] Fenêtre modale sur ordinateur, modale plein écran sur téléphone, ouverte depuis le menu
-- [ ] Son : interrupteur et curseur de volume (désactivé quand le son est coupé), un son d'essai au relâchement du curseur
-- [ ] Effets visuels : interrupteur
-- [ ] Thème : choix Clair, Sombre, Appareil
-- [ ] Les changements s'appliquent tout de suite, il n'y a pas de bouton Enregistrer
+- [x] Fenêtre modale sur ordinateur, modale plein écran sur téléphone, ouverte depuis le menu
+- [x] Son : interrupteur et curseur de volume (désactivé quand le son est coupé), un son d'essai une fois le curseur posé (relâchement ou courte pause : le clavier n'a pas de relâchement)
+- [x] Effets visuels : interrupteur
+- [x] Thème : choix Clair, Sombre, Appareil
+- [x] Les changements s'appliquent tout de suite, il n'y a pas de bouton Enregistrer
 
 ### Étape 5 — Effacer la grille (serveur et client)
 
@@ -85,7 +85,7 @@ Les réglages de l'application sont **enregistrés sur le compte** (table `user_
 - **Réglages sur le compte, table `user_settings`.** Une ligne par personne : `user_id` (clé primaire, clé étrangère vers `users`, suppression en cascade), `sound_enabled`, `volume`, `effects_enabled`, `theme`, avec les valeurs par défaut en base. La ligne n'est créée qu'au premier enregistrement : sans ligne, le serveur renvoie les valeurs par défaut. Colonnes plutôt qu'un bloc JSON : la base refuse elle-même une valeur hors plage (`CHECK`), et ajouter un réglage plus tard est une migration simple.
 - **Effets : une classe `tile-still` posée par chaque case** (qui lit le réglage) plutôt qu'une classe globale sur la page : le CSS des composants est limité à ses propres éléments, et une règle globale sur un descendant n'est pas fiable (vérifié dans Chrome : `:global(.x) .y` perd le `.y`).
 - **Les réglages se chargent avec la session.** Le routeur attend déjà de savoir si une session est ouverte avant d'afficher une page ; il attend aussi les réglages, pour que le thème soit le bon dès le premier affichage. Avant la connexion (pages Connexion et Créer un compte), les valeurs par défaut s'appliquent : thème de l'appareil, son et effets actifs. À la déconnexion, on y revient.
-- **Un réglage s'applique tout de suite, puis s'enregistre.** Le changement est visible et audible immédiatement ; le `PATCH` suit. Si le serveur refuse ou ne répond pas, la valeur précédente revient et la fenêtre affiche le message. Le curseur du volume n'enregistre qu'au relâchement (un appel par réglage, pas un par pixel).
+- **Un réglage s'applique tout de suite, puis s'enregistre.** Le changement est visible et audible immédiatement ; le `PATCH` suit. Si le serveur refuse ou ne répond pas, la valeur précédente revient et la fenêtre affiche le message. Le curseur du volume n'enregistre qu'une fois le geste fini, au relâchement ou après 350 ms sans mouvement pour le clavier (un appel par réglage, pas un par pixel).
 - **L'ancienne préférence du son dans le navigateur (`sdpc.sound`) est abandonnée**, sans reprise : le son est actif par défaut sur le compte. Elle disparaît du code ; son éventuelle valeur dans `localStorage` n'est plus lue.
 - **Le bouton son quitte la barre.** Il fait double emploi avec l'interrupteur des réglages et prend de la place sur téléphone. Le son se coupe en trois gestes : Mon compte, Configuration de l'application, interrupteur.
 - **Volume = multiplicateur des volumes actuels.** Les notes ont déjà un volume bas et réglé (« la grille se manipule longtemps »). Le curseur, de 0 à 100 %, les multiplie : 100 % donne exactement le son d'aujourd'hui, jamais plus fort. L'interrupteur du son reste distinct du curseur (couper puis remettre rend le volume choisi).

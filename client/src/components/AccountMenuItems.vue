@@ -8,6 +8,12 @@
         :title="onConfig ? 'Retour à la grille' : 'Configuration de la grille'"
         @click="emit('select', 'grid')"
       />
+
+      <v-list-item
+        prepend-icon="mdi-tune"
+        title="Configuration de l'application"
+        @click="emit('select', 'settings')"
+      />
     </template>
 
     <v-divider v-if="part === 'all'" class="my-1" />
