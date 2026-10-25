@@ -28,14 +28,14 @@ Cette feature **remplace** la règle « pas de compte utilisateur » et « confi
 
 ### Étape 2 — Comptes et sessions (serveur)
 
-- [ ] Migration : tables `users` et `sessions`
-- [ ] Mot de passe haché (`scrypt` de `node:crypto`, sel par personne, comparaison en temps constant)
-- [ ] `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`
-- [ ] Session : jeton aléatoire dans un cookie `httpOnly`, `SameSite=Lax`, `Secure` en production ; seul son empreinte est stockée en base
-- [ ] Validation : e-mail valide et unique (insensible à la casse), mot de passe de 8 à 128 caractères
-- [ ] Limitation des tentatives de connexion (essais échoués par adresse IP et e-mail)
-- [ ] CORS restreint à `CLIENT_ORIGIN` (le cookie impose une origine explicite)
-- [ ] Tests serveur : inscription, doublon, connexion, mauvais mot de passe, déconnexion, session expirée
+- [x] Migration : tables `users` et `sessions`
+- [x] Mot de passe haché (`scrypt` de `node:crypto`, sel par personne, comparaison en temps constant)
+- [x] `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`
+- [x] Session : jeton aléatoire dans un cookie `httpOnly`, `SameSite=Lax`, `Secure` en production ; seul son empreinte est stockée en base
+- [x] Validation : e-mail valide et unique (insensible à la casse), mot de passe de 8 à 128 caractères
+- [x] Limitation des tentatives de connexion (essais échoués par adresse IP et e-mail)
+- [x] CORS restreint à `CLIENT_ORIGIN` (le cookie impose une origine explicite)
+- [x] Tests serveur : inscription, doublon, connexion, mauvais mot de passe, déconnexion, session expirée
 
 ### Étape 3 — Une grille par personne (serveur)
 
