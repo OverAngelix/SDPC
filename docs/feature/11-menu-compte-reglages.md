@@ -48,12 +48,12 @@ Les réglages de l'application sont **enregistrés sur le compte** (table `user_
 
 ### Étape 3 — Barre d'application et menu du compte (client)
 
-- [ ] Retirer les onglets Grille et Configuration de la barre ; le titre « SDPC » devient un lien vers la grille
-- [ ] Retirer le bouton son de la barre (il passe dans les réglages)
-- [ ] Menu « Mon compte » (`v-menu`) sur ordinateur et tablette, tiroir (`v-navigation-drawer`) derrière un burger sur téléphone, même contenu pour les deux
-- [ ] Contenu : adresse e-mail, Configuration de la grille, Configuration de l'application, Effacer la grille, séparateur, Déconnexion
-- [ ] Sur la page de configuration de la grille, l'entrée du menu devient « Retour à la grille »
-- [ ] Sans connexion (pages Connexion et Créer un compte) : seulement le titre, ni menu ni burger
+- [x] Retirer les onglets Grille et Configuration de la barre ; le titre « SDPC » devient un lien vers la grille
+- [x] Retirer le bouton son de la barre (il passe dans les réglages)
+- [x] Menu « Mon compte » (`v-menu`) sur ordinateur et tablette, tiroir (`v-navigation-drawer`) derrière un burger sur téléphone, même contenu pour les deux (le tiroir est posé à la racine de l'application, pas dans la barre : sinon sa hauteur est fausse et la déconnexion ne s'ancre pas en bas)
+- [x] Contenu : adresse e-mail, Configuration de la grille, séparateur, Déconnexion (Configuration de l'application et Effacer la grille s'ajoutent aux étapes 4 et 5)
+- [x] Sur la page de configuration de la grille, l'entrée du menu devient « Retour à la grille »
+- [x] Sans connexion (pages Connexion et Créer un compte) : seulement le titre, ni menu ni burger
 
 ### Étape 4 — Fenêtre « Configuration de l'application » (client)
 

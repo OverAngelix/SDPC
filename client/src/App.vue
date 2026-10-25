@@ -1,44 +1,29 @@
 <template>
   <v-app>
     <v-app-bar density="comfortable">
-      <v-app-bar-title v-if="!xs">SDPC</v-app-bar-title>
-
-      <v-tabs v-if="auth.user">
-        <v-tab
-          aria-label="Grille"
-          prepend-icon="mdi-view-grid"
-          :text="xs ? undefined : 'Grille'"
-          to="/"
-        />
-
-        <v-tab
-          aria-label="Configuration"
-          prepend-icon="mdi-cog"
-          :text="xs ? undefined : 'Configuration'"
-          to="/config"
-        />
-      </v-tabs>
+      <v-app-bar-title>
+        <router-link class="app-title" to="/">SDPC</router-link>
+      </v-app-bar-title>
 
       <v-spacer />
 
-      <span v-if="auth.user && !xs" class="text-body-2 text-medium-emphasis me-2">{{ auth.user.email }}</span>
-
-      <v-btn
-        :aria-label="settings.soundEnabled ? 'Couper le son' : 'Activer le son'"
-        :aria-pressed="settings.soundEnabled"
-        :icon="settings.soundEnabled ? 'mdi-volume-high' : 'mdi-volume-off'"
-        :title="settings.soundEnabled ? 'Couper le son' : 'Activer le son'"
-        @click="settings.change({ soundEnabled: !settings.soundEnabled })"
-      />
-
-      <v-btn
+      <!-- Sans connexion (pages Connexion et Créer un compte) : le titre seul -->
+      <account-menu
         v-if="auth.user"
-        aria-label="Se déconnecter"
-        icon="mdi-logout"
-        title="Se déconnecter"
-        @click="signOut"
+        v-model:drawer="drawer"
+        :email="auth.user.email"
+        :on-config="onConfig"
+        @select="onAccountAction"
       />
     </v-app-bar>
+
+    <account-drawer
+      v-if="auth.user"
+      v-model="drawer"
+      :email="auth.user.email"
+      :on-config="onConfig"
+      @select="onAccountAction"
+    />
 
     <v-main>
       <router-view />
@@ -51,9 +36,12 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, watch } from 'vue'
+  import type { AccountAction } from '@/interfaces/account'
+  import { computed, ref, watch } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
-  import { useDisplay, useTheme } from 'vuetify'
+  import { useTheme } from 'vuetify'
+  import AccountDrawer from '@/components/AccountDrawer.vue'
+  import AccountMenu from '@/components/AccountMenu.vue'
   import { guardRoute } from '@/router/guard'
   import { useAuthStore } from '@/stores/auth'
   import { useSettingsStore } from '@/stores/settings'
@@ -63,6 +51,8 @@
   const route = useRoute()
   const router = useRouter()
   const signOutFailed = ref(false)
+  // Tiroir du compte (téléphone) : ouvert par le burger de la barre, affiché hors de la barre
+  const drawer = ref(false)
   const theme = useTheme()
 
   // Thème du compte (les effets sont lus par les cases elles-mêmes, voir ButtonTile)
@@ -76,6 +66,14 @@
     }
   })
 
+  // La page de configuration de la grille (dossiers compris) : l'entrée du menu y devient « Retour à la grille »
+  const onConfig = computed(() => route.path === '/config' || route.path.startsWith('/config/'))
+
+  function onAccountAction (action: AccountAction) {
+    if (action === 'grid') router.push(onConfig.value ? '/' : '/config')
+    else signOut()
+  }
+
   async function signOut () {
     try {
       await auth.signOut()
@@ -83,11 +81,15 @@
       signOutFailed.value = true
     }
   }
-  // Téléphone : les onglets se réduisent à leur icône pour que la barre tienne sur une ligne
-  const { xs } = useDisplay()
 </script>
 
 <style>
+  /* Titre de la barre : un lien vers la grille, qui garde l'allure d'un titre */
+  .app-title {
+    color: inherit;
+    text-decoration: none;
+  }
+
   /* Pages Grille et Configuration : la grille est centrée dans l'écran sous la barre d'application
      (si elle est plus haute que l'écran, la page défile normalement) */
   .page-centered {

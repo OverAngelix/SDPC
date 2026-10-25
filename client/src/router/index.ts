@@ -11,7 +11,7 @@ const router = createRouter({
   routes: [
     { path: '/login', name: 'login', component: LoginPage, meta: { public: true } },
     { path: '/register', name: 'register', component: RegisterPage, meta: { public: true } },
-    // Parent commun : l'onglet Grille reste actif dans un dossier
+    // La grille et ses dossiers
     {
       path: '/',
       children: [
@@ -19,7 +19,7 @@ const router = createRouter({
         { path: 'folder/:id', name: 'folder', component: GridPage },
       ],
     },
-    // Même principe : l'onglet Configuration reste actif dans un dossier
+    // La configuration de la grille et de ses dossiers, ouverte depuis le menu du compte
     {
       path: '/config',
       children: [
