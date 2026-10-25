@@ -21,7 +21,7 @@
           <v-text-field
             v-model="email"
             autocomplete="username"
-            autofocus
+            :autofocus="savedLogin === null"
             label="Adresse e-mail"
             :rules="[required]"
             type="email"
@@ -30,6 +30,7 @@
           <v-text-field
             v-model="password"
             :autocomplete="isRegister ? 'new-password' : 'current-password'"
+            :autofocus="savedLogin !== null"
             :hint="isRegister ? '8 caractères au moins' : undefined"
             label="Mot de passe"
             :persistent-hint="isRegister"
@@ -42,6 +43,7 @@
             density="compact"
             hide-details
             label="Se souvenir de moi"
+            title="Garde votre adresse e-mail sur cet appareil pour la prochaine connexion"
           />
         </v-card-text>
 
@@ -75,6 +77,7 @@
   import { safeRedirect } from '@/router/guard'
   import { useAuthStore } from '@/stores/auth'
   import { describeApiError } from '@/utils/apiError'
+  import { readRememberedLogin, writeRememberedLogin } from '@/utils/rememberedLogin'
 
   const props = defineProps<{ mode: 'login' | 'register' }>()
 
@@ -85,9 +88,11 @@
   const router = useRouter()
 
   const isRegister = computed(() => props.mode === 'register')
-  const email = ref('')
+  // « Se souvenir de moi » garde l'adresse e-mail sur cet appareil (la session, elle, dure 90 jours dans tous les cas)
+  const savedLogin = readRememberedLogin()
+  const email = ref(savedLogin ?? '')
   const password = ref('')
-  const remember = ref(false)
+  const remember = ref(savedLogin !== null)
   const loading = ref(false)
   const error = ref<ApiErrorMessage | null>(null)
 
@@ -101,8 +106,9 @@
     loading.value = true
     error.value = null
     try {
-      const credentials = { email: email.value, password: password.value, remember: remember.value }
+      const credentials = { email: email.value, password: password.value }
       await (isRegister.value ? auth.signUp(credentials) : auth.signIn(credentials))
+      writeRememberedLogin(remember.value ? email.value.trim() : null)
       await router.replace(safeRedirect(route.query.redirect))
     } catch (error_) {
       error.value = describeApiError(error_)

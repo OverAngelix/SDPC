@@ -25,7 +25,7 @@ const registerMock = vi.mocked(register)
 const logoutMock = vi.mocked(logout)
 
 const jean: User = { id: 'u1', email: 'jean@exemple.fr' }
-const credentials: Credentials = { email: 'jean@exemple.fr', password: 'motdepasse', remember: true }
+const credentials: Credentials = { email: 'jean@exemple.fr', password: 'motdepasse' }
 
 describe('auth store', () => {
   beforeEach(() => {

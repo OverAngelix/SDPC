@@ -8,6 +8,4 @@ export interface User {
 export interface Credentials {
   email: string
   password: string
-  /** « Se souvenir de moi » : session de 30 jours au lieu de la durée du navigateur */
-  remember: boolean
 }
