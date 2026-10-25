@@ -5,8 +5,13 @@ import { hashPassword, verifyPassword } from './password.js'
 import type { User } from './types.js'
 import { validateCredentials } from './validation.js'
 
+const HOUR_MS = 60 * 60 * 1000
+const DAY_MS = 24 * HOUR_MS
+
+/** Durée d'une session « se souvenir de moi » ; sans la case, la session vaut 24 h et le cookie disparaît avec le navigateur. */
 export const SESSION_DAYS = 30
-const DAY_MS = 24 * 60 * 60 * 1000
+export const SHORT_SESSION_HOURS = 24
+export const REMEMBERED_SESSION_MS = SESSION_DAYS * DAY_MS
 
 const BAD_CREDENTIALS = 'E-mail ou mot de passe incorrect'
 
@@ -62,11 +67,11 @@ export class AuthStore {
   }
 
   /** Crée une session et renvoie son jeton, à poser dans le cookie. Les sessions expirées sont purgées au passage. */
-  createSession (userId: string): string {
+  createSession (userId: string, remember = false): string {
     const token = randomBytes(32).toString('base64url')
     this.db.prepare('DELETE FROM sessions WHERE expires_at <= ?').run(new Date(this.now()).toISOString())
     this.db.prepare('INSERT INTO sessions (token_hash, user_id, expires_at) VALUES (?, ?, ?)').run(
-      hashToken(token), userId, new Date(this.now() + SESSION_DAYS * DAY_MS).toISOString(),
+      hashToken(token), userId, new Date(this.now() + (remember ? REMEMBERED_SESSION_MS : SHORT_SESSION_HOURS * HOUR_MS)).toISOString(),
     )
     return token
   }

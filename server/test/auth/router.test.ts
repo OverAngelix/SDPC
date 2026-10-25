@@ -44,6 +44,8 @@ describe('/api/auth', () => {
     assert.match(res.setCookie ?? '', /HttpOnly/)
     assert.match(res.setCookie ?? '', /SameSite=Lax/)
     assert.doesNotMatch(res.setCookie ?? '', /Secure/)
+    // Sans « se souvenir de moi » : cookie de session, sans date d'expiration
+    assert.doesNotMatch(res.setCookie ?? '', /Max-Age|Expires/)
 
     const me = await call('GET', '/me', undefined, res.cookie)
     assert.equal(me.status, 200)
@@ -72,6 +74,13 @@ describe('/api/auth', () => {
     assert.equal(res.status, 200)
     assert.equal(res.body.email, credentials.email)
     assert.equal((await call('GET', '/me', undefined, res.cookie)).status, 200)
+  })
+
+  it('POST /login avec remember garde la session 30 jours (cookie daté), sans remember non', async () => {
+    const remembered = await call('POST', '/login', { ...credentials, remember: true })
+    assert.match(remembered.setCookie ?? '', /Max-Age=2592000/)
+    const plain = await call('POST', '/login', { ...credentials, remember: 'oui' })
+    assert.doesNotMatch(plain.setCookie ?? '', /Max-Age|Expires/)
   })
 
   it('POST /logout supprime la session côté serveur et efface le cookie', async () => {

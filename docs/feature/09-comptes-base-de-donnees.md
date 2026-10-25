@@ -32,6 +32,7 @@ Cette feature **remplace** la règle « pas de compte utilisateur » et « confi
 - [x] Mot de passe haché (`scrypt` de `node:crypto`, sel par personne, comparaison en temps constant)
 - [x] `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`
 - [x] Session : jeton aléatoire dans un cookie `httpOnly`, `SameSite=Lax`, `Secure` en production ; seul son empreinte est stockée en base
+- [x] Case « Se souvenir de moi » : `remember` dans le corps de `/login` et `/register` ; cochée, cookie et session de 30 jours, sinon cookie de session (perdu à la fermeture du navigateur) et session de 24 h
 - [x] Validation : e-mail valide et unique (insensible à la casse), mot de passe de 8 à 128 caractères
 - [x] Limitation des tentatives de connexion (essais échoués par adresse IP et e-mail)
 - [x] CORS restreint à `CLIENT_ORIGIN` (le cookie impose une origine explicite)
@@ -49,7 +50,7 @@ Cette feature **remplace** la règle « pas de compte utilisateur » et « confi
 
 - [ ] Interfaces `User` et formulaires dans `client/src/interfaces/`, API `api/auth.ts`
 - [ ] Store Pinia `auth` (personne connectée, chargement via `/api/auth/me` au démarrage)
-- [ ] Pages **Connexion** et **Créer un compte** (Vuetify, messages d'erreur en français), garde de navigation du routeur
+- [ ] Pages **Connexion** et **Créer un compte** (Vuetify, messages d'erreur en français), case « Se souvenir de moi », garde de navigation du routeur
 - [ ] Barre d'application : adresse e-mail et bouton Se déconnecter ; sur téléphone, icône seule
 - [ ] `http.ts` : un 401 renvoie à la page de connexion ; les boutons déjà chargés sont vidés à la déconnexion
 - [ ] Tests client : store `auth`, garde de navigation
@@ -68,7 +69,7 @@ Cette feature **remplace** la règle « pas de compte utilisateur » et « confi
 - **Échange de deux boutons : passage par l'emplacement -1.** L'index d'unicité refuse deux boutons sur le même emplacement, même un instant, et SQLite ne permet pas de le différer. Le déplacement se fait donc en trois mises à jour dans une transaction (le bouton déplacé en -1, l'occupant à l'ancienne place, puis le bouton à sa place).
 - **Schéma des boutons** : `id` (UUID), `user_id`, `parent_id` (clé étrangère vers `buttons`, `ON DELETE CASCADE`), `position`, `label`, `icon`, `type`, `color`, `url`. La suppression en cascade remplace la boucle de suppression des enfants du store actuel. L'unicité d'un emplacement est un index unique sur `(user_id, parent_id, position)` ; comme SQLite considère deux `NULL` comme différents, la racine (`parent_id` nul) a son propre index partiel. Les règles métier (parent dossier, emplacement 0 réservé, positions 0 à 27) restent dans `validation.ts` : la base n'est qu'un filet de sécurité.
 - **Identifiant de connexion : l'e-mail**, enregistré en minuscules. Pas de pseudo : il faudra un e-mail pour réinitialiser un mot de passe plus tard.
-- **Sessions côté serveur plutôt que JWT.** Un cookie opaque, stocké haché en base, se révoque (déconnexion, compte supprimé) ; un JWT non. Cookie `httpOnly` (illisible par le JavaScript de la page), `SameSite=Lax` (protège des requêtes forgées depuis un autre site, la seule écriture se fait en JSON). Durée : 30 jours. Lecture du cookie écrite à la main (une fonction) pour ne pas ajouter de dépendance.
+- **Sessions côté serveur plutôt que JWT.** Un cookie opaque, stocké haché en base, se révoque (déconnexion, compte supprimé) ; un JWT non. Cookie `httpOnly` (illisible par le JavaScript de la page), `SameSite=Lax` (protège des requêtes forgées depuis un autre site, la seule écriture se fait en JSON). Durée : 30 jours avec la case « Se souvenir de moi », sinon cookie de session et 24 h. La case est décochée par défaut (poste partagé). Elle garde la *session* ouverte ; elle ne mémorise pas l'adresse e-mail dans le champ. Lecture du cookie écrite à la main (une fonction) pour ne pas ajouter de dépendance.
 - **Mot de passe : `scrypt` de Node.** Aucune dépendance native de plus ; paramètres par défaut renforcés. Aucune règle de composition (majuscules, chiffres…), seulement une longueur minimale de 8.
 - **Inscription ouverte.** Tout le monde peut créer un compte (le but est d'ouvrir l'application à plusieurs personnes). Pas de vérification d'e-mail dans cette feature : l'adresse sert d'identifiant uniquement.
 - **Un identifiant d'un autre compte renvoie 404.** On ne révèle pas l'existence d'un bouton qui n'est pas à soi.
