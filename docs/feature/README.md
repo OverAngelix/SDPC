@@ -12,7 +12,7 @@ Une fiche par feature : explication, TODO, implémentation et personne active. N
 | 06 | [UX : couleurs et effets « juicy »](06-ux-couleurs-effets.md) | Livré | OverAngelix |
 | 07 | [Responsive : grille adaptée au téléphone](07-responsive.md) | Livré | OverAngelix |
 | 08 | [Grille de 28 cases (7 × 4, 4 × 7 en portrait)](08-grille-28-cases.md) | Livré | OverAngelix |
-| 09 | [Comptes utilisateur et base de données SQLite](09-comptes-base-de-donnees.md) | À faire (plan à valider) | OverAngelix |
+| 09 | [Comptes utilisateur et base de données SQLite](09-comptes-base-de-donnees.md) | Livré | OverAngelix |
 
 Ordre de réalisation : 02 → 03 → 04 → 05 → 06 → 07 → 08 → 09 (chaque feature dépend de la précédente).
 

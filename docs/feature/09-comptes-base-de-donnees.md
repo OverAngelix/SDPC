@@ -2,7 +2,7 @@
 
 | | |
 | --- | --- |
-| **Statut** | À faire (plan à valider) |
+| **Statut** | Livré |
 | **Personne active** | OverAngelix |
 | **Périmètre** | `server/` et `client/` |
 | **Dépend de** | [08 — Grille de 28 cases (7 × 4, 4 × 7 en portrait)](08-grille-28-cases.md) |
@@ -48,18 +48,18 @@ Cette feature **remplace** la règle « pas de compte utilisateur » et « confi
 
 ### Étape 4 — Client
 
-- [ ] Interfaces `User` et formulaires dans `client/src/interfaces/`, API `api/auth.ts`
-- [ ] Store Pinia `auth` (personne connectée, chargement via `/api/auth/me` au démarrage)
-- [ ] Pages **Connexion** et **Créer un compte** (Vuetify, messages d'erreur en français), case « Se souvenir de moi », garde de navigation du routeur
-- [ ] Barre d'application : adresse e-mail et bouton Se déconnecter ; sur téléphone, icône seule
-- [ ] `http.ts` : un 401 renvoie à la page de connexion ; les boutons déjà chargés sont vidés à la déconnexion
-- [ ] Tests client : store `auth`, garde de navigation
+- [x] Interfaces `User` et formulaires dans `client/src/interfaces/`, API `api/auth.ts`
+- [x] Store Pinia `auth` (personne connectée, chargement via `/api/auth/me` au démarrage)
+- [x] Pages **Connexion** et **Créer un compte** (Vuetify, messages d'erreur en français), case « Se souvenir de moi », garde de navigation du routeur
+- [x] Barre d'application : adresse e-mail et bouton Se déconnecter ; sur téléphone, icône seule et titre masqué
+- [x] `http.ts` : un 401 renvoie à la page de connexion ; les boutons déjà chargés sont vidés à la déconnexion
+- [x] Tests client : store `auth`, garde de navigation
 
 ### Étape 5 — Documentation
 
-- [ ] `CLAUDE.md`, `README.md` : comptes, SQLite, variables d'environnement, commandes
-- [ ] README des features : ligne 09, retrait de « Creation de compte » et « Base de données au lieu de json » de « Plus tard »
-- [ ] Fiche mise à jour, vérification manuelle (voir plus bas)
+- [x] `CLAUDE.md`, `README.md` : comptes, SQLite, variables d'environnement, commandes
+- [x] README des features : ligne 09, retrait de « Creation de compte » et « Base de données au lieu de json » de « Plus tard »
+- [x] Fiche mise à jour, vérification manuelle (voir plus bas)
 
 ## Décisions (proposées)
 
@@ -162,9 +162,9 @@ L'étape 1 crée `buttons` sans `user_id` ; l'étape 3 l'ajoute par une nouvelle
 
 ### Validation
 
-- [ ] Type-check, lint, tests et build sans erreur côté serveur et côté client
-- [ ] Deux comptes ne voient jamais les boutons l'un de l'autre (test automatique et vérification à la main)
-- [ ] Le fichier de la base survit à un redémarrage du serveur
+- [x] Type-check, lint, tests (124 serveur, 108 client) et build sans erreur côté serveur et côté client
+- [x] Deux comptes ne voient jamais les boutons l'un de l'autre (test automatique et vérification à la main)
+- [x] Le fichier de la base survit à un redémarrage du serveur
 
 ### Vérifier à la main
 

@@ -12,15 +12,16 @@ Un Stream Deck logiciel pour PC, dans l'esprit des Stream Deck d'Elgato : une gr
 ## Périmètre de la V1
 
 - Une page web affichant la grille, et un second onglet pour configurer les boutons (créer, modifier, supprimer : type, icône, libellé, URL, contenu des dossiers).
-- La configuration est conservée côté serveur.
-- Pas de compte utilisateur, pas de plugin, pas d'intégration à un logiciel de streaming.
+- Chaque personne a un **compte** (e-mail et mot de passe) et sa propre grille ; sans connexion, seule la page de connexion est accessible.
+- La configuration est conservée côté serveur, dans une base SQLite (`server/data/sdpc.db`).
+- Pas de plugin, pas d'intégration à un logiciel de streaming.
 
 ## Stack
 
 Technologies imposées : Node, Vue 3 et Vuetify.
 
 - `client/` : Vue 3, Vuetify, Vue Router, Pinia, Vite, TypeScript. Port 3000.
-- `server/` : Node, Express 5, TypeScript (modules ESM, `tsx` en développement). API sous `/api`, JSON. Port 4000.
+- `server/` : Node, Express 5, TypeScript (modules ESM, `tsx` en développement). API sous `/api`, JSON. Base SQLite (`better-sqlite3`), sessions par cookie `httpOnly`. Port 4000.
 - Client et serveur sont indépendants : chacun a son `package.json`, son `package-lock.json`, sans espace de travail partagé.
 
 ## Commandes

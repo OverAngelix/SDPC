@@ -12,7 +12,7 @@ Un Stream Deck logiciel pour PC, dans l'esprit des Stream Deck d'Elgato : une gr
 | Dossier | Technologies | Port |
 | --- | --- | --- |
 | `client/` | Vue 3, Vuetify, Vue Router, Pinia, axios, Vite, TypeScript | 3000 |
-| `server/` | Node, Express 5, TypeScript (ESM, `tsx` en développement) | 4000 |
+| `server/` | Node, Express 5, SQLite (better-sqlite3), TypeScript (ESM, `tsx` en développement) | 4000 |
 
 Le client et le serveur sont indépendants : chacun a son `package.json` et son `package-lock.json`.
 
@@ -33,7 +33,9 @@ npm run dev
 
 Puis ouvrir <http://localhost:3000>. En développement, le client redirige `/api` vers le serveur. En production, l'URL de l'API se règle avec `VITE_API_URL` (voir `client/.env.example`).
 
-Les boutons sont conservés côté serveur dans `server/data/buttons.json` (ignoré par git, chemin réglable avec `DATA_FILE`, voir `server/.env.example`).
+Au premier lancement, créer un compte depuis la page de connexion : chaque compte a sa propre grille de boutons.
+
+Les comptes et les boutons sont conservés côté serveur dans une base SQLite, `server/data/sdpc.db` (ignorée par git, créée et mise à jour au démarrage, chemin réglable avec `DATABASE_FILE`). Variables d'environnement : voir `server/.env.example`. En production, lancer le serveur avec `NODE_ENV=production` (cookie de session réservé au HTTPS) ; `CLIENT_ORIGIN` n'est utile que si le client est servi depuis une autre origine que l'API.
 
 ## Commandes
 
