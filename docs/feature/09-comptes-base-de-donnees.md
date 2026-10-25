@@ -78,7 +78,7 @@ Cette feature **remplace** la règle « pas de compte utilisateur » et « confi
 - **Message de connexion unique** (« E-mail ou mot de passe incorrect ») pour ne pas révéler si une adresse a un compte. L'inscription, elle, indique qu'une adresse est déjà prise : c'est inévitable sans vérification par e-mail.
 - **Même origine en développement et en production.** Le proxy de Vite sert déjà `/api` depuis le port 3000, donc le cookie reste sur une seule origine. CORS n'est ouvert qu'à `CLIENT_ORIGIN` si elle est définie (ouvert à tous aujourd'hui, ce qui est incompatible avec les cookies).
 - **Pas de reprise de l'ancien `data/buttons.json`.** Il ne contenait que des boutons d'essai : on repart de zéro. La migration qui ajoute `user_id` (étape 3) vide donc la table `buttons`, faute de propriétaire à leur donner. Le fichier JSON n'est plus lu ; il peut être supprimé.
-- **Les réglages locaux (sons, thème) restent dans le navigateur.** Ils ne passent pas en base ; ils pourront être rattachés au compte avec la future page de configuration de l'application.
+- **Les réglages locaux (son) restent dans le navigateur dans cette feature.** Ils ne passent pas en base ; la [feature 11](11-menu-compte-reglages.md) les rattache au compte (table `user_settings`).
 - **Hors périmètre, prévu pour la feature 10** : réinitialisation de mot de passe et vérification par e-mail (il faut un envoi de courriel), changement de mot de passe ou d'e-mail, suppression de compte, connexion via un tiers (Google, GitHub), rôles et administration, PostgreSQL, partage d'une grille entre personnes, mode sans connexion (session Storage) ?
 
 ## Implémentation
