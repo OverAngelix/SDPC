@@ -23,6 +23,13 @@
         title="Configuration de l'application"
         @click="emit('select', 'settings')"
       />
+
+      <v-list-item
+        :disabled="gridEmpty"
+        prepend-icon="mdi-delete-sweep"
+        title="Effacer la grille"
+        @click="emit('select', 'clear')"
+      />
     </template>
 
     <v-divider v-if="part === 'all'" class="my-1" />
@@ -43,9 +50,11 @@
     email: string
     /** On est sur la page de configuration de la grille (sinon sur la grille) : son entrée est surlignée */
     onConfig: boolean
+    /** La grille n'a aucun bouton : rien à effacer */
+    gridEmpty?: boolean
     /** `main` : les entrées ; `logout` : la déconnexion seule (ancrée en bas du tiroir) ; `all` : tout, pour le menu déroulant */
     part?: 'main' | 'logout' | 'all'
-  }>(), { part: 'all' })
+  }>(), { gridEmpty: false, part: 'all' })
 
   const emit = defineEmits<{ select: [action: AccountAction] }>()
 </script>

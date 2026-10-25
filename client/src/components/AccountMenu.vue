@@ -21,6 +21,7 @@
     <v-card min-width="280">
       <account-menu-items
         :email="email"
+        :grid-empty="gridEmpty"
         :on-config="onConfig"
         @select="emit('select', $event)"
       />
@@ -36,6 +37,8 @@
   defineProps<{
     email: string
     onConfig: boolean
+    /** La grille n'a aucun bouton : « Effacer la grille » est grisée */
+    gridEmpty?: boolean
   }>()
 
   const emit = defineEmits<{ select: [action: AccountAction] }>()

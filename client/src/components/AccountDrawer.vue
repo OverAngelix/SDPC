@@ -8,6 +8,7 @@
   >
     <account-menu-items
       :email="email"
+      :grid-empty="gridEmpty"
       :on-config="onConfig"
       part="main"
       @select="choose"
@@ -16,6 +17,7 @@
     <template #append>
       <account-menu-items
         :email="email"
+        :grid-empty="gridEmpty"
         :on-config="onConfig"
         part="logout"
         @select="choose"
@@ -31,6 +33,8 @@
   defineProps<{
     email: string
     onConfig: boolean
+    /** La grille n'a aucun bouton : « Effacer la grille » est grisée */
+    gridEmpty?: boolean
   }>()
 
   const emit = defineEmits<{ select: [action: AccountAction] }>()

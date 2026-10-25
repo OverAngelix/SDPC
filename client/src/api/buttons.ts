@@ -25,3 +25,8 @@ export async function moveButton (id: string, position: number): Promise<Button[
   const { data } = await http.post<Button[]>(`/buttons/${encodeURIComponent(id)}/move`, { position })
   return data
 }
+
+/** Efface tous les boutons de la personne connectée */
+export async function clearButtons (): Promise<void> {
+  await http.delete('/buttons')
+}

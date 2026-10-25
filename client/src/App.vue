@@ -12,6 +12,7 @@
         v-if="auth.user"
         v-model:drawer="drawer"
         :email="auth.user.email"
+        :grid-empty="gridEmpty"
         :on-config="onConfig"
         @select="onAccountAction"
       />
@@ -21,6 +22,7 @@
       v-if="auth.user"
       v-model="drawer"
       :email="auth.user.email"
+      :grid-empty="gridEmpty"
       :on-config="onConfig"
       @select="onAccountAction"
     />
@@ -31,9 +33,17 @@
 
     <settings-dialog v-if="auth.user" v-model="settingsOpen" />
 
+    <confirm-clear-grid
+      v-if="auth.user"
+      v-model="clearOpen"
+      @cleared="onCleared"
+    />
+
     <v-snackbar v-model="signOutFailed" color="error" timeout="5000">
       Déconnexion impossible : le serveur est injoignable.
     </v-snackbar>
+
+    <v-snackbar v-model="notice" timeout="3000">{{ noticeText }}</v-snackbar>
   </v-app>
 </template>
 
@@ -44,9 +54,11 @@
   import { useTheme } from 'vuetify'
   import AccountDrawer from '@/components/AccountDrawer.vue'
   import AccountMenu from '@/components/AccountMenu.vue'
+  import ConfirmClearGrid from '@/components/ConfirmClearGrid.vue'
   import SettingsDialog from '@/components/SettingsDialog.vue'
   import { guardRoute } from '@/router/guard'
   import { useAuthStore } from '@/stores/auth'
+  import { useButtonsStore } from '@/stores/buttons'
   import { useSettingsStore } from '@/stores/settings'
 
   const auth = useAuthStore()
@@ -57,6 +69,12 @@
   // Tiroir du compte (téléphone) : ouvert par le burger de la barre, affiché hors de la barre
   const drawer = ref(false)
   const settingsOpen = ref(false)
+  const clearOpen = ref(false)
+  const notice = ref(false)
+  const noticeText = ref('')
+  const buttons = useButtonsStore()
+  // Rien à effacer : une fois les boutons chargés, une grille vide grise l'entrée du menu
+  const gridEmpty = computed(() => buttons.loaded && buttons.buttons.length === 0)
   const theme = useTheme()
 
   // Thème du compte (les effets sont lus par les cases elles-mêmes, voir ButtonTile)
@@ -87,9 +105,20 @@
         settingsOpen.value = true
         break
       }
-      default: { signOut()
+      case 'clear': {
+        clearOpen.value = true
+        break
+      }
+      case 'logout': {
+        signOut()
+        break
       }
     }
+  }
+
+  function onCleared (count: number) {
+    noticeText.value = `Grille effacée (${count} bouton${count > 1 ? 's' : ''} supprimé${count > 1 ? 's' : ''}).`
+    notice.value = true
   }
 
   async function signOut () {

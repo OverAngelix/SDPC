@@ -1,7 +1,7 @@
 import type { Button, ButtonInput, ButtonPatch } from '@/interfaces/button'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import { createButton, deleteButton, fetchButtons, moveButton, updateButton } from '@/api/buttons'
+import { clearButtons, createButton, deleteButton, fetchButtons, moveButton, updateButton } from '@/api/buttons'
 import { buildSlots, collectSubtree } from '@/grid'
 
 export const useButtonsStore = defineStore('buttons', () => {
@@ -84,5 +84,11 @@ export const useButtonsStore = defineStore('buttons', () => {
     buttons.value = buttons.value.filter(button => !removed.has(button.id))
   }
 
-  return { buttons, loading, error, loaded, load, reset, slotsOf, pathTo, create, update, move, remove }
+  // Efface toute la grille : le serveur supprime aussi les dossiers et leur contenu
+  async function clear () {
+    await clearButtons()
+    buttons.value = []
+  }
+
+  return { buttons, loading, error, loaded, load, reset, slotsOf, pathTo, create, update, move, remove, clear }
 })
