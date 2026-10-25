@@ -39,11 +39,11 @@ Cette feature **remplace** la règle « pas de compte utilisateur » et « confi
 
 ### Étape 3 — Une grille par personne (serveur)
 
-- [ ] Migration : `buttons.user_id` (clé étrangère, suppression en cascade avec le compte)
-- [ ] Middleware d'authentification sur `/api/buttons` : 401 sans session valide
-- [ ] Toutes les lectures et écritures du store filtrées par `userId` ; un identifiant d'un autre compte donne 404, jamais 403
-- [ ] L'unicité d'un emplacement et le parent dossier valent par personne
-- [ ] Tests serveur : isolation entre deux comptes (lecture, modification, déplacement, suppression)
+- [x] Migration : `buttons.user_id` (clé étrangère, suppression en cascade avec le compte)
+- [x] Middleware d'authentification sur `/api/buttons` : 401 sans session valide
+- [x] Toutes les lectures et écritures du store filtrées par `userId` ; un identifiant d'un autre compte donne 404, jamais 403
+- [x] L'unicité d'un emplacement et le parent dossier valent par personne
+- [x] Tests serveur : isolation entre deux comptes (lecture, modification, déplacement, suppression)
 
 ### Étape 4 — Client
 

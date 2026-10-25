@@ -7,25 +7,44 @@ const folder = { position: 1, label: 'Musique', icon: 'mdi-folder', type: 'folde
 
 describe('/api/buttons', () => {
   let server: Awaited<ReturnType<typeof startTestServer>>
+  let jean: { id: string, cookie: string }
+  let marie: { id: string, cookie: string }
+
+  async function signUp (email: string) {
+    const user = await server.auth.register({ email, password: 'motdepasse' })
+    return { id: user.id, cookie: `sdpc_session=${server.auth.createSession(user.id)}` }
+  }
 
   before(async () => {
     server = await startTestServer()
+    jean = await signUp('jean@exemple.fr')
+    marie = await signUp('marie@exemple.fr')
   })
 
   after(() => server.close())
 
   beforeEach(async () => {
-    for (const button of server.store.list(null)) await server.store.remove(button.id)
+    for (const { id } of [jean, marie]) {
+      for (const button of server.store.list(id, null)) await server.store.remove(id, button.id)
+    }
   })
 
-  async function call (method: string, path: string, body?: unknown) {
+  async function callAs (cookie: string | undefined, method: string, path: string, body?: unknown) {
     const res = await fetch(`${server.baseUrl}/api/buttons${path}`, {
       method,
-      headers: body === undefined ? {} : { 'Content-Type': 'application/json' },
+      headers: {
+        ...(body === undefined ? {} : { 'Content-Type': 'application/json' }),
+        ...(cookie === undefined ? {} : { Cookie: cookie }),
+      },
       body: typeof body === 'string' ? body : JSON.stringify(body),
     })
     const text = await res.text()
     return { status: res.status, body: text === '' ? undefined : JSON.parse(text) }
+  }
+
+  // Sauf mention contraire, les tests agissent en tant que Jean
+  function call (method: string, path: string, body?: unknown) {
+    return callAs(jean.cookie, method, path, body)
   }
 
   it('POST crée un bouton (201) et GET le relit', async () => {
@@ -117,7 +136,7 @@ describe('/api/buttons', () => {
 
   it('les modifications sont écrites dans la base', async () => {
     const created = (await call('POST', '', action)).body
-    assert.deepEqual(server.store.list(), [created])
+    assert.deepEqual(server.store.list(jean.id), [created])
   })
 
   it('POST /:id/move déplace un bouton (200) et renvoie les boutons modifiés', async () => {
@@ -147,5 +166,56 @@ describe('/api/buttons', () => {
     assert.equal((await call('POST', `/${inside.id}/move`, { position: 99 })).status, 400)
     assert.equal((await call('POST', `/${inside.id}/move`, {})).status, 400)
     assert.equal((await call('POST', '/fantome/move', { position: 3 })).status, 404)
+  })
+  describe('authentification et isolation', () => {
+    it('répond 401 sans session ou avec un jeton inconnu, sur chaque route', async () => {
+      for (const cookie of [undefined, 'sdpc_session=inconnu']) {
+        assert.equal((await callAs(cookie, 'GET', '')).status, 401)
+        assert.equal((await callAs(cookie, 'GET', '/x')).status, 401)
+        assert.equal((await callAs(cookie, 'POST', '', action)).status, 401)
+        assert.equal((await callAs(cookie, 'PATCH', '/x', { label: 'y' })).status, 401)
+        assert.equal((await callAs(cookie, 'POST', '/x/move', { position: 3 })).status, 401)
+        assert.equal((await callAs(cookie, 'DELETE', '/x')).status, 401)
+      }
+    })
+
+    it('chaque personne ne voit que ses boutons', async () => {
+      const mine = (await call('POST', '', action)).body
+      const theirs = (await callAs(marie.cookie, 'POST', '', { ...action, label: 'Netflix' })).body
+
+      assert.deepEqual((await call('GET', '')).body, [mine])
+      assert.deepEqual((await callAs(marie.cookie, 'GET', '')).body, [theirs])
+      assert.deepEqual((await call('GET', '?parentId=root')).body, [mine])
+    })
+
+    it('le même emplacement est libre pour chaque personne', async () => {
+      assert.equal((await call('POST', '', action)).status, 201)
+      assert.equal((await callAs(marie.cookie, 'POST', '', action)).status, 201)
+    })
+
+    it('répond 404 sur le bouton d\'une autre personne, sans le modifier', async () => {
+      const theirs = (await callAs(marie.cookie, 'POST', '', action)).body
+
+      assert.equal((await call('GET', `/${theirs.id}`)).status, 404)
+      assert.equal((await call('PATCH', `/${theirs.id}`, { label: 'Volé' })).status, 404)
+      assert.equal((await call('POST', `/${theirs.id}/move`, { position: 5 })).status, 404)
+      assert.equal((await call('DELETE', `/${theirs.id}`)).status, 404)
+
+      assert.deepEqual((await callAs(marie.cookie, 'GET', `/${theirs.id}`)).body, theirs)
+    })
+
+    it('refuse (400) de créer un bouton dans le dossier d\'une autre personne', async () => {
+      const theirs = (await callAs(marie.cookie, 'POST', '', folder)).body
+      assert.equal((await call('POST', '', { ...action, position: 1, parentId: theirs.id })).status, 400)
+    })
+
+    it('un compte supprimé emporte ses boutons et ses sessions', async () => {
+      const mine = (await call('POST', '', action)).body
+      server.db.prepare('DELETE FROM users WHERE id = ?').run(jean.id)
+
+      assert.equal((await call('GET', `/${mine.id}`)).status, 401)
+      assert.equal((server.db.prepare('SELECT count(*) AS n FROM buttons WHERE user_id = ?').get(jean.id) as { n: number }).n, 0)
+      jean = await signUp('jean@exemple.fr')
+    })
   })
 })

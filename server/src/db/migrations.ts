@@ -32,5 +32,21 @@ export const MIGRATIONS: readonly string[] = [
     expires_at TEXT NOT NULL
   );
   CREATE INDEX sessions_user ON sessions (user_id);
+  `,  // 3 : une grille par personne. Les boutons d'avant les comptes n'ont pas de propriétaire : ils sont abandonnés
+  `
+  DROP TABLE buttons;
+  CREATE TABLE buttons (
+    id        TEXT PRIMARY KEY,
+    user_id   TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    parent_id TEXT REFERENCES buttons(id) ON DELETE CASCADE,
+    position  INTEGER NOT NULL,
+    label     TEXT NOT NULL,
+    icon      TEXT NOT NULL,
+    type      TEXT NOT NULL CHECK (type IN ('action', 'folder')),
+    color     TEXT,
+    url       TEXT
+  );
+  CREATE UNIQUE INDEX buttons_slot ON buttons (user_id, parent_id, position) WHERE parent_id IS NOT NULL;
+  CREATE UNIQUE INDEX buttons_root_slot ON buttons (user_id, position) WHERE parent_id IS NULL;
   `,
 ]

@@ -2,7 +2,7 @@ import type { NextFunction, Request, Response } from 'express'
 import express from 'express'
 import cors from 'cors'
 import { LoginLimiter } from './auth/loginLimiter.js'
-import { authenticate } from './auth/middleware.js'
+import { authenticate, requireAuth } from './auth/middleware.js'
 import { authRouter } from './auth/router.js'
 import type { AuthStore } from './auth/store.js'
 import { buttonsRouter } from './buttons/router.js'
@@ -37,7 +37,7 @@ export function createApp ({ store, auth, limiter = new LoginLimiter(), secureCo
     res.json({ status: 'ok' })
   })
   app.use('/api/auth', authRouter(auth, limiter, { secureCookie }))
-  app.use('/api/buttons', buttonsRouter(store))
+  app.use('/api/buttons', requireAuth, buttonsRouter(store))
 
   app.use('/api', (_req: Request, res: Response) => {
     res.status(404).json({ error: 'Route introuvable' })

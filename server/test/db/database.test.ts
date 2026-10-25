@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, it } from 'node:test'
 import type { Db } from '../../src/db/database.js'
 import { MEMORY_DATABASE, openDatabase } from '../../src/db/database.js'
 import { MIGRATIONS } from '../../src/db/migrations.js'
+import { createUser } from '../helpers/users.js'
 
 function countButtons (db: Db): number {
   return (db.prepare('SELECT count(*) AS n FROM buttons').get() as { n: number }).n
@@ -36,7 +37,8 @@ describe('openDatabase', () => {
   it('conserve les données après réouverture sans rejouer les migrations', () => {
     const file = join(dir, 'sdpc.db')
     const first = openDatabase(file)
-    first.prepare("INSERT INTO buttons (id, position, label, icon, type) VALUES ('a', 0, 'A', 'mdi-home', 'folder')").run()
+    const userId = createUser(first)
+    first.prepare("INSERT INTO buttons (id, user_id, position, label, icon, type) VALUES ('a', ?, 0, 'A', 'mdi-home', 'folder')").run(userId)
     first.close()
 
     const second = openDatabase(file)
@@ -51,8 +53,9 @@ describe('openDatabase', () => {
   it('active les clés étrangères : supprimer un dossier supprime son contenu', () => {
     const db = openDatabase(MEMORY_DATABASE)
     try {
-      db.prepare("INSERT INTO buttons (id, position, label, icon, type) VALUES ('d', 0, 'D', 'mdi-folder', 'folder')").run()
-      db.prepare("INSERT INTO buttons (id, parent_id, position, label, icon, type) VALUES ('c', 'd', 1, 'C', 'mdi-home', 'folder')").run()
+      const userId = createUser(db)
+      db.prepare("INSERT INTO buttons (id, user_id, position, label, icon, type) VALUES ('d', ?, 0, 'D', 'mdi-folder', 'folder')").run(userId)
+      db.prepare("INSERT INTO buttons (id, user_id, parent_id, position, label, icon, type) VALUES ('c', ?, 'd', 1, 'C', 'mdi-home', 'folder')").run(userId)
       db.prepare("DELETE FROM buttons WHERE id = 'd'").run()
       assert.equal(countButtons(db), 0)
     } finally {
@@ -60,14 +63,18 @@ describe('openDatabase', () => {
     }
   })
 
-  it('refuse un emplacement pris, à la racine comme dans un dossier', () => {
+  it('refuse un emplacement pris, à la racine comme dans un dossier, mais seulement pour la même personne', () => {
     const db = openDatabase(MEMORY_DATABASE)
-    const insert = db.prepare('INSERT INTO buttons (id, parent_id, position, label, icon, type) VALUES (?, ?, ?, ?, ?, ?)')
+    const first = createUser(db)
+    const second = createUser(db, 'marie@exemple.fr')
+    const insert = db.prepare('INSERT INTO buttons (id, user_id, parent_id, position, label, icon, type) VALUES (?, ?, ?, ?, ?, ?, ?)')
     try {
-      insert.run('d', null, 0, 'D', 'mdi-folder', 'folder')
-      assert.throws(() => insert.run('x', null, 0, 'X', 'mdi-home', 'folder'), /UNIQUE/)
-      insert.run('a', 'd', 1, 'A', 'mdi-home', 'folder')
-      assert.throws(() => insert.run('b', 'd', 1, 'B', 'mdi-home', 'folder'), /UNIQUE/)
+      insert.run('d', first, null, 0, 'D', 'mdi-folder', 'folder')
+      assert.throws(() => insert.run('x', first, null, 0, 'X', 'mdi-home', 'folder'), /UNIQUE/)
+      insert.run('a', first, 'd', 1, 'A', 'mdi-home', 'folder')
+      assert.throws(() => insert.run('b', first, 'd', 1, 'B', 'mdi-home', 'folder'), /UNIQUE/)
+      // Une autre personne a sa propre grille
+      insert.run('m', second, null, 0, 'M', 'mdi-home', 'folder')
     } finally {
       db.close()
     }
