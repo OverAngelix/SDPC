@@ -22,6 +22,12 @@ export const SOUNDS: Record<SoundName, readonly Tone[]> = {
   ],
 }
 
+/** Les notes d'un son au volume demandé : 1 donne le son d'origine, 0 le rend muet. */
+export function scaleTones (tones: readonly Tone[], volume: number): Tone[] {
+  const factor = Math.min(1, Math.max(0, volume))
+  return tones.map(tone => ({ ...tone, volume: tone.volume * factor }))
+}
+
 // Silence de départ et d'arrivée des enveloppes : une rampe exponentielle ne peut pas viser 0
 const SILENCE = 0.0001
 // Montée rapide pour éviter le « clic » d'un son qui démarre à pleine puissance
@@ -67,9 +73,16 @@ function getContext (): AudioContext | null {
   return context
 }
 
-/** Joue un son. Ne lève jamais d'erreur : un son qui échoue ne doit pas gêner le geste qu'il accompagne. */
-export function playSound (name: SoundName) {
+/**
+ * Joue un son au volume demandé (de 0 à 1, 1 par défaut). Ne lève jamais d'erreur : un son qui échoue
+ * ne doit pas gêner le geste qu'il accompagne.
+ */
+export function playSound (name: SoundName, volume = 1) {
   try {
+    // Volume nul : rien à jouer (une rampe exponentielle ne peut pas viser 0)
+    if (volume <= 0) {
+      return
+    }
     const audio = getContext()
     if (!audio) {
       return
@@ -78,7 +91,7 @@ export function playSound (name: SoundName) {
     if (audio.state === 'suspended') {
       void audio.resume().catch(() => {})
     }
-    scheduleTones(audio, SOUNDS[name])
+    scheduleTones(audio, scaleTones(SOUNDS[name], volume))
   } catch {
     // Audio indisponible : tant pis pour le son
   }

@@ -1,6 +1,6 @@
 import type { SoundName } from '@/interfaces/sound'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { playSound, scheduleTones, SOUNDS } from '@/utils/sounds'
+import { playSound, scaleTones, scheduleTones, SOUNDS } from '@/utils/sounds'
 
 const NAMES = Object.keys(SOUNDS) as SoundName[]
 
@@ -73,6 +73,27 @@ describe('SOUNDS', () => {
         expect(tone.volume, name).toBeLessThanOrEqual(0.3)
       }
     }
+  })
+})
+
+describe('scaleTones', () => {
+  it('multiplie le volume de chaque note, sans toucher au reste', () => {
+    const scaled = scaleTones(SOUNDS.create, 0.5)
+    for (const [index, tone] of SOUNDS.create.entries()) {
+      expect(scaled[index]).toEqual({ ...tone, volume: tone.volume * 0.5 })
+    }
+  })
+
+  it('1 rend le son d\'origine, sans modifier l\'original', () => {
+    const before = structuredClone(SOUNDS.launch)
+    expect(scaleTones(SOUNDS.launch, 1)).toEqual(SOUNDS.launch)
+    scaleTones(SOUNDS.launch, 0.2)
+    expect(SOUNDS.launch).toEqual(before)
+  })
+
+  it('reste entre 0 et 1', () => {
+    expect(scaleTones(SOUNDS.move, 3)).toEqual(SOUNDS.move)
+    expect(scaleTones(SOUNDS.move, -2)[0]!.volume).toBe(0)
   })
 })
 
@@ -156,6 +177,21 @@ describe('playSound', () => {
     }))
     const { playSound: play } = await import('@/utils/sounds')
     expect(() => play('delete')).not.toThrow()
+  })
+
+  it('joue au volume demandé, et pas du tout à volume nul', async () => {
+    vi.resetModules()
+    const fake = fakeContext()
+    vi.stubGlobal('AudioContext', vi.fn(function () {
+      return fake.context
+    }))
+    const { playSound: play } = await import('@/utils/sounds')
+
+    play('move', 0.5)
+    expect(fake.gains[0]!.ramps[0]![0]).toBeCloseTo(SOUNDS.move[0]!.volume * 0.5)
+
+    play('move', 0)
+    expect(fake.gains).toHaveLength(1)
   })
 
   it('exporte playSound', () => {
