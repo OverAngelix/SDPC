@@ -70,13 +70,26 @@
     }
   })
 
-  // La page de configuration de la grille (dossiers compris) : l'entrée du menu y devient « Retour à la grille »
+  // La page de configuration de la grille (dossiers compris) : son entrée du menu est surlignée
   const onConfig = computed(() => route.path === '/config' || route.path.startsWith('/config/'))
 
   function onAccountAction (action: AccountAction) {
-    if (action === 'grid') router.push(onConfig.value ? '/' : '/config')
-    else if (action === 'settings') settingsOpen.value = true
-    else signOut()
+    switch (action) {
+      case 'grid': {
+        router.push('/')
+        break
+      }
+      case 'config': {
+        router.push('/config')
+        break
+      }
+      case 'settings': {
+        settingsOpen.value = true
+        break
+      }
+      default: { signOut()
+      }
+    }
   }
 
   async function signOut () {

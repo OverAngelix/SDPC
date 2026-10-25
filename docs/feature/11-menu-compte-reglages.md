@@ -18,10 +18,11 @@ L'écran principal est la **grille**, rien d'autre. La barre d'application n'aff
 
 Le menu contient :
 
-1. **Configuration de la grille** : la page actuelle (créer, modifier, déplacer, supprimer les boutons).
-2. **Configuration de l'application** : son (actif ou non, volume), effets visuels (actifs ou non), thème (clair, sombre, celui de l'appareil). Elle s'ouvre dans une **fenêtre modale** sur ordinateur et dans une **fenêtre modale plein écran** sur téléphone.
-3. **Effacer la grille** : supprime tous les boutons du compte, après une fenêtre de confirmation.
-4. **Déconnexion**, en dernier.
+1. **Grille** : la page d'accueil.
+2. **Configuration de la grille** : la page actuelle (créer, modifier, déplacer, supprimer les boutons).
+3. **Configuration de l'application** : son (actif ou non, volume), effets visuels (actifs ou non), thème (clair, sombre, celui de l'appareil). Elle s'ouvre dans une **fenêtre modale** sur ordinateur et dans une **fenêtre modale plein écran** sur téléphone.
+4. **Effacer la grille** : supprime tous les boutons du compte, après une fenêtre de confirmation.
+5. **Déconnexion**, en dernier.
 
 En tête du menu, l'adresse e-mail de la personne rappelle sous quel compte on est connecté.
 
@@ -51,8 +52,8 @@ Les réglages de l'application sont **enregistrés sur le compte** (table `user_
 - [x] Retirer les onglets Grille et Configuration de la barre ; le titre « SDPC » devient un lien vers la grille
 - [x] Retirer le bouton son de la barre (il passe dans les réglages)
 - [x] Menu « Mon compte » (`v-menu`) sur ordinateur et tablette, tiroir (`v-navigation-drawer`) derrière un burger sur téléphone, même contenu pour les deux (le tiroir est posé à la racine de l'application, pas dans la barre : sinon sa hauteur est fausse et la déconnexion ne s'ancre pas en bas)
-- [x] Contenu : adresse e-mail, Configuration de la grille, séparateur, Déconnexion (Configuration de l'application et Effacer la grille s'ajoutent aux étapes 4 et 5)
-- [x] Sur la page de configuration de la grille, l'entrée du menu devient « Retour à la grille »
+- [x] Contenu : adresse e-mail, Grille, Configuration de la grille, Configuration de l'application, Effacer la grille, séparateur, Déconnexion (Effacer la grille s'ajoute à l'étape 5)
+- [x] Deux entrées fixes, « Grille » et « Configuration de la grille » : celle de la page courante est surlignée
 - [x] Sans connexion (pages Connexion et Créer un compte) : seulement le titre, ni menu ni burger
 
 ### Étape 4 — Fenêtre « Configuration de l'application » (client)
@@ -94,7 +95,7 @@ Les réglages de l'application sont **enregistrés sur le compte** (table `user_
 - **Configuration de l'application : une fenêtre modale**, plein écran sur téléphone (comme le formulaire d'un bouton). On voit la grille changer derrière, sans nouvelle adresse à gérer. Sans bouton Enregistrer : les changements s'appliquent et s'enregistrent un à un.
 - **Effacer la grille supprime tous les boutons du compte** (racine, dossiers et contenus), pas le compte ni les réglages. Une fenêtre de confirmation indique le nombre de boutons supprimés et propose un bouton rouge « Effacer la grille » ; aucune saisie à recopier, cohérent avec la suppression d'un dossier. Sur une grille déjà vide, l'entrée du menu est grisée.
 - **Un seul appel serveur pour effacer** : `DELETE /api/buttons`, filtré par `userId` comme les autres routes, qui supprime la racine et laisse la cascade de la base vider les dossiers. Faire une boucle de suppressions côté client serait lent et pourrait s'arrêter à moitié.
-- **Retour à la grille depuis la configuration.** Le titre « SDPC » de la barre est un lien vers la grille, et l'entrée « Configuration de la grille » du menu devient **« Retour à la grille »** quand on est déjà sur la page de configuration. C'est le même emplacement dans le menu, sans onglet de plus.
+- **Deux entrées fixes : « Grille » et « Configuration de la grille ».** Un même emplacement du menu ne change jamais de rôle (une entrée qui devient « Retour à la grille » sur une page et « Configuration de la grille » sur l'autre perturbe). L'entrée de la page courante est surlignée. Le titre « SDPC » de la barre reste un lien vers la grille.
 - **Pages publiques sans menu.** Connexion et Créer un compte n'ont que le titre : pas de compte à gérer avant d'être connecté.
 - **Fermeture automatique.** Le menu et le tiroir se ferment après le choix d'une entrée, y compris quand elle ouvre une fenêtre.
 - **Hors périmètre** : image de fond de la grille (liste « Plus tard »), changement de mot de passe ou d'e-mail et suppression du compte (feature 10).
@@ -105,7 +106,8 @@ Les réglages de l'application sont **enregistrés sur le compte** (table `user_
 
 ```
 Barre d'application → « Mon compte » (ou burger) → menu / tiroir
-  ├─ Configuration de la grille     → router.push('/config')           (« Retour à la grille » sur /config)
+  ├─ Grille                         → router.push('/')
+  ├─ Configuration de la grille     → router.push('/config')           (l'entrée de la page courante est surlignée)
   ├─ Configuration de l'application → ouvre la fenêtre des réglages
   │      curseur / interrupteurs / thème → store settings (appliqué tout de suite)
   │                                      → PATCH /api/settings → table user_settings
@@ -168,7 +170,7 @@ CREATE TABLE user_settings (
 ### Validation
 
 - [ ] Type-check, lint, tests et build sans erreur côté serveur et côté client
-- [ ] Parcours vérifié sur ordinateur : menu déroulant, les quatre entrées, retour à la grille depuis la configuration
+- [ ] Parcours vérifié sur ordinateur : menu déroulant, les quatre entrées, aller et retour entre la grille et sa configuration
 - [ ] Parcours vérifié sur téléphone, en portrait et en paysage : burger, tiroir, déconnexion en bas, fenêtre des réglages en plein écran
 - [ ] Les réglages suivent le compte d'un appareil à l'autre et ne sont pas partagés entre deux comptes
 
@@ -180,8 +182,8 @@ cd client && npm run dev -- --host
 ```
 
 1. Connecté : la barre n'affiche que « SDPC » et « Mon compte » (burger sur téléphone), plus aucun onglet.
-2. « Mon compte » : le menu s'ouvre sous le bouton, avec l'adresse e-mail, les entrées dans l'ordre demandé et Déconnexion en dernier (en bas du tiroir sur téléphone).
-3. Configuration de la grille : la page de configuration s'ouvre ; l'entrée du menu devient « Retour à la grille », tout comme un clic sur « SDPC ».
+2. « Mon compte » : le menu s'ouvre sous le bouton, avec l'adresse e-mail, les entrées dans l'ordre (Grille, Configuration de la grille, Configuration de l'application, Effacer la grille) et Déconnexion en dernier (en bas du tiroir sur téléphone).
+3. Configuration de la grille : la page de configuration s'ouvre et son entrée est surlignée dans le menu ; « Grille » (ou un clic sur « SDPC ») ramène à la grille.
 4. Configuration de l'application : couper le son, remettre le son, déplacer le volume (le son d'essai suit), recharger la page : les réglages sont conservés.
 5. Désactiver les effets : les cases n'ont plus de survol, d'apparition ni d'animation de lancement ; les réactiver les rend.
 6. Thème : Sombre, Clair, puis Appareil (suit le thème du système). Recharger : pas de flash du mauvais thème.

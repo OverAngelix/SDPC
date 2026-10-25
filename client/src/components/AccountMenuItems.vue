@@ -3,10 +3,19 @@
     <template v-if="part !== 'logout'">
       <v-list-subheader class="text-truncate">{{ email }}</v-list-subheader>
 
+      <!-- Deux entrées fixes : un même emplacement ne change jamais de rôle ; celle de la page courante est surlignée -->
       <v-list-item
-        :prepend-icon="onConfig ? 'mdi-view-grid' : 'mdi-view-grid-plus'"
-        :title="onConfig ? 'Retour à la grille' : 'Configuration de la grille'"
+        :active="!onConfig"
+        prepend-icon="mdi-view-grid"
+        title="Grille"
         @click="emit('select', 'grid')"
+      />
+
+      <v-list-item
+        :active="onConfig"
+        prepend-icon="mdi-view-grid-plus"
+        title="Configuration de la grille"
+        @click="emit('select', 'config')"
       />
 
       <v-list-item
@@ -32,7 +41,7 @@
 
   withDefaults(defineProps<{
     email: string
-    /** On est sur la page de configuration de la grille : la première entrée ramène à la grille */
+    /** On est sur la page de configuration de la grille (sinon sur la grille) : son entrée est surlignée */
     onConfig: boolean
     /** `main` : les entrées ; `logout` : la déconnexion seule (ancrée en bas du tiroir) ; `all` : tout, pour le menu déroulant */
     part?: 'main' | 'logout' | 'all'
