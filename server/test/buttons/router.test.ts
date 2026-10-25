@@ -10,15 +10,10 @@ describe('/api/buttons', () => {
   let jean: { id: string, cookie: string }
   let marie: { id: string, cookie: string }
 
-  async function signUp (email: string) {
-    const user = await server.auth.register({ email, password: 'motdepasse' })
-    return { id: user.id, cookie: `sdpc_session=${server.auth.createSession(user.id)}` }
-  }
-
   before(async () => {
     server = await startTestServer()
-    jean = await signUp('jean@exemple.fr')
-    marie = await signUp('marie@exemple.fr')
+    jean = await server.signUp('jean@exemple.fr')
+    marie = await server.signUp('marie@exemple.fr')
   })
 
   after(() => server.close())
@@ -215,7 +210,7 @@ describe('/api/buttons', () => {
 
       assert.equal((await call('GET', `/${mine.id}`)).status, 401)
       assert.equal((server.db.prepare('SELECT count(*) AS n FROM buttons WHERE user_id = ?').get(jean.id) as { n: number }).n, 0)
-      jean = await signUp('jean@exemple.fr')
+      jean = await server.signUp('jean@exemple.fr')
     })
   })
 })

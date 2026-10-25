@@ -1,16 +1,10 @@
-import type { Request } from 'express'
 import { Router } from 'express'
+import { currentUserId as userId } from '../auth/middleware.js'
 import { HttpError } from '../errors.js'
 import type { ButtonStore } from './store.js'
 
 /** Valeur de `?parentId=` pour lister la racine (un identifiant de dossier ne vaut jamais "root"). */
 export const ROOT_FILTER = 'root'
-
-/** Identifiant de la personne connectée : le routeur n'est monté qu'après `requireAuth`. */
-function userId (req: Request): string {
-  if (req.user === undefined) throw new HttpError(401, 'Connexion requise')
-  return req.user.id
-}
 
 export function buttonsRouter (store: ButtonStore) {
   const router = Router()

@@ -38,3 +38,9 @@ export const requireAuth: RequestHandler = (req, _res, next) => {
   if (req.user === undefined) throw new HttpError(401, 'Connexion requise')
   next()
 }
+
+/** Identifiant de la personne connectée : à utiliser dans les routes montées après `requireAuth`. */
+export function currentUserId (req: Request): string {
+  if (req.user === undefined) throw new HttpError(401, 'Connexion requise')
+  return req.user.id
+}

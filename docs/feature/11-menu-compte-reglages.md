@@ -31,11 +31,11 @@ Les réglages de l'application sont **enregistrés sur le compte** (table `user_
 
 ### Étape 1 — Réglages du compte (serveur)
 
-- [ ] Migration : table `user_settings` (une ligne par personne, supprimée avec le compte)
-- [ ] Store des réglages : valeurs par défaut quand la personne n'a encore rien enregistré, enregistrement partiel (seuls les champs envoyés changent)
-- [ ] Validation : son actif et effets actifs (booléens), volume (entier de 0 à 100), thème (`light`, `dark` ou `system`) ; tout le reste est refusé
-- [ ] `GET /api/settings` et `PATCH /api/settings` (401 sans session)
-- [ ] Tests serveur : valeurs par défaut, enregistrement partiel, valeurs invalides (400), persistance, isolation entre deux comptes, 401
+- [x] Migration : table `user_settings` (une ligne par personne, supprimée avec le compte)
+- [x] Store des réglages : valeurs par défaut quand la personne n'a encore rien enregistré, enregistrement partiel (seuls les champs envoyés changent)
+- [x] Validation : son actif et effets actifs (booléens), volume (entier de 0 à 100), thème (`light`, `dark` ou `system`) ; tout le reste est refusé
+- [x] `GET /api/settings` et `PATCH /api/settings` (401 sans session)
+- [x] Tests serveur : valeurs par défaut, enregistrement partiel, valeurs invalides (400), persistance, isolation entre deux comptes, 401
 
 ### Étape 2 — Réglages de l'application (client)
 

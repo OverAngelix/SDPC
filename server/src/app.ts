@@ -8,10 +8,13 @@ import type { AuthStore } from './auth/store.js'
 import { buttonsRouter } from './buttons/router.js'
 import type { ButtonStore } from './buttons/store.js'
 import { HttpError } from './errors.js'
+import { settingsRouter } from './settings/router.js'
+import type { SettingsStore } from './settings/store.js'
 
 export interface AppOptions {
   store: ButtonStore
   auth: AuthStore
+  settings: SettingsStore
   limiter?: LoginLimiter
   /** Cookie de session réservé au HTTPS (production) */
   secureCookie?: boolean
@@ -25,7 +28,7 @@ function clientErrorStatus (error: unknown): number | undefined {
   return typeof status === 'number' && status >= 400 && status < 500 ? status : undefined
 }
 
-export function createApp ({ store, auth, limiter = new LoginLimiter(), secureCookie = false, clientOrigin }: AppOptions) {
+export function createApp ({ store, auth, settings, limiter = new LoginLimiter(), secureCookie = false, clientOrigin }: AppOptions) {
   const app = express()
 
   // Les cookies de session imposent une origine précise : jamais de CORS ouvert à tous
@@ -38,6 +41,7 @@ export function createApp ({ store, auth, limiter = new LoginLimiter(), secureCo
   })
   app.use('/api/auth', authRouter(auth, limiter, { secureCookie }))
   app.use('/api/buttons', requireAuth, buttonsRouter(store))
+  app.use('/api/settings', requireAuth, settingsRouter(settings))
 
   app.use('/api', (_req: Request, res: Response) => {
     res.status(404).json({ error: 'Route introuvable' })
