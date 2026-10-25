@@ -1,7 +1,7 @@
-import type { Db } from '../db/database.js'
 import { HttpError } from '../errors.js'
-import type { Settings, Theme } from './types.js'
-import { DEFAULT_SETTINGS } from './types.js'
+import type { Db } from '../interfaces/database.js'
+import type { Settings, Theme } from '../interfaces/settings.js'
+import { DEFAULT_SETTINGS } from './constants.js'
 import { validateSettingsPatch } from './validation.js'
 
 interface SettingsRow {

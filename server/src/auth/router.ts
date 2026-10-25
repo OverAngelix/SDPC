@@ -1,15 +1,11 @@
 import type { CookieOptions, Response } from 'express'
 import { Router } from 'express'
 import { HttpError } from '../errors.js'
+import type { AuthRouterOptions } from '../interfaces/auth.js'
 import type { LoginLimiter } from './loginLimiter.js'
 import { requireAuth, SESSION_COOKIE, sessionToken } from './middleware.js'
 import { SESSION_MS } from './store.js'
 import type { AuthStore } from './store.js'
-
-export interface AuthRouterOptions {
-  /** Cookie réservé au HTTPS : à activer en production */
-  secureCookie: boolean
-}
 
 export function authRouter (auth: AuthStore, limiter: LoginLimiter, { secureCookie }: AuthRouterOptions) {
   const router = Router()

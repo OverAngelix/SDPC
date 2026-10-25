@@ -1,5 +1,6 @@
-import type { Button, ButtonColor, ButtonInput, ButtonType } from './types.js'
-import { BACK_SLOT, BUTTON_COLORS, SLOTS } from './types.js'
+import type { Button, ButtonColor, ButtonInput, ButtonType } from '../interfaces/button.js'
+import type { ValidationResult } from '../interfaces/validation.js'
+import { BACK_SLOT, BUTTON_COLORS, SLOTS } from './constants.js'
 
 export const LABEL_MAX_LENGTH = 50
 export const URL_MAX_LENGTH = 2048
@@ -9,8 +10,6 @@ const ICON_PATTERN = /^mdi-[a-z0-9]+(?:-[a-z0-9]+)*$/
 // Seules des redirections web sont autorisées : ni javascript:, ni file:, etc.
 const ALLOWED_PROTOCOLS = new Set(['http:', 'https:'])
 const RESERVED_SLOT_ERROR = `position : l'emplacement ${BACK_SLOT} est réservé au bouton retour dans un dossier`
-
-export type ValidationResult<T> = { ok: true, value: T } | { ok: false, errors: string[] }
 
 type Parsed<T> = { value: T } | { error: string }
 

@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
-import type { Db } from '../db/database.js'
 import { HttpError } from '../errors.js'
-import type { Button, ButtonColor } from './types.js'
+import type { Button, ButtonColor } from '../interfaces/button.js'
+import type { Db } from '../interfaces/database.js'
 import { mergeButtonPatch, validateButtonInput, validateMoveInput } from './validation.js'
 
 const INVALID_DATA = 'Données invalides'

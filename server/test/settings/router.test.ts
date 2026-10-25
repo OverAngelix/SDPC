@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { after, before, describe, it } from 'node:test'
-import { DEFAULT_SETTINGS } from '../../src/settings/types.js'
+import { DEFAULT_SETTINGS } from '../../src/settings/constants.js'
 import { startTestServer } from '../helpers/server.js'
 
 describe('/api/settings', () => {

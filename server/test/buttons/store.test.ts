@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import { HttpError } from '../../src/errors.js'
 import { ButtonStore } from '../../src/buttons/store.js'
-import type { Db } from '../../src/db/database.js'
+import type { Db } from '../../src/interfaces/database.js'
 import { openDatabase } from '../../src/db/database.js'
 import { createUser } from '../helpers/users.js'
 

@@ -1,9 +1,8 @@
 import Database from 'better-sqlite3'
 import { mkdirSync } from 'node:fs'
 import { dirname } from 'node:path'
+import type { Db } from '../interfaces/database.js'
 import { MIGRATIONS } from './migrations.js'
-
-export type Db = Database.Database
 
 /** Base en mémoire, perdue à la fermeture : pour les tests. */
 export const MEMORY_DATABASE = ':memory:'

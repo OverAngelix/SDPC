@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { beforeEach, afterEach, describe, it } from 'node:test'
 import { AuthStore, SESSION_DAYS } from '../../src/auth/store.js'
-import type { Db } from '../../src/db/database.js'
+import type { Db } from '../../src/interfaces/database.js'
 import { MEMORY_DATABASE, openDatabase } from '../../src/db/database.js'
 import { HttpError } from '../../src/errors.js'
 

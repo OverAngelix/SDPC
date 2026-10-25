@@ -1,5 +1,5 @@
-import type { ValidationResult } from '../buttons/validation.js'
-import type { Credentials } from './types.js'
+import type { Credentials } from '../interfaces/auth.js'
+import type { ValidationResult } from '../interfaces/validation.js'
 
 export const EMAIL_MAX_LENGTH = 254
 export const PASSWORD_MIN_LENGTH = 8

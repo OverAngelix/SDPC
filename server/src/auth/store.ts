@@ -1,8 +1,8 @@
 import { createHash, randomBytes, randomUUID } from 'node:crypto'
-import type { Db } from '../db/database.js'
 import { HttpError } from '../errors.js'
+import type { Db } from '../interfaces/database.js'
+import type { User } from '../interfaces/auth.js'
 import { hashPassword, verifyPassword } from './password.js'
-import type { User } from './types.js'
 import { validateCredentials } from './validation.js'
 
 const DAY_MS = 24 * 60 * 60 * 1000

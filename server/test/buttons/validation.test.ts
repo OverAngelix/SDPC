@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
-import type { Button } from '../../src/buttons/types.js'
-import { BUTTON_COLORS } from '../../src/buttons/types.js'
+import { BUTTON_COLORS } from '../../src/buttons/constants.js'
+import type { Button } from '../../src/interfaces/button.js'
 import { mergeButtonPatch, validateButtonInput, validateMoveInput } from '../../src/buttons/validation.js'
 
 const action = { position: 0, label: 'YouTube', icon: 'mdi-youtube', type: 'action', url: 'https://www.youtube.com' }

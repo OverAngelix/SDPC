@@ -1,6 +1,6 @@
-import type { ValidationResult } from '../buttons/validation.js'
-import type { Settings, Theme } from './types.js'
-import { THEMES, VOLUME_MAX, VOLUME_MIN } from './types.js'
+import type { Settings, Theme } from '../interfaces/settings.js'
+import type { ValidationResult } from '../interfaces/validation.js'
+import { THEMES, VOLUME_MAX, VOLUME_MIN } from './constants.js'
 
 function isRecord (value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)

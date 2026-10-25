@@ -1,4 +1,4 @@
-import type { Db } from '../../src/db/database.js'
+import type { Db } from '../../src/interfaces/database.js'
 
 /** Insère directement une personne en base (sans hachage, donc sans connexion possible) et renvoie son identifiant. */
 export function createUser (db: Db, email = 'jean@exemple.fr'): string {

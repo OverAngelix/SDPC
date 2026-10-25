@@ -1,10 +1,10 @@
 import { once } from 'node:events'
 import type { AddressInfo } from 'node:net'
-import type { AppOptions } from '../../src/app.js'
 import { createApp } from '../../src/app.js'
 import { AuthStore } from '../../src/auth/store.js'
 import { ButtonStore } from '../../src/buttons/store.js'
 import { MEMORY_DATABASE, openDatabase } from '../../src/db/database.js'
+import type { AppOptions } from '../../src/interfaces/app.js'
 import { SettingsStore } from '../../src/settings/store.js'
 
 /** Démarre l'application sur un port libre, avec une base SQLite en mémoire. */

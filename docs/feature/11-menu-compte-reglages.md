@@ -68,8 +68,15 @@ Les réglages de l'application sont **enregistrés sur le compte** (table `user_
 
 - [x] Serveur : `DELETE /api/buttons` supprime tous les boutons de la personne connectée (204, 401 sans session), ceux des autres comptes ne bougent pas
 - [x] Tests serveur : effacement, grille déjà vide, isolation entre deux comptes, 401
-- [ ] Client : fenêtre de confirmation avec le nombre de boutons supprimés, erreur du serveur affichée, retour à la racine de la grille, son de suppression, message de confirmation
-- [ ] Le store des boutons se vide et la page se recharge
+- [x] Client : fenêtre de confirmation avec le nombre de boutons supprimés, erreur du serveur affichée, retour à la racine de la grille, son de suppression, message de confirmation
+- [x] Le store des boutons se vide et la page se recharge
+
+### Étape 5 bis — Interfaces du serveur dans `src/interfaces/`
+
+- [x] Tous les types exportés du serveur déplacés dans `server/src/interfaces/` (un fichier par sujet) : `button.ts`, `auth.ts` (dont `AuthRouterOptions` et le type de `req.user`), `settings.ts`, `validation.ts` (`ValidationResult`), `database.ts` (`Db`), `app.ts` (`AppOptions`)
+- [x] Les constantes qui étaient dans les anciens `types.ts` vont dans `constants.ts` (`buttons/constants.ts`, `settings/constants.ts`) ; les anciens `buttons/types.ts`, `auth/types.ts` et `settings/types.ts` disparaissent
+- [x] Imports mis à jour (source et tests), mêmes tests, même comportement
+- [x] `CLAUDE.md` : la règle des interfaces vaut pour le client et le serveur
 
 ### Étape 6 — Documentation
 
@@ -97,6 +104,7 @@ Les réglages de l'application sont **enregistrés sur le compte** (table `user_
 - **Un seul appel serveur pour effacer** : `DELETE /api/buttons`, filtré par `userId` comme les autres routes, qui supprime la racine et laisse la cascade de la base vider les dossiers. Faire une boucle de suppressions côté client serait lent et pourrait s'arrêter à moitié.
 - **Deux entrées fixes : « Grille » et « Configuration de la grille ».** Un même emplacement du menu ne change jamais de rôle (une entrée qui devient « Retour à la grille » sur une page et « Configuration de la grille » sur l'autre perturbe). L'entrée de la page courante est surlignée. Le titre « SDPC » de la barre reste un lien vers la grille.
 - **Pages publiques sans menu.** Connexion et Créer un compte n'ont que le titre : pas de compte à gérer avant d'être connecté.
+- **Interfaces du serveur dans `src/interfaces/`, comme le client.** Les types partagés (`Button`, `User`, `Settings`, `ValidationResult`, `Db`, `AppOptions`…) quittent les fichiers qui les utilisaient (`buttons/types.ts`, `app.ts`, `auth/router.ts`, `buttons/validation.ts`, `db/database.ts`…) pour un fichier par sujet. Les constantes n'en sont pas : elles vont dans `constants.ts`. Les types privés d'un fichier (forme d'une ligne SQL, état interne du limiteur) restent sur place, non exportés. Cela vaut pour le code livré par les fiches 02 à 10 : leurs tableaux de fichiers ne sont pas réécrits.
 - **Fermeture automatique.** Le menu et le tiroir se ferment après le choix d'une entrée, y compris quand elle ouvre une fenêtre.
 - **Hors périmètre** : image de fond de la grille (liste « Plus tard »), changement de mot de passe ou d'e-mail et suppression du compte (feature 10).
 
@@ -150,7 +158,8 @@ CREATE TABLE user_settings (
 | Fichier | Rôle |
 | --- | --- |
 | `server/src/db/migrations.ts` | Migration 4 : table `user_settings` |
-| `server/src/settings/store.ts`, `validation.ts`, `router.ts`, `types.ts` | Lecture avec valeurs par défaut, enregistrement partiel, routes `/api/settings` |
+| `server/src/settings/store.ts`, `validation.ts`, `router.ts`, `constants.ts` | Lecture avec valeurs par défaut, enregistrement partiel, routes `/api/settings`, constantes (thèmes, volume, valeurs par défaut) |
+| `server/src/interfaces/` | `button.ts`, `auth.ts`, `settings.ts`, `validation.ts`, `database.ts`, `app.ts` : tous les types partagés du serveur |
 | `server/src/buttons/store.ts`, `router.ts` | `clear(userId)`, route `DELETE /api/buttons` |
 | `server/src/app.ts`, `index.ts` | Câblage du routeur des réglages |
 | `client/src/interfaces/settings.ts` | Type des réglages et du thème |

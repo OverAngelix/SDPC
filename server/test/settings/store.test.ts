@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict'
 import { afterEach, beforeEach, describe, it } from 'node:test'
-import type { Db } from '../../src/db/database.js'
+import type { Db } from '../../src/interfaces/database.js'
 import { MEMORY_DATABASE, openDatabase } from '../../src/db/database.js'
 import { HttpError } from '../../src/errors.js'
 import { SettingsStore } from '../../src/settings/store.js'
-import { DEFAULT_SETTINGS } from '../../src/settings/types.js'
+import { DEFAULT_SETTINGS } from '../../src/settings/constants.js'
 import { createUser } from '../helpers/users.js'
 
 async function rejectsWith (promise: Promise<unknown>, status: number) {
