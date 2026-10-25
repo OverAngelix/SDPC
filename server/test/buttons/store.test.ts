@@ -250,6 +250,42 @@ describe('ButtonStore', () => {
       await rejectsWith(store.move(userId, 'fantome', { position: 3 }), 404)
     })
   })
+  describe('clear', () => {
+    it('supprime tous les boutons de la personne, dossiers et contenus compris, et renvoie leur nombre', async () => {
+      const store = new ButtonStore(db)
+      const parent = await store.create(userId, folder)
+      const sub = await store.create(userId, { ...folder, parentId: parent.id })
+      await store.create(userId, { ...action, position: 1, parentId: sub.id })
+      await store.create(userId, action)
+
+      assert.equal(await store.clear(userId), 4)
+      assert.deepEqual(store.list(userId), [])
+      assert.equal((db.prepare('SELECT count(*) AS n FROM buttons').get() as { n: number }).n, 0)
+    })
+
+    it('ne fait rien sur une grille déjà vide', async () => {
+      assert.equal(await new ButtonStore(db).clear(userId), 0)
+    })
+
+    it('ne touche pas à la grille des autres personnes', async () => {
+      const store = new ButtonStore(db)
+      const other = createUser(db, 'marie@exemple.fr')
+      await store.create(userId, action)
+      const theirs = await store.create(other, action)
+
+      await store.clear(userId)
+
+      assert.deepEqual(store.list(other), [theirs])
+    })
+
+    it('laisse la grille réutilisable, emplacements compris', async () => {
+      const store = new ButtonStore(db)
+      await store.create(userId, action)
+      await store.clear(userId)
+      assert.equal((await store.create(userId, action)).position, 0)
+    })
+  })
+
   describe('isolation entre personnes', () => {
     let other: string
     let store: ButtonStore

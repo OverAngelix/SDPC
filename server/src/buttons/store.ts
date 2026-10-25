@@ -124,6 +124,16 @@ export class ButtonStore {
     this.db.prepare('DELETE FROM buttons WHERE id = ? AND user_id = ?').run(id, userId)
   }
 
+  /** Supprime tous les boutons de la personne, dossiers et contenus compris. Renvoie leur nombre. */
+  async clear (userId: string): Promise<number> {
+    // Les dossiers supprimés emportent leur contenu par cascade, ce que `changes` ne compte pas : on compte avant
+    return this.db.transaction(() => {
+      const { count } = this.db.prepare('SELECT count(*) AS count FROM buttons WHERE user_id = ?').get(userId) as { count: number }
+      this.db.prepare('DELETE FROM buttons WHERE user_id = ?').run(userId)
+      return count
+    })()
+  }
+
   private assertParentIsFolder (userId: string, parentId: string | null): void {
     if (parentId === null) return
     const parent = this.db.prepare('SELECT type FROM buttons WHERE id = ? AND user_id = ?').get(parentId, userId) as { type: string } | undefined

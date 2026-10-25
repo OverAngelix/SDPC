@@ -36,6 +36,12 @@ export function buttonsRouter (store: ButtonStore) {
     res.json(await store.move(userId(req), req.params.id, req.body))
   })
 
+  // Efface toute la grille de la personne connectée
+  router.delete('/', async (req, res) => {
+    await store.clear(userId(req))
+    res.status(204).end()
+  })
+
   router.delete('/:id', async (req, res) => {
     await store.remove(userId(req), req.params.id)
     res.status(204).end()

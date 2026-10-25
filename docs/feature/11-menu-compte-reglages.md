@@ -65,8 +65,8 @@ Les réglages de l'application sont **enregistrés sur le compte** (table `user_
 
 ### Étape 5 — Effacer la grille (serveur et client)
 
-- [ ] Serveur : `DELETE /api/buttons` supprime tous les boutons de la personne connectée (204, 401 sans session), ceux des autres comptes ne bougent pas
-- [ ] Tests serveur : effacement, grille déjà vide, isolation entre deux comptes, 401
+- [x] Serveur : `DELETE /api/buttons` supprime tous les boutons de la personne connectée (204, 401 sans session), ceux des autres comptes ne bougent pas
+- [x] Tests serveur : effacement, grille déjà vide, isolation entre deux comptes, 401
 - [ ] Client : fenêtre de confirmation avec le nombre de boutons supprimés, erreur du serveur affichée, retour à la racine de la grille, son de suppression, message de confirmation
 - [ ] Le store des boutons se vide et la page se recharge
 

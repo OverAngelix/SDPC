@@ -174,6 +174,24 @@ describe('/api/buttons', () => {
       }
     })
 
+    it('DELETE / efface toute la grille de la personne (204), la grille des autres reste', async () => {
+      const parent = (await call('POST', '', folder)).body
+      await call('POST', '', { ...action, position: 1, parentId: parent.id })
+      const theirs = (await callAs(marie.cookie, 'POST', '', action)).body
+
+      const res = await call('DELETE', '')
+
+      assert.equal(res.status, 204)
+      assert.deepEqual((await call('GET', '')).body, [])
+      assert.deepEqual((await callAs(marie.cookie, 'GET', '')).body, [theirs])
+    })
+
+    it('DELETE / sur une grille vide répond 204, et 401 sans session', async () => {
+      assert.equal((await call('DELETE', '')).status, 204)
+      assert.equal((await callAs(undefined, 'DELETE', '')).status, 401)
+      assert.equal((await callAs('sdpc_session=inconnu', 'DELETE', '')).status, 401)
+    })
+
     it('chaque personne ne voit que ses boutons', async () => {
       const mine = (await call('POST', '', action)).body
       const theirs = (await callAs(marie.cookie, 'POST', '', { ...action, label: 'Netflix' })).body
