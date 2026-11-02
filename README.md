@@ -73,4 +73,4 @@ La liste complète et le détail de chaque feature (TODO, implémentation) sont 
 
 ## Licence
 
-Projet libre de droit, placé dans le domaine public : voir [LICENSE](LICENSE) (Unlicense).
+Projet sous licence MIT : voir [LICENSE](LICENSE).
