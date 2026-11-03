@@ -21,18 +21,18 @@ Le menu du compte devient : Grille, Configuration de la grille, Configuration de
 
 ### Étape 1 — Changer le mot de passe (serveur)
 
-- [ ] Store `AccountStore` (`server/src/account/store.ts`) : `changePassword(userId, currentPassword, newPassword, keepToken)` vérifie l'actuel, pose le nouveau haché, supprime les autres sessions de la personne
-- [ ] Validation : nouveau mot de passe de 8 à 128 caractères (règles de l'inscription réutilisées), différent de l'actuel ; actuel requis
-- [ ] `PUT /api/account/password` (401 sans session), routeur `account` branché dans `app.ts` derrière l'authentification
-- [ ] Mot de passe actuel faux : **403** (voir les décisions) ; essais comptés par le limiteur, 429 quand il est atteint
-- [ ] Tests serveur : changement réussi (l'ancien est refusé à la connexion, le nouveau accepté), actuel faux (403, rien ne change), nouveau trop court, trop long ou identique (400), autres sessions fermées et session courante gardée, un autre compte inchangé, 429, 401 sans session
+- [x] Store `AccountStore` (`server/src/account/store.ts`) : `changePassword(userId, currentPassword, newPassword, keepToken)` vérifie l'actuel, pose le nouveau haché, supprime les autres sessions de la personne
+- [x] Validation : nouveau mot de passe de 8 à 128 caractères (règles de l'inscription réutilisées), différent de l'actuel ; actuel requis
+- [x] `PUT /api/account/password` (401 sans session), routeur `account` branché dans `app.ts` derrière l'authentification
+- [x] Mot de passe actuel faux : **403** (voir les décisions) ; essais comptés par le limiteur, 429 quand il est atteint
+- [x] Tests serveur : changement réussi (l'ancien est refusé à la connexion, le nouveau accepté), actuel faux (403, rien ne change), nouveau trop court, trop long ou identique (400), autres sessions fermées et session courante gardée, un autre compte inchangé, 429, 401 sans session
 
 ### Étape 2 — Supprimer le compte (serveur)
 
-- [ ] `AccountStore.deleteAccount(userId, password)` : vérifie le mot de passe puis supprime la ligne `users` ; la cascade de la base emporte boutons, réglages et sessions
-- [ ] `DELETE /api/account` avec `{ password }` : 204, cookie de session effacé ; 400 sans mot de passe, 401 sans session, 403 mot de passe faux, 429
-- [ ] Même limiteur que pour le changement de mot de passe (une seule série d'essais par personne)
-- [ ] Tests serveur : suppression (plus de connexion possible, lignes `users`, `buttons`, `user_settings`, `sessions` vidées pour cette personne), un autre compte intact, mot de passe faux (403, compte conservé), cookie effacé, 401 sans session, 429
+- [x] `AccountStore.deleteAccount(userId, password)` : vérifie le mot de passe puis supprime la ligne `users` ; la cascade de la base emporte boutons, réglages et sessions
+- [x] `DELETE /api/account` avec `{ password }` : 204, cookie de session effacé ; 400 sans mot de passe, 401 sans session, 403 mot de passe faux, 429
+- [x] Même limiteur que pour le changement de mot de passe (une seule série d'essais par personne)
+- [x] Tests serveur : suppression (plus de connexion possible, lignes `users`, `buttons`, `user_settings`, `sessions` vidées pour cette personne), un autre compte intact, mot de passe faux (403, compte conservé), cookie effacé, 401 sans session, 429
 
 ### Étape 3 — Fenêtre « Mon compte » (client)
 
