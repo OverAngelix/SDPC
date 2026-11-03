@@ -24,7 +24,7 @@ function isUniqueViolation (error: unknown): boolean {
 }
 
 /** Seule l'empreinte du jeton est stockée : une base copiée ne permet pas de se faire passer pour quelqu'un. */
-function hashToken (token: string): string {
+export function hashToken (token: string): string {
   return createHash('sha256').update(token).digest('hex')
 }
 

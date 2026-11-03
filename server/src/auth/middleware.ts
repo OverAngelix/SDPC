@@ -1,8 +1,13 @@
-import type { NextFunction, Request, RequestHandler, Response } from 'express'
+import type { CookieOptions, NextFunction, Request, RequestHandler, Response } from 'express'
 import { HttpError } from '../errors.js'
 import type { AuthStore } from './store.js'
 
 export const SESSION_COOKIE = 'sdpc_session'
+
+/** Options du cookie de session, aussi nécessaires pour l'effacer. */
+export function sessionCookieOptions (secureCookie: boolean): CookieOptions {
+  return { httpOnly: true, sameSite: 'lax', secure: secureCookie, path: '/' }
+}
 
 /** Valeur d'un cookie de la requête (analyse minimale de l'en-tête `Cookie`). */
 export function readCookie (req: Request, name: string): string | undefined {

@@ -1,16 +1,16 @@
-import type { CookieOptions, Response } from 'express'
+import type { Response } from 'express'
 import { Router } from 'express'
 import { HttpError } from '../errors.js'
 import type { AuthRouterOptions } from '../interfaces/auth.js'
 import type { LoginLimiter } from './loginLimiter.js'
-import { requireAuth, SESSION_COOKIE, sessionToken } from './middleware.js'
+import { requireAuth, SESSION_COOKIE, sessionCookieOptions, sessionToken } from './middleware.js'
 import { SESSION_MS } from './store.js'
 import type { AuthStore } from './store.js'
 
 export function authRouter (auth: AuthStore, limiter: LoginLimiter, { secureCookie }: AuthRouterOptions) {
   const router = Router()
 
-  const cookieOptions: CookieOptions = { httpOnly: true, sameSite: 'lax', secure: secureCookie, path: '/' }
+  const cookieOptions = sessionCookieOptions(secureCookie)
 
   function startSession (res: Response, userId: string): void {
     res.cookie(SESSION_COOKIE, auth.createSession(userId), { ...cookieOptions, maxAge: SESSION_MS })
