@@ -1,6 +1,7 @@
 import type { Credentials, User } from '@/interfaces/auth'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { deleteAccount } from '@/api/account'
 import { fetchMe, login, logout, register } from '@/api/auth'
 import { setUnauthorizedHandler } from '@/api/http'
 import { useButtonsStore } from '@/stores/buttons'
@@ -58,7 +59,15 @@ export const useAuthStore = defineStore('auth', () => {
     forget()
   }
 
+  // Un mot de passe refusé (403) remonte à la fenêtre et laisse la session ouverte ; sinon tout est remis à zéro comme à la déconnexion
+  async function removeAccount (password: string) {
+    await deleteAccount(password)
+    // Le son avant la remise à zéro : il suit les réglages de la personne qui part
+    useSettingsStore().play('delete')
+    forget()
+  }
+
   setUnauthorizedHandler(forget)
 
-  return { user, ready, restore, signIn, signUp, signOut }
+  return { user, ready, restore, signIn, signUp, signOut, removeAccount }
 })

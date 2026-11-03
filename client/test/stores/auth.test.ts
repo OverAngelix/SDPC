@@ -1,12 +1,15 @@
 import type { Credentials, User } from '@/interfaces/auth'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { deleteAccount } from '@/api/account'
 import { fetchMe, login, logout, register } from '@/api/auth'
 import { fetchSettings } from '@/api/settings'
 import { useAuthStore } from '@/stores/auth'
 import { useButtonsStore } from '@/stores/buttons'
 import { useSettingsStore } from '@/stores/settings'
+import { playSound } from '@/utils/sounds'
 
+vi.mock('@/api/account', () => ({ changePassword: vi.fn(), deleteAccount: vi.fn() }))
 vi.mock('@/api/auth', () => ({
   fetchMe: vi.fn(),
   login: vi.fn(),
@@ -27,6 +30,7 @@ const fetchMeMock = vi.mocked(fetchMe)
 const loginMock = vi.mocked(login)
 const registerMock = vi.mocked(register)
 const logoutMock = vi.mocked(logout)
+const deleteAccountMock = vi.mocked(deleteAccount)
 const fetchSettingsMock = vi.mocked(fetchSettings)
 
 const darkSettings = { soundEnabled: false, volume: 30, effectsEnabled: false, theme: 'dark' as const }
@@ -37,7 +41,7 @@ const credentials: Credentials = { email: 'jean@exemple.fr', password: 'motdepas
 describe('auth store', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
-    for (const mock of [fetchMeMock, loginMock, registerMock, logoutMock]) {
+    for (const mock of [fetchMeMock, loginMock, registerMock, logoutMock, deleteAccountMock, vi.mocked(playSound)]) {
       mock.mockReset()
     }
   })
@@ -112,6 +116,51 @@ describe('auth store', () => {
 
     await expect(auth.signOut()).rejects.toThrow('réseau')
     expect(auth.user).toEqual(jean)
+  })
+
+  describe('removeAccount', () => {
+    beforeEach(() => {
+      fetchSettingsMock.mockResolvedValue({ ...darkSettings, soundEnabled: true })
+      loginMock.mockResolvedValue(jean)
+    })
+
+    it('supprime le compte, ferme la session et remet boutons et réglages à zéro', async () => {
+      deleteAccountMock.mockResolvedValue()
+      const auth = useAuthStore()
+      await auth.signIn(credentials)
+      const buttons = useButtonsStore()
+      buttons.buttons = [{ id: 'b1', parentId: null, position: 1, label: 'Un', icon: 'mdi-web', type: 'action', url: 'https://exemple.fr' }]
+
+      await auth.removeAccount('motdepasse')
+
+      expect(deleteAccountMock).toHaveBeenCalledWith('motdepasse')
+      expect(auth.user).toBeNull()
+      expect(buttons.buttons).toEqual([])
+      expect(useSettingsStore().theme).toBe('system')
+    })
+
+    it('joue le son de suppression avec les réglages de la personne, avant de les remettre à zéro', async () => {
+      deleteAccountMock.mockResolvedValue()
+      const auth = useAuthStore()
+      await auth.signIn(credentials)
+
+      await auth.removeAccount('motdepasse')
+
+      expect(playSound).toHaveBeenCalledWith('delete', 0.3)
+    })
+
+    it('laisse la session ouverte et muette quand le serveur refuse (mot de passe faux)', async () => {
+      const refusal = new Error('403')
+      deleteAccountMock.mockRejectedValue(refusal)
+      const auth = useAuthStore()
+      await auth.signIn(credentials)
+
+      await expect(auth.removeAccount('mauvais')).rejects.toBe(refusal)
+
+      expect(auth.user).toEqual(jean)
+      expect(useSettingsStore().theme).toBe('dark')
+      expect(playSound).not.toHaveBeenCalled()
+    })
   })
 
   describe('réglages', () => {
