@@ -25,10 +25,9 @@
       />
 
       <v-list-item
-        :disabled="gridEmpty"
-        prepend-icon="mdi-delete-sweep"
-        title="Effacer la grille"
-        @click="emit('select', 'clear')"
+        prepend-icon="mdi-account-cog"
+        title="Mon compte"
+        @click="emit('select', 'account')"
       />
     </template>
 
@@ -50,11 +49,9 @@
     email: string
     /** On est sur la page de configuration de la grille (sinon sur la grille) : son entrée est surlignée */
     onConfig: boolean
-    /** La grille n'a aucun bouton : rien à effacer */
-    gridEmpty?: boolean
     /** `main` : les entrées ; `logout` : la déconnexion seule (ancrée en bas du tiroir) ; `all` : tout, pour le menu déroulant */
     part?: 'main' | 'logout' | 'all'
-  }>(), { gridEmpty: false, part: 'all' })
+  }>(), { part: 'all' })
 
   const emit = defineEmits<{ select: [action: AccountAction] }>()
 </script>

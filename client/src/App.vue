@@ -12,7 +12,6 @@
         v-if="auth.user"
         v-model:drawer="drawer"
         :email="auth.user.email"
-        :grid-empty="gridEmpty"
         :on-config="onConfig"
         @select="onAccountAction"
       />
@@ -22,7 +21,6 @@
       v-if="auth.user"
       v-model="drawer"
       :email="auth.user.email"
-      :grid-empty="gridEmpty"
       :on-config="onConfig"
       @select="onAccountAction"
     />
@@ -33,11 +31,23 @@
 
     <settings-dialog v-if="auth.user" v-model="settingsOpen" />
 
+    <account-dialog
+      v-if="auth.user"
+      v-model="accountOpen"
+      :email="auth.user.email"
+      :grid-empty="gridEmpty"
+      @clear="clearOpen = true"
+      @delete="deleteOpen = true"
+    />
+
     <confirm-clear-grid
       v-if="auth.user"
       v-model="clearOpen"
       @cleared="onCleared"
     />
+
+    <!-- Sans v-if : la confirmation survit à la fermeture de la session qu'elle provoque -->
+    <confirm-delete-account v-model="deleteOpen" @deleted="onAccountDeleted" />
 
     <v-snackbar v-model="signOutFailed" color="error" timeout="5000">
       Déconnexion impossible : le serveur est injoignable.
@@ -52,9 +62,11 @@
   import { computed, ref, watch } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   import { useTheme } from 'vuetify'
+  import AccountDialog from '@/components/AccountDialog.vue'
   import AccountDrawer from '@/components/AccountDrawer.vue'
   import AccountMenu from '@/components/AccountMenu.vue'
   import ConfirmClearGrid from '@/components/ConfirmClearGrid.vue'
+  import ConfirmDeleteAccount from '@/components/ConfirmDeleteAccount.vue'
   import SettingsDialog from '@/components/SettingsDialog.vue'
   import { guardRoute } from '@/router/guard'
   import { useAuthStore } from '@/stores/auth'
@@ -69,11 +81,13 @@
   // Tiroir du compte (téléphone) : ouvert par le burger de la barre, affiché hors de la barre
   const drawer = ref(false)
   const settingsOpen = ref(false)
+  const accountOpen = ref(false)
   const clearOpen = ref(false)
+  const deleteOpen = ref(false)
   const notice = ref(false)
   const noticeText = ref('')
   const buttons = useButtonsStore()
-  // Rien à effacer : une fois les boutons chargés, une grille vide grise l'entrée du menu
+  // Rien à effacer : une fois les boutons chargés, une grille vide grise le bouton de la fenêtre « Mon compte »
   const gridEmpty = computed(() => buttons.loaded && buttons.buttons.length === 0)
   const theme = useTheme()
 
@@ -105,8 +119,8 @@
         settingsOpen.value = true
         break
       }
-      case 'clear': {
-        clearOpen.value = true
+      case 'account': {
+        accountOpen.value = true
         break
       }
       case 'logout': {
@@ -118,6 +132,13 @@
 
   function onCleared (count: number) {
     noticeText.value = `Grille effacée (${count} bouton${count > 1 ? 's' : ''} supprimé${count > 1 ? 's' : ''}).`
+    notice.value = true
+  }
+
+  // La session est déjà fermée : la page de connexion s'affiche (voir plus haut), le message l'accompagne
+  function onAccountDeleted () {
+    accountOpen.value = false
+    noticeText.value = 'Compte supprimé.'
     notice.value = true
   }
 
