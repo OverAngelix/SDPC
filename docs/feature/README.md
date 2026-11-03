@@ -15,14 +15,14 @@ Une fiche par feature : explication, TODO, implémentation et personne active. N
 | 09 | [Comptes utilisateur et base de données SQLite](09-comptes-base-de-donnees.md) | Livré | OverAngelix |
 | 10 | [Fenêtre « Mon compte » : mot de passe, remise à zéro et suppression](10-fenetre-mon-compte.md) | Livré | OverAngelix |
 | 11 | [Menu « Mon compte » et réglages de l'application](11-menu-compte-reglages.md) | Livré | OverAngelix |
+| 12 | [Internationalisation (français et anglais)](12-i18n.md) | À faire | OverAngelix |
 
-Ordre de réalisation : 02 → 03 → 04 → 05 → 06 → 07 → 08 → 09 → 11 → 10 (chaque feature dépend de la précédente ; la 10, fenêtre « Mon compte », vient après la 11).
+Ordre de réalisation : 02 → 03 → 04 → 05 → 06 → 07 → 08 → 09 → 11 → 10 → 12
 
 ## Plus tard
 
 - Plein écran ou mode kiosque pour la grille.
 - Rendre commun les types
-- I18n
 - Deploiement serveur OVH
 - Image de fond de la grille (réglage de l'application, après la feature 11).
 - **Grille modulable** : nombre de colonnes et de lignes configurable (aujourd'hui fixe : 7 × 4, 4 × 7 en portrait, emplacements 0 à 27 ; l'emplacement 0 d'un dossier est le retour).
