@@ -2,7 +2,7 @@
 
 | | |
 | --- | --- |
-| **Statut** | À faire |
+| **Statut** | Livré |
 | **Personne active** | OverAngelix |
 | **Périmètre** | `server/` (routes du compte) et `client/` (fenêtre ouverte depuis le menu) |
 | **Dépend de** | [09 — Comptes utilisateur et base de données SQLite](09-comptes-base-de-donnees.md), [11 — Menu « Mon compte » et réglages de l'application](11-menu-compte-reglages.md) |
@@ -36,20 +36,20 @@ Le menu du compte devient : Grille, Configuration de la grille, Configuration de
 
 ### Étape 3 — Fenêtre « Mon compte » (client)
 
-- [ ] Interfaces des formulaires dans `client/src/interfaces/`, appels `changePassword` et `deleteAccount` dans `client/src/api/account.ts`
-- [ ] Composant `AccountDialog.vue` : fenêtre modale (plein écran sur téléphone), adresse e-mail en tête, trois sections : Mot de passe, Grille, Supprimer le compte (la dernière en rouge, séparée)
-- [ ] Section **Mot de passe** : trois champs (actuel, nouveau, confirmation), affichage à la demande, validation côté client (longueur, confirmation identique), bouton désactivé pendant l'envoi, erreurs du serveur en français dans la section, message de confirmation à la réussite
-- [ ] Section **Grille** : bouton « Effacer la grille » (grisé quand la grille est vide), qui ouvre la confirmation existante (`ConfirmClearGrid.vue`) ; la fenêtre ne perd pas son état
-- [ ] Section **Supprimer le compte** : texte qui dit ce qui disparaît, bouton rouge, confirmation avec mot de passe (`ConfirmDeleteAccount.vue`) ; succès → grille, réglages et session remis à zéro, retour à la page de connexion, son de suppression
-- [ ] Menu et tiroir : retirer l'entrée « Effacer la grille » (et le grisage lié à la grille vide, qui passe dans la fenêtre), ajouter « Mon compte » après « Configuration de l'application » ; action `account` à la place de `clear` dans `interfaces/account.ts`
-- [ ] Tests client : appels d'API (corps envoyé, 403 affiché sans déconnexion), état remis à zéro après la suppression du compte
+- [x] Interfaces des formulaires dans `client/src/interfaces/`, appels `changePassword` et `deleteAccount` dans `client/src/api/account.ts`
+- [x] Composant `AccountDialog.vue` : fenêtre modale (plein écran sur téléphone), adresse e-mail en tête, trois sections : Mot de passe, Grille, Supprimer le compte (la dernière en rouge, séparée)
+- [x] Section **Mot de passe** : trois champs (actuel, nouveau, confirmation), affichage à la demande, validation côté client (longueur, confirmation identique), bouton désactivé pendant l'envoi, erreurs du serveur en français dans la section, message de confirmation à la réussite
+- [x] Section **Grille** : bouton « Effacer la grille » (grisé quand la grille est vide), qui ouvre la confirmation existante (`ConfirmClearGrid.vue`) ; la fenêtre ne perd pas son état
+- [x] Section **Supprimer le compte** : texte qui dit ce qui disparaît, bouton rouge, confirmation avec mot de passe (`ConfirmDeleteAccount.vue`) ; succès → grille, réglages et session remis à zéro, retour à la page de connexion, son de suppression
+- [x] Menu et tiroir : retirer l'entrée « Effacer la grille » (et le grisage lié à la grille vide, qui passe dans la fenêtre), ajouter « Mon compte » après « Configuration de l'application » ; action `account` à la place de `clear` dans `interfaces/account.ts`
+- [x] Tests client : appels d'API (corps envoyé, 403 affiché sans déconnexion), état remis à zéro après la suppression du compte
 
 ### Étape 4 — Documentation
 
-- [ ] `CLAUDE.md` et `README.md` : menu du compte, fenêtre « Mon compte » (mot de passe, effacement de la grille, suppression du compte)
-- [ ] README des features : ligne 10, « Plus tard » à jour
-- [ ] Fiches 09 et 11 : « hors périmètre, prévu pour la feature 10 » renvoie ici ; la fiche 11 note que « Effacer la grille » est ensuite passé dans la fenêtre « Mon compte »
-- [ ] Fiche mise à jour, vérification manuelle (voir plus bas)
+- [x] `CLAUDE.md` et `README.md` : menu du compte, fenêtre « Mon compte » (mot de passe, effacement de la grille, suppression du compte)
+- [x] README des features : ligne 10, « Plus tard » à jour
+- [x] Fiches 09 et 11 : « hors périmètre, prévu pour la feature 10 » renvoie ici ; la fiche 11 note que « Effacer la grille » est ensuite passé dans la fenêtre « Mon compte »
+- [x] Fiche mise à jour, vérification manuelle (voir plus bas)
 
 ## Décisions (proposées)
 
@@ -113,7 +113,7 @@ Corps : `{ "currentPassword": "…", "newPassword": "…" }` pour le changement,
 
 ### Validation
 
-- [ ] Type-check, lint, tests et build sans erreur côté serveur et côté client
+- [x] Type-check, lint, tests (179 serveur, 136 client) et build sans erreur côté serveur et côté client
 - [ ] Parcours vérifié sur ordinateur (menu déroulant, fenêtre) et sur téléphone (tiroir, fenêtre plein écran)
 - [ ] Une session ouverte sur un autre appareil est bien fermée après le changement de mot de passe
 - [ ] Après la suppression du compte, la base ne contient plus aucune ligne de cette personne

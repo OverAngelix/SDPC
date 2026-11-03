@@ -14,7 +14,7 @@ L'écran principal est la grille. Le menu **Mon compte** de la barre du haut (un
 
 - **Grille** et **Configuration de la grille** : lancer ses raccourcis, ou créer, modifier, déplacer et supprimer les boutons ;
 - **Configuration de l'application** : son (actif ou non, volume), effets visuels (survol, animations), thème (clair, sombre, celui de l'appareil). Ces réglages sont enregistrés sur le compte et suivent la personne d'un appareil à l'autre ;
-- **Effacer la grille** : supprime tous les boutons du compte, après confirmation ;
+- **Mon compte** : changer son mot de passe (le mot de passe actuel est redemandé, les autres appareils sont déconnectés), effacer la grille (tous les boutons du compte, après confirmation) ou supprimer son compte (avec son mot de passe, définitif) ;
 - **Déconnexion**.
 
 ## Stack
@@ -67,6 +67,7 @@ Les comptes et les boutons sont conservés côté serveur dans une base SQLite, 
 | [07 — Responsive : grille adaptée au téléphone](docs/feature/07-responsive.md) | Livré | OverAngelix |
 | [08 — Grille de 28 cases (7 × 4, 4 × 7 en portrait)](docs/feature/08-grille-28-cases.md) | Livré | OverAngelix |
 | [09 — Comptes utilisateur et base de données SQLite](docs/feature/09-comptes-base-de-donnees.md) | Livré | OverAngelix |
+| [10 — Fenêtre « Mon compte » : mot de passe, remise à zéro et suppression](docs/feature/10-fenetre-mon-compte.md) | Livré | OverAngelix |
 | [11 — Menu « Mon compte » et réglages de l'application](docs/feature/11-menu-compte-reglages.md) | Livré | OverAngelix |
 
 La liste complète et le détail de chaque feature (TODO, implémentation) sont dans [`docs/feature/`](docs/feature/README.md).

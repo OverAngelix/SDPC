@@ -7,7 +7,7 @@
 | **Périmètre** | `server/` (réglages du compte, effacement de la grille) et `client/` |
 | **Dépend de** | [09 — Comptes utilisateur et base de données SQLite](09-comptes-base-de-donnees.md) |
 
-La feature 10 (suite des comptes) est repoussée après celle-ci : le numéro 10 reste réservé (voir « Plus tard » dans le README des features).
+La [feature 10](10-fenetre-mon-compte.md) vient après celle-ci : elle déplace « Effacer la grille » du menu dans la fenêtre « Mon compte » et y ajoute le changement de mot de passe et la suppression du compte.
 
 ## Explication de la feature
 
@@ -106,7 +106,7 @@ Les réglages de l'application sont **enregistrés sur le compte** (table `user_
 - **Pages publiques sans menu.** Connexion et Créer un compte n'ont que le titre : pas de compte à gérer avant d'être connecté.
 - **Interfaces du serveur dans `src/interfaces/`, comme le client.** Les types partagés (`Button`, `User`, `Settings`, `ValidationResult`, `Db`, `AppOptions`…) quittent les fichiers qui les utilisaient (`buttons/types.ts`, `app.ts`, `auth/router.ts`, `buttons/validation.ts`, `db/database.ts`…) pour un fichier par sujet. Les constantes n'en sont pas : elles vont dans `constants.ts`. Les types privés d'un fichier (forme d'une ligne SQL, état interne du limiteur) restent sur place, non exportés. Cela vaut pour le code livré par les fiches 02 à 10 : leurs tableaux de fichiers ne sont pas réécrits.
 - **Fermeture automatique.** Le menu et le tiroir se ferment après le choix d'une entrée, y compris quand elle ouvre une fenêtre.
-- **Hors périmètre** : image de fond de la grille (liste « Plus tard »), changement de mot de passe ou d'e-mail et suppression du compte (feature 10).
+- **Hors périmètre** : image de fond de la grille (liste « Plus tard »), changement de mot de passe et suppression du compte (feature 10).
 
 ## Implémentation
 
