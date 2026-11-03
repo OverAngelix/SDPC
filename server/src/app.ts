@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from 'express'
 import express from 'express'
 import cors from 'cors'
+import { accountRouter } from './account/router.js'
 import { LoginLimiter } from './auth/loginLimiter.js'
 import { authenticate, requireAuth } from './auth/middleware.js'
 import { authRouter } from './auth/router.js'
@@ -15,7 +16,7 @@ function clientErrorStatus (error: unknown): number | undefined {
   return typeof status === 'number' && status >= 400 && status < 500 ? status : undefined
 }
 
-export function createApp ({ store, auth, settings, limiter = new LoginLimiter(), secureCookie = false, clientOrigin }: AppOptions) {
+export function createApp ({ store, auth, settings, account, limiter = new LoginLimiter(), secureCookie = false, clientOrigin }: AppOptions) {
   const app = express()
 
   // Les cookies de session imposent une origine précise : jamais de CORS ouvert à tous
@@ -27,6 +28,7 @@ export function createApp ({ store, auth, settings, limiter = new LoginLimiter()
     res.json({ status: 'ok' })
   })
   app.use('/api/auth', authRouter(auth, limiter, { secureCookie }))
+  app.use('/api/account', requireAuth, accountRouter(account, limiter, { secureCookie }))
   app.use('/api/buttons', requireAuth, buttonsRouter(store))
   app.use('/api/settings', requireAuth, settingsRouter(settings))
 

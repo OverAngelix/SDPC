@@ -1,4 +1,5 @@
 import 'dotenv/config'
+import { AccountStore } from './account/store.js'
 import { createApp } from './app.js'
 import { AuthStore } from './auth/store.js'
 import { ButtonStore } from './buttons/store.js'
@@ -13,11 +14,13 @@ const db = openDatabase(databaseFile)
 const store = new ButtonStore(db)
 const auth = new AuthStore(db)
 const settings = new SettingsStore(db)
+const account = new AccountStore(db)
 
 createApp({
   store,
   auth,
   settings,
+  account,
   secureCookie: process.env.NODE_ENV === 'production',
   clientOrigin: process.env.CLIENT_ORIGIN || undefined,
 }).listen(port, () => {

@@ -1,3 +1,4 @@
+import type { AccountStore } from '../account/store.js'
 import type { AuthStore } from '../auth/store.js'
 import type { LoginLimiter } from '../auth/loginLimiter.js'
 import type { ButtonStore } from '../buttons/store.js'
@@ -7,6 +8,7 @@ export interface AppOptions {
   store: ButtonStore
   auth: AuthStore
   settings: SettingsStore
+  account: AccountStore
   limiter?: LoginLimiter
   /** Cookie de session réservé au HTTPS (production) */
   secureCookie?: boolean

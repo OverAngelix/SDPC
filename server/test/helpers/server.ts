@@ -1,5 +1,6 @@
 import { once } from 'node:events'
 import type { AddressInfo } from 'node:net'
+import { AccountStore } from '../../src/account/store.js'
 import { createApp } from '../../src/app.js'
 import { AuthStore } from '../../src/auth/store.js'
 import { ButtonStore } from '../../src/buttons/store.js'
@@ -13,7 +14,8 @@ export async function startTestServer (options: Partial<AppOptions> = {}) {
   const store = new ButtonStore(db)
   const auth = new AuthStore(db)
   const settings = new SettingsStore(db)
-  const server = createApp({ store, auth, settings, ...options }).listen(0)
+  const account = new AccountStore(db)
+  const server = createApp({ store, auth, settings, account, ...options }).listen(0)
   await once(server, 'listening')
 
   return {
@@ -22,6 +24,7 @@ export async function startTestServer (options: Partial<AppOptions> = {}) {
     store,
     auth,
     settings,
+    account,
     /** Crée un compte et ouvre une session : renvoie l'identifiant et le cookie à envoyer. */
     async signUp (email: string) {
       const user = await auth.register({ email, password: 'motdepasse' })
