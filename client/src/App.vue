@@ -50,7 +50,7 @@
     <confirm-delete-account v-model="deleteOpen" @deleted="onAccountDeleted" />
 
     <v-snackbar v-model="signOutFailed" color="error" timeout="5000">
-      Déconnexion impossible : le serveur est injoignable.
+      {{ t('notices.signOutFailed') }}
     </v-snackbar>
 
     <v-snackbar v-model="notice" timeout="3000">{{ noticeText }}</v-snackbar>
@@ -60,6 +60,7 @@
 <script lang="ts" setup>
   import type { AccountAction } from '@/interfaces/account'
   import { computed, ref, watch } from 'vue'
+  import { useI18n } from 'vue-i18n'
   import { useRoute, useRouter } from 'vue-router'
   import { useTheme } from 'vuetify'
   import AccountDialog from '@/components/AccountDialog.vue'
@@ -74,6 +75,7 @@
   import { useSettingsStore } from '@/stores/settings'
 
   const auth = useAuthStore()
+  const { t } = useI18n()
   const settings = useSettingsStore()
   const route = useRoute()
   const router = useRouter()
@@ -131,14 +133,14 @@
   }
 
   function onCleared (count: number) {
-    noticeText.value = `Grille effacée (${count} bouton${count > 1 ? 's' : ''} supprimé${count > 1 ? 's' : ''}).`
+    noticeText.value = t('notices.gridCleared', count)
     notice.value = true
   }
 
   // La session est déjà fermée : la page de connexion s'affiche (voir plus haut), le message l'accompagne
   function onAccountDeleted () {
     accountOpen.value = false
-    noticeText.value = 'Compte supprimé.'
+    noticeText.value = t('notices.accountDeleted')
     notice.value = true
   }
 

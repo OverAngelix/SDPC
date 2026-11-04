@@ -7,26 +7,26 @@
       <v-list-item
         :active="!onConfig"
         prepend-icon="mdi-view-grid"
-        title="Grille"
+        :title="t('menu.grid')"
         @click="emit('select', 'grid')"
       />
 
       <v-list-item
         :active="onConfig"
         prepend-icon="mdi-view-grid-plus"
-        title="Configuration de la grille"
+        :title="t('menu.gridConfig')"
         @click="emit('select', 'config')"
       />
 
       <v-list-item
         prepend-icon="mdi-tune"
-        title="Configuration de l'application"
+        :title="t('menu.appSettings')"
         @click="emit('select', 'settings')"
       />
 
       <v-list-item
         prepend-icon="mdi-account-cog"
-        title="Mon compte"
+        :title="t('menu.accountWindow')"
         @click="emit('select', 'account')"
       />
     </template>
@@ -36,7 +36,7 @@
     <v-list-item
       v-if="part !== 'main'"
       prepend-icon="mdi-logout"
-      title="Déconnexion"
+      :title="t('menu.logout')"
       @click="emit('select', 'logout')"
     />
   </v-list>
@@ -44,6 +44,7 @@
 
 <script lang="ts" setup>
   import type { AccountAction } from '@/interfaces/account'
+  import { useI18n } from 'vue-i18n'
 
   withDefaults(defineProps<{
     email: string
@@ -54,4 +55,6 @@
   }>(), { part: 'all' })
 
   const emit = defineEmits<{ select: [action: AccountAction] }>()
+
+  const { t } = useI18n()
 </script>

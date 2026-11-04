@@ -9,6 +9,24 @@ export default {
     en: 'English',
   },
 
+  /** Barre d'application, menu et tiroir du compte */
+  menu: {
+    open: 'Menu',
+    account: 'Mon compte',
+    grid: 'Grille',
+    gridConfig: 'Configuration de la grille',
+    appSettings: 'Configuration de l\'application',
+    accountWindow: 'Mon compte',
+    logout: 'Déconnexion',
+  },
+
+  /** Messages affichés par l'application elle-même */
+  notices: {
+    signOutFailed: 'Déconnexion impossible : le serveur est injoignable.',
+    gridCleared: 'Grille effacée ({count} bouton supprimé). | Grille effacée ({count} boutons supprimés).',
+    accountDeleted: 'Compte supprimé.',
+  },
+
   /** Fenêtre « Configuration de l'application » */
   settings: {
     language: 'Langue',

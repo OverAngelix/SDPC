@@ -13,6 +13,10 @@ export const i18n = createI18n({
   legacy: false,
   locale: initialLocale,
   fallbackLocale: DEFAULT_LOCALE,
+  // En français, 0 et 1 sont au singulier (« 0 bouton », « 1 bouton »), contrairement à l'anglais
+  pluralRules: {
+    fr: (choice: number) => choice < 2 ? 0 : 1,
+  },
   messages: {
     fr: { $vuetify: vuetifyFr, ...messages.fr },
     en: { $vuetify: vuetifyEn, ...messages.en },

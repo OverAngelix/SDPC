@@ -2,7 +2,7 @@
   <!-- Téléphone : un burger ouvre le tiroir (AccountDrawer, à la racine de l'application) -->
   <v-btn
     v-if="xs"
-    aria-label="Menu"
+    :aria-label="t('menu.open')"
     icon="mdi-menu"
     @click="drawer = !drawer"
   />
@@ -13,7 +13,7 @@
       <v-btn
         v-bind="activator"
         prepend-icon="mdi-account-circle"
-        text="Mon compte"
+        :text="t('menu.account')"
         variant="text"
       />
     </template>
@@ -30,6 +30,7 @@
 
 <script lang="ts" setup>
   import type { AccountAction } from '@/interfaces/account'
+  import { useI18n } from 'vue-i18n'
   import { useDisplay } from 'vuetify'
   import AccountMenuItems from '@/components/AccountMenuItems.vue'
 
@@ -44,4 +45,5 @@
   const drawer = defineModel<boolean>('drawer', { default: false })
 
   const { xs } = useDisplay()
+  const { t } = useI18n()
 </script>

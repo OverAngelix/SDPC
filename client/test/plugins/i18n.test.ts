@@ -31,4 +31,17 @@ describe('plugin i18n', () => {
     setLocale('en')
     expect(i18n.global.t('onlyInFrench')).toBe('Seulement en français')
   })
+
+  it('accorde les pluriels : en français 0 et 1 sont au singulier, en anglais seul 1 l\'est', () => {
+    const cleared = (count: number) => i18n.global.t('notices.gridCleared', count)
+
+    setLocale('fr')
+    expect(cleared(0)).toBe('Grille effacée (0 bouton supprimé).')
+    expect(cleared(1)).toBe('Grille effacée (1 bouton supprimé).')
+    expect(cleared(12)).toBe('Grille effacée (12 boutons supprimés).')
+
+    setLocale('en')
+    expect(cleared(1)).toBe('Grid cleared (1 button removed).')
+    expect(cleared(12)).toBe('Grid cleared (12 buttons removed).')
+  })
 })
