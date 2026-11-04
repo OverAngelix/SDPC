@@ -9,6 +9,53 @@ export default {
     en: 'English',
   },
 
+  /** Erreurs de l'API : un texte par code d'erreur du serveur (`ERROR_CODES`), et les erreurs que le client constate lui-même */
+  errors: {
+    unreachable: 'Le serveur est injoignable.',
+    unexpected: 'Une erreur inattendue est survenue.',
+    serverStatus: 'Le serveur a répondu avec une erreur ({status}).',
+    /** Un problème sur un champ : le nom du champ de l'API, puis le problème */
+    field: '{field} : {message}',
+    invalid_data: 'Données invalides',
+    invalid_parent_id: 'Paramètre parentId invalide',
+    session_required: 'Connexion requise',
+    wrong_password: 'Mot de passe incorrect',
+    wrong_current_password: 'Mot de passe actuel incorrect',
+    invalid_credentials: 'E-mail ou mot de passe incorrect',
+    email_taken: 'Adresse e-mail déjà utilisée',
+    too_many_attempts: 'Trop de tentatives, réessayez plus tard',
+    button_not_found: 'Bouton introuvable',
+    folder_not_empty: 'Un dossier non vide ne peut pas devenir une action',
+    slot_taken: 'Emplacement déjà occupé',
+    route_not_found: 'Route introuvable',
+    bad_request: 'Requête invalide',
+    internal_error: 'Erreur interne du serveur',
+  },
+
+  /** Problèmes relevés sur un champ : un texte par code (`ISSUE_CODES`) */
+  issues: {
+    body_not_object: 'Le corps de la requête doit être un objet JSON',
+    required: 'obligatoire',
+    too_short: '{min} caractères au moins',
+    too_long: '{max} caractères au plus',
+    must_differ: 'doit être différent du mot de passe actuel',
+    invalid_email: 'adresse invalide',
+    invalid_icon: 'nom d\'icône MDI requis (ex. « mdi-youtube »)',
+    invalid_choice: 'l\'une de ces valeurs attendue ({values})',
+    integer_range: 'entier de {min} à {max} requis',
+    boolean_expected: 'booléen attendu',
+    unknown_setting: 'réglage inconnu',
+    invalid_parent: 'identifiant de dossier ou null attendu',
+    parent_not_found: 'dossier introuvable',
+    reserved_slot: 'l\'emplacement {slot} est réservé au bouton retour dans un dossier',
+    move_unsupported: 'le déplacement vers un autre dossier n\'est pas géré',
+    url_forbidden: 'interdite pour un dossier',
+    url_scheme: 'seules les adresses http et https sont autorisées',
+    invalid_url: 'adresse invalide',
+    empty_folder_first: 'vider le dossier d\'abord',
+    slot_taken: 'l\'emplacement {position} est pris dans ce dossier',
+  },
+
   /** Boutons et phrases communs à plusieurs fenêtres */
   common: {
     cancel: 'Annuler',
