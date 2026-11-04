@@ -7,6 +7,11 @@ const en: Messages = {
     en: 'English',
   },
 
+  common: {
+    cancel: 'Cancel',
+    irreversible: 'This cannot be undone.',
+  },
+
   validation: {
     required: 'Required',
     minLength: 'At least {min} characters',
@@ -36,6 +41,66 @@ const en: Messages = {
     edit: 'Edit',
     remove: 'Delete',
     add: 'Add a button',
+  },
+
+  config: {
+    helpEmptySlot: 'An empty slot lets you create a button, a folder lets you set up its contents.',
+    helpDrag: 'Drag a button onto another slot to move it: if the slot is taken, the two buttons swap places.',
+    helpMove: 'Without a mouse, open the button and tap “Move”.',
+    moving: 'Moving “{label}”: tap the destination slot (a taken slot swaps places).',
+    reserved: 'The first slot of a folder is reserved for the back button: a button cannot be placed there.',
+    moveFailed: 'Could not move: {reason}',
+    removed: 'Button deleted.',
+  },
+
+  buttonForm: {
+    editTitle: 'Edit button',
+    newTitle: 'New button',
+    typeAction: 'Action',
+    typeFolder: 'Folder',
+    label: 'Label',
+    url: 'URL',
+    move: 'Move',
+    save: 'Save',
+    created: 'Button created.',
+    updated: 'Button updated.',
+    errors: {
+      labelRequired: 'The label is required.',
+      labelTooLong: 'The label can be at most {max} characters long.',
+      iconInvalid: 'An MDI icon name is expected, for example “mdi-youtube”.',
+      urlRequired: 'The URL is required for an action.',
+      urlTooLong: 'The URL can be at most {max} characters long.',
+      urlScheme: 'The URL must start with http:// or https://.',
+    },
+  },
+
+  pickers: {
+    color: 'Color',
+    icon: 'Icon',
+    iconPlaceholder: 'Pick one below or type an MDI icon name (mdi-youtube)',
+    iconsPrevious: 'Previous icons',
+    iconsNext: 'Next icons',
+  },
+
+  colors: {
+    grey: 'Grey',
+    red: 'Red',
+    orange: 'Orange',
+    amber: 'Amber',
+    green: 'Green',
+    teal: 'Teal',
+    cyan: 'Cyan',
+    blue: 'Blue',
+    purple: 'Purple',
+    pink: 'Pink',
+  },
+
+  deleteButton: {
+    titleButton: 'Delete the button “{label}”?',
+    titleFolder: 'Delete the folder “{label}”?',
+    contentCount: '{count} item deleted with the folder | {count} items deleted with the folder',
+    confirmButton: 'Delete',
+    confirmFolder: 'Delete folder',
   },
 
   menu: {

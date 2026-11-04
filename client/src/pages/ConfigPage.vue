@@ -2,9 +2,9 @@
   <v-container class="page-centered pa-2 pa-sm-4">
     <grid-status :home="{ name: 'config' }" :path="path">
       <p class="text-medium-emphasis text-center mb-4">
-        Un emplacement vide permet de créer un bouton, un dossier de configurer son contenu.
-        Glissez un bouton sur un autre emplacement pour le déplacer : s'il est occupé, les deux boutons échangent leur place.
-        Sans souris, ouvrez le bouton puis touchez « Déplacer ».
+        {{ t('config.helpEmptySlot') }}
+        {{ t('config.helpDrag') }}
+        {{ t('config.helpMove') }}
       </p>
 
       <v-alert
@@ -14,9 +14,9 @@
         icon="mdi-cursor-move"
         variant="tonal"
       >
-        Déplacement de « {{ moving.label }} » : touchez l'emplacement de destination (un bouton occupé échange sa place).
+        {{ t('config.moving', { label: moving.label }) }}
         <template #append>
-          <v-btn size="small" text="Annuler" variant="outlined" @click="moving = null" />
+          <v-btn size="small" :text="t('common.cancel')" variant="outlined" @click="moving = null" />
         </template>
       </v-alert>
 
@@ -62,6 +62,7 @@
   import type { ApiErrorMessage } from '@/interfaces/api'
   import type { Button } from '@/interfaces/button'
   import { onMounted, ref, watch } from 'vue'
+  import { useI18n } from 'vue-i18n'
   import ButtonForm from '@/components/ButtonForm.vue'
   import ButtonGrid from '@/components/ButtonGrid.vue'
   import ConfirmDelete from '@/components/ConfirmDelete.vue'
@@ -73,6 +74,7 @@
   import { describeApiError } from '@/utils/apiError'
 
   const store = useButtonsStore()
+  const { t } = useI18n()
   const settings = useSettingsStore()
   const { folderId, path, slots, openFolder, goBack } = useFolderNavigation({ root: 'config', folder: 'config-folder' })
 
@@ -160,7 +162,7 @@
   // Lâché sur la tuile de retour : rien n'est envoyé au serveur, on explique le refus
   function refuseReserved () {
     settings.play('refuse')
-    notify('La première case d\'un dossier est réservée au bouton retour : on ne peut pas y placer un bouton.')
+    notify(t('config.reserved'))
   }
 
   async function move (button: Button, slot: number) {
@@ -169,7 +171,7 @@
       settings.play('move')
     } catch (error) {
       settings.play('refuse')
-      notify(`Déplacement impossible : ${describeApiError(error).title}`)
+      notify(t('config.moveFailed', { reason: describeApiError(error).title }))
     }
   }
 
@@ -181,7 +183,7 @@
       await store.remove(removing.value.id)
       removeOpen.value = false
       settings.play('delete')
-      notify('Bouton supprimé.')
+      notify(t('config.removed'))
     } catch (error) {
       removeError.value = describeApiError(error)
     } finally {

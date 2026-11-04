@@ -5,15 +5,15 @@
       autocomplete="off"
       :error-messages="errorMessages"
       :hide-details="!errorMessages"
-      label="Icône"
-      placeholder="Choisir ci-dessous ou saisir un nom d'icône MDI (mdi-youtube)"
+      :label="t('pickers.icon')"
+      :placeholder="t('pickers.iconPlaceholder')"
       :prepend-inner-icon="preview"
     />
 
     <!-- Les flèches signalent que la liste défile et la font défiler d'un coup, sans molette horizontale -->
     <div class="d-flex align-center mt-2">
       <v-btn
-        aria-label="Icônes précédentes"
+        :aria-label="t('pickers.iconsPrevious')"
         density="comfortable"
         :disabled="!canScrollBack"
         icon="mdi-chevron-left"
@@ -35,7 +35,7 @@
       </div>
 
       <v-btn
-        aria-label="Icônes suivantes"
+        :aria-label="t('pickers.iconsNext')"
         density="comfortable"
         :disabled="!canScrollForward"
         icon="mdi-chevron-right"
@@ -48,10 +48,12 @@
 
 <script lang="ts" setup>
   import { computed, nextTick, onMounted, ref } from 'vue'
+  import { useI18n } from 'vue-i18n'
   import { ICON_PATTERN } from '@/utils/buttonForm'
   import { COMMON_ICONS } from '@/utils/icons'
 
   const model = defineModel<string>({ required: true })
+  const { t } = useI18n()
 
   defineProps<{
     errorMessages?: string

@@ -13,7 +13,7 @@
         {{ countText }}
       </v-alert>
 
-      <p class="text-medium-emphasis">Cette action est définitive.</p>
+      <p class="text-medium-emphasis">{{ t('common.irreversible') }}</p>
 
       <v-alert
         v-if="error"
@@ -26,12 +26,12 @@
       </v-alert>
 
       <v-card-actions class="justify-center mt-4">
-        <v-btn :disabled="loading" text="Annuler" @click="open = false" />
+        <v-btn :disabled="loading" :text="t('common.cancel')" @click="open = false" />
 
         <v-btn
           color="error"
           :loading="loading"
-          :text="isFolder ? 'Supprimer le dossier' : 'Supprimer'"
+          :text="isFolder ? t('deleteButton.confirmFolder') : t('deleteButton.confirmButton')"
           variant="flat"
           @click="emit('confirm')"
         />
@@ -44,6 +44,7 @@
   import type { ApiErrorMessage } from '@/interfaces/api'
   import type { Button } from '@/interfaces/button'
   import { computed } from 'vue'
+  import { useI18n } from 'vue-i18n'
 
   // Dialogue ouvert ou fermé
   const open = defineModel<boolean>({ required: true })
@@ -63,9 +64,11 @@
     confirm: []
   }>()
 
+  const { t } = useI18n()
+
   const isFolder = computed(() => props.button?.type === 'folder')
   const count = computed(() => props.contentCount ?? 0)
   // Le nom de l'élément est dans le titre : la fenêtre n'a pas besoin d'une phrase de plus
-  const title = computed(() => `Supprimer ${isFolder.value ? 'le dossier' : 'le bouton'} « ${props.button?.label} » ?`)
-  const countText = computed(() => `${count.value} élément${count.value > 1 ? 's' : ''} supprimé${count.value > 1 ? 's' : ''} avec le dossier`)
+  const title = computed(() => t(isFolder.value ? 'deleteButton.titleFolder' : 'deleteButton.titleButton', { label: props.button?.label }))
+  const countText = computed(() => t('deleteButton.contentCount', count.value))
 </script>

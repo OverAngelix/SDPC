@@ -9,7 +9,7 @@
       <v-card
         class="form-card d-flex flex-column"
         :class="{ 'h-100 form-card-full': xs }"
-        :title="button ? 'Modifier le bouton' : 'Nouveau bouton'"
+        :title="button ? t('buttonForm.editTitle') : t('buttonForm.newTitle')"
       >
         <!-- Seul le contenu défile : les boutons du bas restent toujours visibles -->
         <v-card-text class="flex-grow-1 overflow-y-auto">
@@ -20,8 +20,8 @@
             divided
             mandatory
           >
-            <v-btn prepend-icon="mdi-open-in-new" text="Action" value="action" />
-            <v-btn prepend-icon="mdi-folder" text="Dossier" value="folder" />
+            <v-btn prepend-icon="mdi-open-in-new" :text="t('buttonForm.typeAction')" value="action" />
+            <v-btn prepend-icon="mdi-folder" :text="t('buttonForm.typeFolder')" value="folder" />
           </v-btn-toggle>
 
           <v-text-field
@@ -29,7 +29,7 @@
             autofocus
             :error-messages="shown.label"
             :hide-details="!shown.label"
-            label="Libellé"
+            :label="t('buttonForm.label')"
             :maxlength="LABEL_MAX_LENGTH"
           />
 
@@ -44,7 +44,7 @@
             :class="{ 'url-hidden': values.type !== 'action' }"
             :disabled="values.type !== 'action'"
             :error-messages="shown.url"
-            label="URL"
+            :label="t('buttonForm.url')"
             placeholder="https://"
             type="url"
           />
@@ -68,17 +68,17 @@
             v-if="button"
             :disabled="saving"
             prepend-icon="mdi-cursor-move"
-            text="Déplacer"
+            :text="t('buttonForm.move')"
             @click="emit('move', button)"
           />
 
           <v-spacer />
-          <v-btn :disabled="saving" text="Annuler" @click="open = false" />
+          <v-btn :disabled="saving" :text="t('common.cancel')" @click="open = false" />
 
           <v-btn
             color="primary"
             :loading="saving"
-            text="Enregistrer"
+            :text="t('buttonForm.save')"
             type="submit"
             variant="flat"
           />
@@ -93,6 +93,7 @@
   import type { Button, ButtonType } from '@/interfaces/button'
   import type { ButtonFormValues } from '@/interfaces/buttonForm'
   import { computed, reactive, ref, watch } from 'vue'
+  import { useI18n } from 'vue-i18n'
   import { useDisplay } from 'vuetify'
   import ColorPicker from '@/components/ColorPicker.vue'
   import IconPicker from '@/components/IconPicker.vue'
@@ -103,6 +104,7 @@
 
   // Téléphone : le formulaire occupe tout l'écran, ses champs défilent au-dessus du clavier
   const { xs } = useDisplay()
+  const { t } = useI18n()
 
   // Dialogue ouvert ou fermé
   const open = defineModel<boolean>({ required: true })
@@ -159,7 +161,7 @@
     saving.value = true
     try {
       await (props.button ? store.update(props.button.id, toButtonPatch(values)) : store.create(toButtonInput(values, props.parentId, props.position)))
-      emit('saved', props.button ? 'Bouton modifié.' : 'Bouton créé.')
+      emit('saved', props.button ? t('buttonForm.updated') : t('buttonForm.created'))
       open.value = false
     } catch (error) {
       // 400 et 409 : le serveur reste l'autorité, son message s'affiche dans le formulaire

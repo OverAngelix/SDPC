@@ -1,21 +1,21 @@
 <template>
   <div>
-    <div class="text-body-2 text-medium-emphasis mb-2">Couleur</div>
+    <div class="text-body-2 text-medium-emphasis mb-2">{{ t('pickers.color') }}</div>
 
-    <div aria-label="Couleur" class="swatches" role="radiogroup">
+    <div :aria-label="t('pickers.color')" class="swatches" role="radiogroup">
       <button
         v-for="color in BUTTON_COLORS"
-        :key="color.value"
-        :aria-checked="color.value === model"
-        :aria-label="color.label"
+        :key="color"
+        :aria-checked="color === model"
+        :aria-label="t(`colors.${color}`)"
         class="swatch"
-        :class="[`bg-${solidColor(color.value)}`, { 'swatch-selected': color.value === model, 'swatch-still': !settings.effectsEnabled }]"
+        :class="[`bg-${solidColor(color)}`, { 'swatch-selected': color === model, 'swatch-still': !settings.effectsEnabled }]"
         role="radio"
-        :title="color.label"
+        :title="t(`colors.${color}`)"
         type="button"
-        @click="model = color.value"
+        @click="model = color"
       >
-        <v-icon v-if="color.value === model" color="white" icon="mdi-check" size="20" />
+        <v-icon v-if="color === model" color="white" icon="mdi-check" size="20" />
       </button>
     </div>
   </div>
@@ -23,11 +23,13 @@
 
 <script lang="ts" setup>
   import type { ButtonColor } from '@/interfaces/button'
+  import { useI18n } from 'vue-i18n'
   import { useSettingsStore } from '@/stores/settings'
   import { BUTTON_COLORS, solidColor } from '@/utils/colors'
 
   const model = defineModel<ButtonColor>({ required: true })
   const settings = useSettingsStore()
+  const { t } = useI18n()
 </script>
 
 <style scoped>

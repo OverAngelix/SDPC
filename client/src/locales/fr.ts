@@ -9,6 +9,12 @@ export default {
     en: 'English',
   },
 
+  /** Boutons et phrases communs à plusieurs fenêtres */
+  common: {
+    cancel: 'Annuler',
+    irreversible: 'Cette action est définitive.',
+  },
+
   /** Messages de validation des champs, communs à tous les formulaires */
   validation: {
     required: 'Champ requis',
@@ -41,6 +47,71 @@ export default {
     edit: 'Modifier',
     remove: 'Supprimer',
     add: 'Ajouter un bouton',
+  },
+
+  /** Page « Configuration de la grille » */
+  config: {
+    helpEmptySlot: 'Un emplacement vide permet de créer un bouton, un dossier de configurer son contenu.',
+    helpDrag: 'Glissez un bouton sur un autre emplacement pour le déplacer : s\'il est occupé, les deux boutons échangent leur place.',
+    helpMove: 'Sans souris, ouvrez le bouton puis touchez « Déplacer ».',
+    moving: 'Déplacement de « {label} » : touchez l\'emplacement de destination (un bouton occupé échange sa place).',
+    reserved: 'La première case d\'un dossier est réservée au bouton retour : on ne peut pas y placer un bouton.',
+    moveFailed: 'Déplacement impossible : {reason}',
+    removed: 'Bouton supprimé.',
+  },
+
+  /** Formulaire d'un bouton */
+  buttonForm: {
+    editTitle: 'Modifier le bouton',
+    newTitle: 'Nouveau bouton',
+    typeAction: 'Action',
+    typeFolder: 'Dossier',
+    label: 'Libellé',
+    url: 'URL',
+    move: 'Déplacer',
+    save: 'Enregistrer',
+    created: 'Bouton créé.',
+    updated: 'Bouton modifié.',
+    errors: {
+      labelRequired: 'Le libellé est obligatoire.',
+      labelTooLong: 'Le libellé fait {max} caractères au plus.',
+      iconInvalid: 'Nom d\'icône MDI attendu, par exemple « mdi-youtube ».',
+      urlRequired: 'L\'URL est obligatoire pour une action.',
+      urlTooLong: 'L\'URL fait {max} caractères au plus.',
+      urlScheme: 'L\'URL doit commencer par http:// ou https://.',
+    },
+  },
+
+  /** Choix de la couleur et de l'icône */
+  pickers: {
+    color: 'Couleur',
+    icon: 'Icône',
+    iconPlaceholder: 'Choisir ci-dessous ou saisir un nom d\'icône MDI (mdi-youtube)',
+    iconsPrevious: 'Icônes précédentes',
+    iconsNext: 'Icônes suivantes',
+  },
+
+  /** Noms des couleurs proposées */
+  colors: {
+    grey: 'Gris',
+    red: 'Rouge',
+    orange: 'Orange',
+    amber: 'Ambre',
+    green: 'Vert',
+    teal: 'Turquoise',
+    cyan: 'Cyan',
+    blue: 'Bleu',
+    purple: 'Violet',
+    pink: 'Rose',
+  },
+
+  /** Confirmation de la suppression d'un bouton ou d'un dossier */
+  deleteButton: {
+    titleButton: 'Supprimer le bouton « {label} » ?',
+    titleFolder: 'Supprimer le dossier « {label} » ?',
+    contentCount: '{count} élément supprimé avec le dossier | {count} éléments supprimés avec le dossier',
+    confirmButton: 'Supprimer',
+    confirmFolder: 'Supprimer le dossier',
   },
 
   /** Barre d'application, menu et tiroir du compte */

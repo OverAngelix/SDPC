@@ -2,15 +2,14 @@ import { describe, expect, it } from 'vitest'
 import { BUTTON_COLORS, colorOf, DEFAULT_COLOR, solidColor } from '@/utils/colors'
 
 describe('BUTTON_COLORS', () => {
-  it('propose 10 couleurs distinctes, avec un libellé', () => {
+  it('propose 10 couleurs distinctes', () => {
     expect(BUTTON_COLORS).toHaveLength(10)
-    expect(new Set(BUTTON_COLORS.map(color => color.value)).size).toBe(10)
-    expect(BUTTON_COLORS.every(color => color.label !== '')).toBe(true)
+    expect(new Set(BUTTON_COLORS).size).toBe(10)
   })
 
   it('contient la couleur par défaut, le gris', () => {
     expect(DEFAULT_COLOR).toBe('grey')
-    expect(BUTTON_COLORS.some(color => color.value === DEFAULT_COLOR)).toBe(true)
+    expect(BUTTON_COLORS.includes(DEFAULT_COLOR)).toBe(true)
   })
 })
 
@@ -32,7 +31,7 @@ describe('solidColor', () => {
   })
 
   it('garde le nom des autres couleurs', () => {
-    for (const { value } of BUTTON_COLORS.filter(color => color.value !== DEFAULT_COLOR)) {
+    for (const value of BUTTON_COLORS.filter(color => color !== DEFAULT_COLOR)) {
       expect(solidColor(value)).toBe(value)
     }
   })

@@ -1,5 +1,6 @@
 import type { ButtonFormValues } from '@/interfaces/buttonForm'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
+import { setLocale } from '@/plugins/i18n'
 import { ICON_PATTERN, LABEL_MAX_LENGTH, toButtonInput, toButtonPatch, URL_MAX_LENGTH, validateButtonForm } from '@/utils/buttonForm'
 import { COMMON_ICONS } from '@/utils/icons'
 
@@ -7,6 +8,20 @@ const action: ButtonFormValues = { type: 'action', label: 'YouTube', icon: 'mdi-
 const folder: ButtonFormValues = { type: 'folder', label: 'Jeux', icon: 'mdi-folder', color: 'grey', url: '' }
 
 describe('validateButtonForm', () => {
+  afterEach(() => setLocale('fr'))
+
+  it('écrit ses messages dans la langue active, limites comprises', () => {
+    const tooLong = { ...action, label: 'a'.repeat(LABEL_MAX_LENGTH + 1) }
+
+    setLocale('fr')
+    expect(validateButtonForm({ ...action, label: '' }).label).toBe('Le libellé est obligatoire.')
+    expect(validateButtonForm(tooLong).label).toBe(`Le libellé fait ${LABEL_MAX_LENGTH} caractères au plus.`)
+
+    setLocale('en')
+    expect(validateButtonForm({ ...action, label: '' }).label).toBe('The label is required.')
+    expect(validateButtonForm(tooLong).label).toBe(`The label can be at most ${LABEL_MAX_LENGTH} characters long.`)
+  })
+
   it('accepte une action et un dossier valides', () => {
     expect(validateButtonForm(action)).toEqual({})
     expect(validateButtonForm(folder)).toEqual({})
