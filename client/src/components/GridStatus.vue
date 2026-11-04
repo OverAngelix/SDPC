@@ -1,7 +1,7 @@
 <template>
   <div v-if="store.loading && !store.loaded" class="text-center pa-12">
     <v-progress-circular indeterminate />
-    <p class="text-medium-emphasis mt-4">Chargement des boutons…</p>
+    <p class="text-medium-emphasis mt-4">{{ t('grid.loading') }}</p>
   </div>
 
   <v-alert
@@ -10,9 +10,9 @@
     type="error"
     variant="tonal"
   >
-    Impossible de charger les boutons : le serveur est injoignable.
+    {{ t('grid.loadFailed') }}
     <template #append>
-      <v-btn text="Réessayer" variant="outlined" @click="store.load()" />
+      <v-btn :text="t('grid.retry')" variant="outlined" @click="store.load()" />
     </template>
   </v-alert>
 
@@ -22,9 +22,9 @@
     type="warning"
     variant="tonal"
   >
-    Ce dossier est introuvable : il a peut-être été supprimé.
+    {{ t('grid.folderMissing') }}
     <template #append>
-      <v-btn text="Retour à l'accueil" :to="home" variant="outlined" />
+      <v-btn :text="t('grid.backHome')" :to="home" variant="outlined" />
     </template>
   </v-alert>
 
@@ -36,9 +36,9 @@
       type="warning"
       variant="tonal"
     >
-      Impossible d'actualiser les boutons : le serveur est injoignable.
+      {{ t('grid.refreshFailed') }}
       <template #append>
-        <v-btn size="small" text="Réessayer" variant="outlined" @click="store.load()" />
+        <v-btn size="small" :text="t('grid.retry')" variant="outlined" @click="store.load()" />
       </template>
     </v-alert>
 
@@ -49,6 +49,7 @@
 <script lang="ts" setup>
   import type { Button } from '@/interfaces/button'
   import type { RouteLocationRaw } from 'vue-router'
+  import { useI18n } from 'vue-i18n'
   import { useButtonsStore } from '@/stores/buttons'
 
   /**
@@ -63,4 +64,5 @@
   }>()
 
   const store = useButtonsStore()
+  const { t } = useI18n()
 </script>

@@ -29,6 +29,20 @@ export default {
     createAccount: 'Créer un compte',
   },
 
+  /** Grille et états communs à la grille et à sa configuration */
+  grid: {
+    loading: 'Chargement des boutons…',
+    loadFailed: 'Impossible de charger les boutons : le serveur est injoignable.',
+    refreshFailed: 'Impossible d\'actualiser les boutons : le serveur est injoignable.',
+    retry: 'Réessayer',
+    folderMissing: 'Ce dossier est introuvable : il a peut-être été supprimé.',
+    backHome: 'Retour à l\'accueil',
+    back: 'Retour',
+    edit: 'Modifier',
+    remove: 'Supprimer',
+    add: 'Ajouter un bouton',
+  },
+
   /** Barre d'application, menu et tiroir du compte */
   menu: {
     open: 'Menu',

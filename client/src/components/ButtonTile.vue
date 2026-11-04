@@ -21,7 +21,7 @@
 
     <div v-if="editable && !back && button" class="tile-actions">
       <v-btn
-        aria-label="Modifier"
+        :aria-label="t('grid.edit')"
         density="comfortable"
         icon="mdi-pencil"
         size="x-small"
@@ -30,7 +30,7 @@
       />
 
       <v-btn
-        aria-label="Supprimer"
+        :aria-label="t('grid.remove')"
         density="comfortable"
         icon="mdi-delete"
         size="x-small"
@@ -42,7 +42,7 @@
 
   <v-card
     v-else-if="editable"
-    aria-label="Ajouter un bouton"
+    :aria-label="t('grid.add')"
     class="tile tile-empty d-flex align-center justify-center text-medium-emphasis"
     :class="[effect && `tile-${effect}`, { 'tile-still': !settings.effectsEnabled }]"
     link
@@ -58,6 +58,7 @@
 <script lang="ts" setup>
   import type { Button } from '@/interfaces/button'
   import { computed, onBeforeUnmount, ref } from 'vue'
+  import { useI18n } from 'vue-i18n'
   import { useSettingsStore } from '@/stores/settings'
   import { colorOf, DEFAULT_COLOR, solidColor } from '@/utils/colors'
 
@@ -73,6 +74,7 @@
   }>()
 
   const settings = useSettingsStore()
+  const { t } = useI18n()
 
   const emit = defineEmits<{
     select: [button: Button]
@@ -83,7 +85,7 @@
   }>()
 
   const icon = computed(() => props.back ? 'mdi-arrow-left' : props.button?.icon)
-  const label = computed(() => props.back ? 'Retour' : props.button?.label)
+  const label = computed(() => props.back ? t('grid.back') : props.button?.label)
   // Case pleine, texte et icônes en blanc ; la tuile de retour est toujours grise
   const color = computed(() => solidColor(props.back ? DEFAULT_COLOR : colorOf(props.button)))
   const isFolder = computed(() => !props.back && props.button?.type === 'folder')

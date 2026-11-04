@@ -25,6 +25,19 @@ const en: Messages = {
     createAccount: 'Create an account',
   },
 
+  grid: {
+    loading: 'Loading buttons…',
+    loadFailed: 'Could not load the buttons: the server is unreachable.',
+    refreshFailed: 'Could not refresh the buttons: the server is unreachable.',
+    retry: 'Try again',
+    folderMissing: 'This folder could not be found: it may have been deleted.',
+    backHome: 'Back to home',
+    back: 'Back',
+    edit: 'Edit',
+    remove: 'Delete',
+    add: 'Add a button',
+  },
+
   menu: {
     open: 'Menu',
     account: 'My account',
