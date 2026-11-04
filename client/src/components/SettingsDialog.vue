@@ -7,10 +7,10 @@
   >
     <v-card>
       <v-toolbar density="comfortable">
-        <v-toolbar-title>Configuration de l'application</v-toolbar-title>
+        <v-toolbar-title>{{ t('settings.title') }}</v-toolbar-title>
 
         <v-btn
-          aria-label="Fermer"
+          :aria-label="t('common.close')"
           icon="mdi-close"
           @click="open = false"
         />
@@ -24,23 +24,23 @@
           type="error"
           variant="tonal"
         >
-          Réglage non enregistré : {{ settings.error.title }}
+          {{ t('settings.saveFailed', { reason: settings.error.title }) }}
         </v-alert>
 
-        <h3 class="text-subtitle-1 mb-1">Son</h3>
+        <h3 class="text-subtitle-1 mb-1">{{ t('settings.sound') }}</h3>
 
         <v-switch
           color="primary"
           density="comfortable"
           hide-details
-          label="Son activé"
+          :label="t('settings.soundEnabled')"
           :model-value="settings.soundEnabled"
           @update:model-value="settings.change({ soundEnabled: $event === true })"
         />
 
         <v-slider
           v-model="volumeDraft"
-          aria-label="Volume"
+          :aria-label="t('settings.volume')"
           class="mt-2"
           color="primary"
           :disabled="!settings.soundEnabled"
@@ -58,20 +58,20 @@
 
         <v-divider class="my-4" />
 
-        <h3 class="text-subtitle-1 mb-1">Effets</h3>
+        <h3 class="text-subtitle-1 mb-1">{{ t('settings.effects') }}</h3>
 
         <v-switch
           color="primary"
           density="comfortable"
           hide-details
-          label="Effets visuels (survol, animations)"
+          :label="t('settings.effectsEnabled')"
           :model-value="settings.effectsEnabled"
           @update:model-value="settings.change({ effectsEnabled: $event === true })"
         />
 
         <v-divider class="my-4" />
 
-        <h3 class="text-subtitle-1 mb-2">Thème</h3>
+        <h3 class="text-subtitle-1 mb-2">{{ t('settings.theme') }}</h3>
 
         <v-btn-toggle
           block
@@ -85,19 +85,19 @@
         >
           <v-btn
             prepend-icon="mdi-white-balance-sunny"
-            text="Clair"
+            :text="t('settings.themeLight')"
             value="light"
           />
 
           <v-btn
             prepend-icon="mdi-weather-night"
-            text="Sombre"
+            :text="t('settings.themeDark')"
             value="dark"
           />
 
           <v-btn
             prepend-icon="mdi-theme-light-dark"
-            text="Appareil"
+            :text="t('settings.device')"
             value="system"
           />
         </v-btn-toggle>
@@ -124,12 +124,12 @@
             :value="locale"
           />
 
-          <v-btn :text="t('settings.deviceLanguage')" value="system" />
+          <v-btn :text="t('settings.device')" value="system" />
         </v-btn-toggle>
       </v-card-text>
 
       <v-card-actions class="justify-end">
-        <v-btn text="Fermer" @click="open = false" />
+        <v-btn :text="t('common.close')" @click="open = false" />
       </v-card-actions>
     </v-card>
   </v-dialog>

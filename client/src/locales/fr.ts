@@ -12,6 +12,7 @@ export default {
   /** Boutons et phrases communs à plusieurs fenêtres */
   common: {
     cancel: 'Annuler',
+    close: 'Fermer',
     irreversible: 'Cette action est définitive.',
   },
 
@@ -19,6 +20,7 @@ export default {
   validation: {
     required: 'Champ requis',
     minLength: '{min} caractères au moins',
+    maxLength: '{max} caractères au plus',
   },
 
   /** Pages Connexion et Créer un compte */
@@ -134,7 +136,52 @@ export default {
 
   /** Fenêtre « Configuration de l'application » */
   settings: {
+    title: 'Configuration de l\'application',
+    saveFailed: 'Réglage non enregistré : {reason}',
+    sound: 'Son',
+    soundEnabled: 'Son activé',
+    volume: 'Volume',
+    effects: 'Effets',
+    effectsEnabled: 'Effets visuels (survol, animations)',
+    theme: 'Thème',
+    themeLight: 'Clair',
+    themeDark: 'Sombre',
     language: 'Langue',
-    deviceLanguage: 'Appareil',
+    /** « Suivre l'appareil », pour le thème comme pour la langue */
+    device: 'Appareil',
+  },
+
+  /** Fenêtre « Mon compte » et ses confirmations */
+  account: {
+    title: 'Mon compte',
+    password: 'Mot de passe',
+    currentPassword: 'Mot de passe actuel',
+    newPassword: 'Nouveau mot de passe',
+    confirmPassword: 'Confirmer le nouveau mot de passe',
+    changePassword: 'Changer le mot de passe',
+    passwordChanged: 'Mot de passe modifié. Les autres appareils sont déconnectés.',
+    sameAsCurrent: 'Doit être différent du mot de passe actuel',
+    mismatch: 'Les deux mots de passe sont différents',
+    grid: 'Grille',
+    gridText: 'Supprime tous les boutons et dossiers de votre grille. Votre compte est conservé.',
+    clearGrid: 'Effacer la grille',
+    deleteTitle: 'Supprimer le compte',
+    deleteText: 'Supprime définitivement votre compte, votre grille et vos réglages.',
+    deleteAccount: 'Supprimer mon compte',
+  },
+
+  /** Confirmation de l'effacement de la grille */
+  clearGrid: {
+    title: 'Effacer toute la grille ?',
+    count: '{count} bouton supprimé, dossiers et contenus compris. | {count} boutons supprimés, dossiers et contenus compris.',
+    confirm: 'Effacer la grille',
+  },
+
+  /** Confirmation de la suppression du compte */
+  deleteAccount: {
+    title: 'Supprimer votre compte ?',
+    warning: 'Votre compte et vos réglages seront supprimés. Cette action est définitive. | Votre compte, votre bouton et vos réglages seront supprimés. Cette action est définitive. | Votre compte, vos {count} boutons et vos réglages seront supprimés. Cette action est définitive.',
+    password: 'Mot de passe',
+    confirm: 'Supprimer mon compte',
   },
 }

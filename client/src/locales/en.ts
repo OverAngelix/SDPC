@@ -9,12 +9,14 @@ const en: Messages = {
 
   common: {
     cancel: 'Cancel',
+    close: 'Close',
     irreversible: 'This cannot be undone.',
   },
 
   validation: {
     required: 'Required',
     minLength: 'At least {min} characters',
+    maxLength: 'At most {max} characters',
   },
 
   auth: {
@@ -120,8 +122,49 @@ const en: Messages = {
   },
 
   settings: {
+    title: 'App settings',
+    saveFailed: 'Setting not saved: {reason}',
+    sound: 'Sound',
+    soundEnabled: 'Sound on',
+    volume: 'Volume',
+    effects: 'Effects',
+    effectsEnabled: 'Visual effects (hover, animations)',
+    theme: 'Theme',
+    themeLight: 'Light',
+    themeDark: 'Dark',
     language: 'Language',
-    deviceLanguage: 'Device',
+    device: 'Device',
+  },
+
+  account: {
+    title: 'My account',
+    password: 'Password',
+    currentPassword: 'Current password',
+    newPassword: 'New password',
+    confirmPassword: 'Confirm the new password',
+    changePassword: 'Change password',
+    passwordChanged: 'Password changed. Your other devices are signed out.',
+    sameAsCurrent: 'Must be different from the current password',
+    mismatch: 'The two passwords do not match',
+    grid: 'Grid',
+    gridText: 'Deletes every button and folder of your grid. Your account is kept.',
+    clearGrid: 'Clear the grid',
+    deleteTitle: 'Delete the account',
+    deleteText: 'Permanently deletes your account, your grid and your settings.',
+    deleteAccount: 'Delete my account',
+  },
+
+  clearGrid: {
+    title: 'Clear the whole grid?',
+    count: '{count} button deleted, folders and their contents included. | {count} buttons deleted, folders and their contents included.',
+    confirm: 'Clear the grid',
+  },
+
+  deleteAccount: {
+    title: 'Delete your account?',
+    warning: 'Your account and your settings will be deleted. This cannot be undone. | Your account, your button and your settings will be deleted. This cannot be undone. | Your account, your {count} buttons and your settings will be deleted. This cannot be undone.',
+    password: 'Password',
+    confirm: 'Delete my account',
   },
 }
 

@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="open" max-width="400" :persistent="loading">
     <v-card class="text-center px-4 py-6">
-      <h2 class="text-h6 mb-4">Effacer toute la grille ?</h2>
+      <h2 class="text-h6 mb-4">{{ t('clearGrid.title') }}</h2>
 
       <v-alert
         class="mb-4"
@@ -9,10 +9,10 @@
         type="warning"
         variant="tonal"
       >
-        {{ count }} bouton{{ count > 1 ? 's' : '' }} supprimé{{ count > 1 ? 's' : '' }}, dossiers et contenus compris.
+        {{ t('clearGrid.count', count) }}
       </v-alert>
 
-      <p class="text-medium-emphasis">Cette action est définitive.</p>
+      <p class="text-medium-emphasis">{{ t('common.irreversible') }}</p>
 
       <v-alert
         v-if="error"
@@ -25,12 +25,12 @@
       </v-alert>
 
       <v-card-actions class="justify-center mt-4">
-        <v-btn :disabled="loading" text="Annuler" @click="open = false" />
+        <v-btn :disabled="loading" :text="t('common.cancel')" @click="open = false" />
 
         <v-btn
           color="error"
           :loading="loading"
-          text="Effacer la grille"
+          :text="t('clearGrid.confirm')"
           variant="flat"
           @click="clear"
         />
@@ -42,6 +42,7 @@
 <script lang="ts" setup>
   import type { ApiErrorMessage } from '@/interfaces/api'
   import { computed, ref, watch } from 'vue'
+  import { useI18n } from 'vue-i18n'
   import { useRoute, useRouter } from 'vue-router'
   import { useButtonsStore } from '@/stores/buttons'
   import { useSettingsStore } from '@/stores/settings'
@@ -56,6 +57,7 @@
   }>()
 
   const store = useButtonsStore()
+  const { t } = useI18n()
   const settings = useSettingsStore()
   const route = useRoute()
   const router = useRouter()

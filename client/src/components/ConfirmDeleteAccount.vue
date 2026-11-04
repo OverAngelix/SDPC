@@ -2,7 +2,7 @@
   <v-dialog v-model="open" max-width="400" :persistent="loading">
     <v-card class="px-4 py-6">
       <v-form @submit.prevent="remove">
-        <h2 class="text-h6 text-center mb-4">Supprimer votre compte ?</h2>
+        <h2 class="text-h6 text-center mb-4">{{ t('deleteAccount.title') }}</h2>
 
         <v-alert
           class="mb-4"
@@ -10,14 +10,14 @@
           type="warning"
           variant="tonal"
         >
-          Votre compte, vos {{ count }} bouton{{ count > 1 ? 's' : '' }} et vos réglages seront supprimés. Cette action est définitive.
+          {{ t('deleteAccount.warning', count) }}
         </v-alert>
 
         <v-text-field
           v-model="password"
           autocomplete="current-password"
           autofocus
-          label="Mot de passe"
+          :label="t('deleteAccount.password')"
           type="password"
         />
 
@@ -32,13 +32,13 @@
         </v-alert>
 
         <v-card-actions class="justify-center mt-2">
-          <v-btn :disabled="loading" text="Annuler" @click="open = false" />
+          <v-btn :disabled="loading" :text="t('common.cancel')" @click="open = false" />
 
           <v-btn
             color="error"
             :disabled="password === ''"
             :loading="loading"
-            text="Supprimer mon compte"
+            :text="t('deleteAccount.confirm')"
             type="submit"
             variant="flat"
           />
@@ -51,6 +51,7 @@
 <script lang="ts" setup>
   import type { ApiErrorMessage } from '@/interfaces/api'
   import { computed, ref, watch } from 'vue'
+  import { useI18n } from 'vue-i18n'
   import { useAuthStore } from '@/stores/auth'
   import { useButtonsStore } from '@/stores/buttons'
   import { describeApiError } from '@/utils/apiError'
@@ -64,6 +65,7 @@
   }>()
 
   const auth = useAuthStore()
+  const { t } = useI18n()
   const buttons = useButtonsStore()
 
   const password = ref('')

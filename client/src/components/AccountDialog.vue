@@ -7,10 +7,10 @@
   >
     <v-card>
       <v-toolbar density="comfortable">
-        <v-toolbar-title>Mon compte</v-toolbar-title>
+        <v-toolbar-title>{{ t('account.title') }}</v-toolbar-title>
 
         <v-btn
-          aria-label="Fermer"
+          :aria-label="t('common.close')"
           icon="mdi-close"
           @click="open = false"
         />
@@ -19,7 +19,7 @@
       <v-card-text class="pt-4">
         <p class="text-medium-emphasis text-truncate mb-4">{{ email }}</p>
 
-        <h3 class="text-subtitle-1 mb-2">Mot de passe</h3>
+        <h3 class="text-subtitle-1 mb-2">{{ t('account.password') }}</h3>
 
         <v-form @submit.prevent="submitPassword">
           <v-alert
@@ -39,14 +39,14 @@
             type="success"
             variant="tonal"
           >
-            Mot de passe modifié. Les autres appareils sont déconnectés.
+            {{ t('account.passwordChanged') }}
           </v-alert>
 
           <v-text-field
             v-model="currentPassword"
             :append-inner-icon="showPasswords ? 'mdi-eye-off' : 'mdi-eye'"
             autocomplete="current-password"
-            label="Mot de passe actuel"
+            :label="t('account.currentPassword')"
             :type="showPasswords ? 'text' : 'password'"
             @click:append-inner="showPasswords = !showPasswords"
           />
@@ -55,8 +55,8 @@
             v-model="newPassword"
             autocomplete="new-password"
             :error-messages="newPasswordError"
-            hint="8 caractères au moins"
-            label="Nouveau mot de passe"
+            :hint="t('validation.minLength', { min: PASSWORD_MIN_LENGTH })"
+            :label="t('account.newPassword')"
             persistent-hint
             :type="showPasswords ? 'text' : 'password'"
           />
@@ -66,7 +66,7 @@
             autocomplete="new-password"
             class="mt-2"
             :error-messages="confirmationError"
-            label="Confirmer le nouveau mot de passe"
+            :label="t('account.confirmPassword')"
             :type="showPasswords ? 'text' : 'password'"
           />
 
@@ -75,7 +75,7 @@
             color="primary"
             :disabled="!canSubmit"
             :loading="changing"
-            text="Changer le mot de passe"
+            :text="t('account.changePassword')"
             type="submit"
             variant="flat"
           />
@@ -83,36 +83,36 @@
 
         <v-divider class="my-6" />
 
-        <h3 class="text-subtitle-1 mb-1">Grille</h3>
-        <p class="text-medium-emphasis mb-3">Supprime tous les boutons et dossiers de votre grille. Votre compte est conservé.</p>
+        <h3 class="text-subtitle-1 mb-1">{{ t('account.grid') }}</h3>
+        <p class="text-medium-emphasis mb-3">{{ t('account.gridText') }}</p>
 
         <v-btn
           block
           color="error"
           :disabled="gridEmpty"
           prepend-icon="mdi-delete-sweep"
-          text="Effacer la grille"
+          :text="t('account.clearGrid')"
           variant="outlined"
           @click="emit('clear')"
         />
 
         <v-divider class="my-6" />
 
-        <h3 class="text-subtitle-1 text-error mb-1">Supprimer le compte</h3>
-        <p class="text-medium-emphasis mb-3">Supprime définitivement votre compte, votre grille et vos réglages.</p>
+        <h3 class="text-subtitle-1 text-error mb-1">{{ t('account.deleteTitle') }}</h3>
+        <p class="text-medium-emphasis mb-3">{{ t('account.deleteText') }}</p>
 
         <v-btn
           block
           color="error"
           prepend-icon="mdi-account-remove"
-          text="Supprimer mon compte"
+          :text="t('account.deleteAccount')"
           variant="outlined"
           @click="emit('delete')"
         />
       </v-card-text>
 
       <v-card-actions class="justify-end">
-        <v-btn text="Fermer" @click="open = false" />
+        <v-btn :text="t('common.close')" @click="open = false" />
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -121,6 +121,7 @@
 <script lang="ts" setup>
   import type { ApiErrorMessage } from '@/interfaces/api'
   import { computed, ref, watch } from 'vue'
+  import { useI18n } from 'vue-i18n'
   import { useDisplay } from 'vuetify'
   import { changePassword } from '@/api/account'
   import { useSettingsStore } from '@/stores/settings'
@@ -146,6 +147,7 @@
   }>()
 
   const settings = useSettingsStore()
+  const { t } = useI18n()
   // Plein écran sur téléphone, comme les réglages
   const { xs } = useDisplay()
 
@@ -160,13 +162,13 @@
   // Rien n'est signalé tant que le champ est vide : on n'accuse pas une saisie qui n'a pas commencé
   const newPasswordError = computed(() => {
     if (newPassword.value === '') return []
-    if (newPassword.value.length < PASSWORD_MIN_LENGTH) return [`${PASSWORD_MIN_LENGTH} caractères au moins`]
-    if (newPassword.value.length > PASSWORD_MAX_LENGTH) return [`${PASSWORD_MAX_LENGTH} caractères au plus`]
-    if (newPassword.value === currentPassword.value) return ['Doit être différent du mot de passe actuel']
+    if (newPassword.value.length < PASSWORD_MIN_LENGTH) return [t('validation.minLength', { min: PASSWORD_MIN_LENGTH })]
+    if (newPassword.value.length > PASSWORD_MAX_LENGTH) return [t('validation.maxLength', { max: PASSWORD_MAX_LENGTH })]
+    if (newPassword.value === currentPassword.value) return [t('account.sameAsCurrent')]
     return []
   })
   const confirmationError = computed(() => {
-    return confirmation.value !== '' && confirmation.value !== newPassword.value ? ['Les deux mots de passe sont différents'] : []
+    return confirmation.value !== '' && confirmation.value !== newPassword.value ? [t('account.mismatch')] : []
   })
   const canSubmit = computed(() => {
     return currentPassword.value !== '' && newPassword.value !== '' && confirmation.value !== ''

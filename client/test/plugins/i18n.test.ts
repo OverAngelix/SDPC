@@ -44,4 +44,22 @@ describe('plugin i18n', () => {
     expect(cleared(1)).toBe('Grid cleared (1 button removed).')
     expect(cleared(12)).toBe('Grid cleared (12 buttons removed).')
   })
+
+  it('accorde un message à trois formes : aucun, un, plusieurs', () => {
+    const warning = (count: number) => i18n.global.t('deleteAccount.warning', count)
+
+    for (const locale of ['fr', 'en'] as const) {
+      setLocale(locale)
+      expect(warning(0), locale).not.toContain('bouton')
+      expect(warning(0), locale).not.toContain('button')
+    }
+
+    setLocale('fr')
+    expect(warning(1)).toContain('votre bouton')
+    expect(warning(5)).toContain('vos 5 boutons')
+
+    setLocale('en')
+    expect(warning(1)).toContain('your button ')
+    expect(warning(5)).toContain('your 5 buttons')
+  })
 })
