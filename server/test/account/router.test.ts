@@ -44,7 +44,9 @@ describe('/api/account', () => {
   }
 
   it('répond 401 sans session', async () => {
-    assert.equal((await call('PUT', '/password', { currentPassword: 'a', newPassword: 'b' })).status, 401)
+    const res = await call('PUT', '/password', { currentPassword: 'a', newPassword: 'b' })
+    assert.equal(res.status, 401)
+    assert.equal(res.body.code, 'session_required')
     assert.equal((await call('DELETE', '/', { password: 'motdepasse' })).status, 401)
   })
 
@@ -68,6 +70,7 @@ describe('/api/account', () => {
       const res = await call('PUT', '/password', { currentPassword: 'mauvais', newPassword: 'nouveaumdp' }, cookie)
       assert.equal(res.status, 403)
       assert.equal(res.body.error, 'Mot de passe actuel incorrect')
+      assert.equal(res.body.code, 'wrong_current_password')
       assert.equal(await me(cookie), 200)
       assert.equal(await login('faux@exemple.fr', 'motdepasse'), 200)
     })
@@ -77,6 +80,7 @@ describe('/api/account', () => {
       const short = await call('PUT', '/password', { currentPassword: 'motdepasse', newPassword: 'court' }, cookie)
       assert.equal(short.status, 400)
       assert.deepEqual(short.body.details, ['newPassword : 8 caractères au moins'])
+      assert.deepEqual(short.body.issues, [{ field: 'newPassword', code: 'too_short', params: { min: 8 } }])
       assert.equal((await call('PUT', '/password', { currentPassword: 'motdepasse', newPassword: 'motdepasse' }, cookie)).status, 400)
       assert.equal((await call('PUT', '/password', undefined, cookie)).status, 400)
     })
@@ -96,6 +100,7 @@ describe('/api/account', () => {
 
       const blocked = await call('PUT', '/password', { currentPassword: 'motdepasse', newPassword: 'nouveaumdp' }, cookie)
       assert.equal(blocked.status, 429)
+      assert.equal(blocked.body.code, 'too_many_attempts')
       assert.ok(Number(blocked.retryAfter) > 0)
       assert.equal(await login('essais@exemple.fr', 'motdepasse'), 200)
 
@@ -148,6 +153,7 @@ describe('/api/account', () => {
       const { cookie } = await server.signUp('garde@exemple.fr')
       const res = await call('DELETE', '/', { password: 'mauvais' }, cookie)
       assert.equal(res.status, 403)
+      assert.equal(res.body.code, 'wrong_password')
       assert.equal(res.setCookie, null)
       assert.equal(await me(cookie), 200)
     })

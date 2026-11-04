@@ -20,6 +20,6 @@ describe('GET /api/health', () => {
   it('répond 404 en JSON sur une route inconnue', async () => {
     const res = await fetch(`${server.baseUrl}/api/inconnue`)
     assert.equal(res.status, 404)
-    assert.deepEqual(await res.json(), { error: 'Route introuvable' })
+    assert.deepEqual(await res.json(), { error: 'Route introuvable', code: 'route_not_found' })
   })
 })

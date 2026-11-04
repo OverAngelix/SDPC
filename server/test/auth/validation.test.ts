@@ -20,7 +20,7 @@ describe('validateCredentials', () => {
     for (const email of [undefined, '', '   ', 'pas-une-adresse', 'a@b', 'a b@c.fr', `${'a'.repeat(250)}@b.fr`, 42]) {
       const result = validateCredentials({ email, password: 'motdepasse' }, 'login')
       assert.equal(result.ok, false, String(email))
-      if (!result.ok) assert.ok(result.errors.some(error => error.startsWith('email')))
+      if (!result.ok) assert.ok(result.errors.some(error => error.field === 'email'))
     }
   })
 
@@ -44,5 +44,17 @@ describe('validateCredentials', () => {
   it('liste toutes les erreurs', () => {
     const result = validateCredentials({}, 'register')
     assert.equal(!result.ok && result.errors.length, 2)
+  })
+
+  it('donne à chaque erreur un code et ses paramètres pour le client', () => {
+    const issues = (body: object, mode: 'register' | 'login' = 'register') => {
+      const result = validateCredentials(body, mode)
+      return result.ok ? [] : result.errors
+    }
+    assert.deepEqual(issues({ email: 'a@b.fr', password: 'court' }), [{ field: 'password', code: 'too_short', message: '8 caractères au moins', params: { min: 8 } }])
+    assert.deepEqual(issues({ email: 'a@b.fr', password: 'x'.repeat(PASSWORD_MAX_LENGTH + 1) })[0]?.params, { max: PASSWORD_MAX_LENGTH })
+    assert.equal(issues({ email: '', password: 'motdepasse' })[0]?.code, 'required')
+    assert.equal(issues({ email: 'pas-une-adresse', password: 'motdepasse' })[0]?.code, 'invalid_email')
+    assert.equal(issues({ password: 'motdepasse' }, 'login')[0]?.field, 'email')
   })
 })

@@ -44,7 +44,7 @@ export class SettingsStore {
   /** Modifie les réglages envoyés, laisse les autres, et renvoie l'ensemble. */
   async update (userId: string, body: unknown): Promise<Settings> {
     const result = validateSettingsPatch(body)
-    if (!result.ok) throw new HttpError(400, 'Données invalides', result.errors)
+    if (!result.ok) throw new HttpError(400, 'invalid_data', 'Données invalides', result.errors)
 
     const entries = Object.entries(result.value) as [keyof Settings, boolean | number | string][]
     this.db.transaction(() => {

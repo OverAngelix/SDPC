@@ -56,6 +56,7 @@ describe('/api/auth', () => {
     assert.equal((await call('POST', '/register', { email: 'nope', password: 'x' })).status, 400)
     const res = await call('POST', '/register', credentials)
     assert.equal(res.status, 409)
+    assert.equal(res.body.code, 'email_taken')
     assert.equal(res.setCookie, null)
   })
 
@@ -92,12 +93,14 @@ describe('/api/auth', () => {
     const wrong = await call('POST', '/login', { email: 'jean@exemple.fr', password: 'mauvais' })
     const unknown = await call('POST', '/login', { email: 'inconnu@exemple.fr', password: 'mauvais' })
     assert.equal(wrong.status, 401)
+    assert.equal(wrong.body.code, 'invalid_credentials')
     assert.deepEqual(wrong.body, unknown.body)
 
     await call('POST', '/login', { email: 'jean@exemple.fr', password: 'mauvais' })
     await call('POST', '/login', { email: 'jean@exemple.fr', password: 'mauvais' })
     const blocked = await call('POST', '/login', credentials)
     assert.equal(blocked.status, 429)
+    assert.equal(blocked.body.code, 'too_many_attempts')
     assert.ok(Number(blocked.retryAfter) > 0)
     assert.equal(blocked.setCookie, null)
 

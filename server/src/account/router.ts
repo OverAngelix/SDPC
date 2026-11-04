@@ -18,7 +18,7 @@ export function accountRouter (account: AccountStore, limiter: LoginLimiter, { s
     const wait = limiter.blockedFor(key)
     if (wait > 0) {
       res.set('Retry-After', String(wait))
-      throw new HttpError(429, 'Trop de tentatives, réessayez plus tard')
+      throw new HttpError(429, 'too_many_attempts', 'Trop de tentatives, réessayez plus tard')
     }
 
     try {

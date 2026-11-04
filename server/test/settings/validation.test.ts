@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
+import { errorTexts } from '../helpers/issues.js'
 import { validateSettingsPatch } from '../../src/settings/validation.js'
 
 describe('validateSettingsPatch', () => {
@@ -26,7 +27,7 @@ describe('validateSettingsPatch', () => {
     for (const volume of [-1, 101, 50.5, '50', null, Number.NaN]) {
       const result = validateSettingsPatch({ volume })
       assert.equal(result.ok, false, String(volume))
-      if (!result.ok) assert.ok(result.errors[0].startsWith('volume'))
+      if (!result.ok) assert.equal(result.errors[0]?.field, 'volume')
     }
   })
 
@@ -51,13 +52,26 @@ describe('validateSettingsPatch', () => {
     for (const locale of ['de', 'FR', '', null, 1]) {
       const result = validateSettingsPatch({ locale })
       assert.equal(result.ok, false, String(locale))
-      if (!result.ok) assert.ok(result.errors[0].startsWith('locale'))
+      if (!result.ok) assert.equal(result.errors[0]?.field, 'locale')
     }
   })
 
   it('refuse un réglage inconnu et liste toutes les erreurs', () => {
     const result = validateSettingsPatch({ couleur: 'rouge', volume: 200 })
     assert.equal(!result.ok && result.errors.length, 2)
-    assert.ok(!result.ok && result.errors.some(error => error.startsWith('couleur')))
+    assert.ok(!result.ok && result.errors.some(error => error.field === 'couleur'))
+  })
+
+  it('donne à chaque erreur un code et ses paramètres pour le client', () => {
+    const issues = (body: object) => {
+      const result = validateSettingsPatch(body)
+      return result.ok ? [] : result.errors
+    }
+    assert.deepEqual(issues({ volume: 200 }), [{ field: 'volume', code: 'integer_range', message: 'entier de 0 à 100 requis', params: { min: 0, max: 100 } }])
+    assert.deepEqual(issues({ theme: 'rouge' })[0]?.params, { values: 'light, dark, system' })
+    assert.deepEqual(issues({ locale: 'de' })[0]?.params, { values: 'fr, en, system' })
+    assert.equal(issues({ soundEnabled: 1 })[0]?.code, 'boolean_expected')
+    assert.equal(issues({ couleur: 'rouge' })[0]?.code, 'unknown_setting')
+    assert.deepEqual(errorTexts(validateSettingsPatch({ volume: 200 })), ['volume : entier de 0 à 100 requis'])
   })
 })

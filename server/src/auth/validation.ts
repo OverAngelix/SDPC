@@ -1,4 +1,6 @@
+import { bodyNotObject, issue } from '../errors.js'
 import type { Credentials } from '../interfaces/auth.js'
+import type { Issue } from '../interfaces/error.js'
 import type { ValidationResult } from '../interfaces/validation.js'
 
 export const EMAIL_MAX_LENGTH = 254
@@ -12,10 +14,10 @@ function isRecord (value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
-function parseEmail (value: unknown): { value: string } | { error: string } {
+function parseEmail (value: unknown): { value: string } | { error: Issue } {
   const email = typeof value === 'string' ? value.trim().toLowerCase() : ''
-  if (email === '') return { error: 'email : adresse requise' }
-  if (email.length > EMAIL_MAX_LENGTH || !EMAIL_PATTERN.test(email)) return { error: 'email : adresse invalide' }
+  if (email === '') return { error: issue('email', 'required', 'adresse requise') }
+  if (email.length > EMAIL_MAX_LENGTH || !EMAIL_PATTERN.test(email)) return { error: issue('email', 'invalid_email', 'adresse invalide') }
   return { value: email }
 }
 
@@ -24,18 +26,18 @@ function parseEmail (value: unknown): { value: string } | { error: string } {
  * à la connexion, seul un texte raisonnable est exigé (le refus doit rester le même quelle que soit la cause).
  */
 export function validateCredentials (body: unknown, mode: 'register' | 'login'): ValidationResult<Credentials> {
-  if (!isRecord(body)) return { ok: false, errors: ['Le corps de la requête doit être un objet JSON'] }
+  if (!isRecord(body)) return { ok: false, errors: [bodyNotObject()] }
 
   const email = parseEmail(body.email)
   const password = body.password
-  const errors: string[] = []
+  const errors: Issue[] = []
   if ('error' in email) errors.push(email.error)
   if (typeof password !== 'string' || password === '') {
-    errors.push('password : mot de passe requis')
+    errors.push(issue('password', 'required', 'mot de passe requis'))
   } else if (password.length > PASSWORD_MAX_LENGTH) {
-    errors.push(`password : ${PASSWORD_MAX_LENGTH} caractères au plus`)
+    errors.push(issue('password', 'too_long', `${PASSWORD_MAX_LENGTH} caractères au plus`, { max: PASSWORD_MAX_LENGTH }))
   } else if (mode === 'register' && password.length < PASSWORD_MIN_LENGTH) {
-    errors.push(`password : ${PASSWORD_MIN_LENGTH} caractères au moins`)
+    errors.push(issue('password', 'too_short', `${PASSWORD_MIN_LENGTH} caractères au moins`, { min: PASSWORD_MIN_LENGTH }))
   }
   if (errors.length > 0 || 'error' in email || typeof password !== 'string') return { ok: false, errors }
   return { ok: true, value: { email: email.value, password } }

@@ -36,7 +36,7 @@ export class AuthStore {
 
   async register (body: unknown): Promise<User> {
     const result = validateCredentials(body, 'register')
-    if (!result.ok) throw new HttpError(400, 'Données invalides', result.errors)
+    if (!result.ok) throw new HttpError(400, 'invalid_data', 'Données invalides', result.errors)
 
     const { email, password } = result.value
     const user: User = { id: randomUUID(), email }
@@ -46,7 +46,7 @@ export class AuthStore {
         user.id, email, hash, new Date(this.now()).toISOString(),
       )
     } catch (error) {
-      if (isUniqueViolation(error)) throw new HttpError(409, 'Adresse e-mail déjà utilisée')
+      if (isUniqueViolation(error)) throw new HttpError(409, 'email_taken', 'Adresse e-mail déjà utilisée')
       throw error
     }
     return user
@@ -55,12 +55,12 @@ export class AuthStore {
   /** Vérifie l'e-mail et le mot de passe. Même refus (401) que l'adresse soit inconnue ou le mot de passe faux. */
   async login (body: unknown): Promise<User> {
     const result = validateCredentials(body, 'login')
-    if (!result.ok) throw new HttpError(400, 'Données invalides', result.errors)
+    if (!result.ok) throw new HttpError(400, 'invalid_data', 'Données invalides', result.errors)
 
     const { email, password } = result.value
     const row = this.db.prepare('SELECT id, email, password_hash FROM users WHERE email = ?').get(email) as UserRow | undefined
     const valid = await verifyPassword(password, row?.password_hash ?? await this.decoyHash())
-    if (row === undefined || !valid) throw new HttpError(401, BAD_CREDENTIALS)
+    if (row === undefined || !valid) throw new HttpError(401, 'invalid_credentials', BAD_CREDENTIALS)
     return { id: row.id, email: row.email }
   }
 

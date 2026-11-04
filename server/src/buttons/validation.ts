@@ -1,4 +1,6 @@
+import { bodyNotObject, issue } from '../errors.js'
 import type { Button, ButtonColor, ButtonInput, ButtonType } from '../interfaces/button.js'
+import type { Issue } from '../interfaces/error.js'
 import type { ValidationResult } from '../interfaces/validation.js'
 import { BACK_SLOT, BUTTON_COLORS, SLOTS } from './constants.js'
 
@@ -9,9 +11,9 @@ const BUTTON_TYPES: readonly ButtonType[] = ['action', 'folder']
 const ICON_PATTERN = /^mdi-[a-z0-9]+(?:-[a-z0-9]+)*$/
 // Seules des redirections web sont autorisées : ni javascript:, ni file:, etc.
 const ALLOWED_PROTOCOLS = new Set(['http:', 'https:'])
-const RESERVED_SLOT_ERROR = `position : l'emplacement ${BACK_SLOT} est réservé au bouton retour dans un dossier`
+const RESERVED_SLOT_ERROR = issue('position', 'reserved_slot', `l'emplacement ${BACK_SLOT} est réservé au bouton retour dans un dossier`, { slot: BACK_SLOT })
 
-type Parsed<T> = { value: T } | { error: string }
+type Parsed<T> = { value: T } | { error: Issue }
 
 function isRecord (value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -19,41 +21,41 @@ function isRecord (value: unknown): value is Record<string, unknown> {
 
 function parseLabel (value: unknown): Parsed<string> {
   const label = typeof value === 'string' ? value.trim() : ''
-  if (label === '') return { error: 'label : texte non vide requis' }
-  if (label.length > LABEL_MAX_LENGTH) return { error: `label : ${LABEL_MAX_LENGTH} caractères au plus` }
+  if (label === '') return { error: issue('label', 'required', 'texte non vide requis') }
+  if (label.length > LABEL_MAX_LENGTH) return { error: issue('label', 'too_long', `${LABEL_MAX_LENGTH} caractères au plus`, { max: LABEL_MAX_LENGTH }) }
   return { value: label }
 }
 
 function parseIcon (value: unknown): Parsed<string> {
   if (typeof value !== 'string' || !ICON_PATTERN.test(value)) {
-    return { error: 'icon : nom d\'icône MDI requis (ex. "mdi-youtube")' }
+    return { error: issue('icon', 'invalid_icon', 'nom d\'icône MDI requis (ex. "mdi-youtube")') }
   }
   return { value }
 }
 
 function parseType (value: unknown): Parsed<ButtonType> {
   const type = BUTTON_TYPES.find(candidate => candidate === value)
-  return type === undefined ? { error: 'type : "action" ou "folder" attendu' } : { value: type }
+  return type === undefined ? { error: issue('type', 'invalid_choice', '"action" ou "folder" attendu', { values: BUTTON_TYPES.join(', ') }) } : { value: type }
 }
 
 function parseColor (value: unknown): Parsed<ButtonColor | undefined> {
   if (value === undefined || value === null) return { value: undefined }
   const color = BUTTON_COLORS.find(candidate => candidate === value)
   return color === undefined
-    ? { error: `color : l'une de ces couleurs attendue (${BUTTON_COLORS.join(', ')})` }
+    ? { error: issue('color', 'invalid_choice', `l'une de ces couleurs attendue (${BUTTON_COLORS.join(', ')})`, { values: BUTTON_COLORS.join(', ') }) }
     : { value: color }
 }
 
 function parsePosition (value: unknown): Parsed<number> {
   if (typeof value !== 'number' || !Number.isInteger(value) || value < 0 || value >= SLOTS) {
-    return { error: `position : entier de 0 à ${SLOTS - 1} requis` }
+    return { error: issue('position', 'integer_range', `entier de 0 à ${SLOTS - 1} requis`, { min: 0, max: SLOTS - 1 }) }
   }
   return { value }
 }
 
 function parseParentId (value: unknown): Parsed<string | null> {
   if (value === undefined || value === null) return { value: null }
-  if (typeof value !== 'string' || value === '') return { error: 'parentId : identifiant de dossier ou null attendu' }
+  if (typeof value !== 'string' || value === '') return { error: issue('parentId', 'invalid_parent', 'identifiant de dossier ou null attendu') }
   return { value }
 }
 
@@ -61,25 +63,25 @@ function parseUrl (value: unknown, type: ButtonType | undefined): Parsed<string 
   if (type === 'folder') {
     return value === undefined || value === null
       ? { value: undefined }
-      : { error: 'url : interdite pour un dossier' }
+      : { error: issue('url', 'url_forbidden', 'interdite pour un dossier') }
   }
   if (type === undefined) return { value: undefined }
 
-  if (typeof value !== 'string' || value.trim() === '') return { error: 'url : requise pour une action' }
+  if (typeof value !== 'string' || value.trim() === '') return { error: issue('url', 'required', 'requise pour une action') }
   const url = value.trim()
-  if (url.length > URL_MAX_LENGTH) return { error: `url : ${URL_MAX_LENGTH} caractères au plus` }
+  if (url.length > URL_MAX_LENGTH) return { error: issue('url', 'too_long', `${URL_MAX_LENGTH} caractères au plus`, { max: URL_MAX_LENGTH }) }
   try {
     if (!ALLOWED_PROTOCOLS.has(new URL(url).protocol)) {
-      return { error: 'url : seules les adresses http et https sont autorisées' }
+      return { error: issue('url', 'url_scheme', 'seules les adresses http et https sont autorisées') }
     }
   } catch {
-    return { error: 'url : adresse invalide' }
+    return { error: issue('url', 'invalid_url', 'adresse invalide') }
   }
   return { value: url }
 }
 
 export function validateButtonInput (body: unknown): ValidationResult<ButtonInput> {
-  if (!isRecord(body)) return { ok: false, errors: ['Le corps de la requête doit être un objet JSON'] }
+  if (!isRecord(body)) return { ok: false, errors: [bodyNotObject()] }
 
   const label = parseLabel(body.label)
   const icon = parseIcon(body.icon)
@@ -116,10 +118,10 @@ export function validateButtonInput (body: unknown): ValidationResult<ButtonInpu
  * Le dossier parent n'est pas modifiable ici (déplacement entre dossiers : feature 05).
  */
 export function mergeButtonPatch (current: Button, patch: unknown): ValidationResult<ButtonInput> {
-  if (!isRecord(patch)) return { ok: false, errors: ['Le corps de la requête doit être un objet JSON'] }
+  if (!isRecord(patch)) return { ok: false, errors: [bodyNotObject()] }
 
   if ('parentId' in patch && (patch.parentId ?? null) !== current.parentId) {
-    return { ok: false, errors: ['parentId : le déplacement vers un autre dossier n\'est pas géré'] }
+    return { ok: false, errors: [issue('parentId', 'move_unsupported', 'le déplacement vers un autre dossier n\'est pas géré')] }
   }
 
   const merged = {
@@ -137,7 +139,7 @@ export function mergeButtonPatch (current: Button, patch: unknown): ValidationRe
 
 /** Valide le corps d'un déplacement (`{ position }`) vers un autre emplacement du dossier `parentId`. */
 export function validateMoveInput (parentId: string | null, body: unknown): ValidationResult<number> {
-  if (!isRecord(body)) return { ok: false, errors: ['Le corps de la requête doit être un objet JSON'] }
+  if (!isRecord(body)) return { ok: false, errors: [bodyNotObject()] }
 
   const position = parsePosition(body.position)
   if ('error' in position) return { ok: false, errors: [position.error] }

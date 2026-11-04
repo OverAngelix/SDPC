@@ -33,22 +33,28 @@ export function createApp ({ store, auth, settings, account, limiter = new Login
   app.use('/api/settings', requireAuth, settingsRouter(settings))
 
   app.use('/api', (_req: Request, res: Response) => {
-    res.status(404).json({ error: 'Route introuvable' })
+    res.status(404).json({ error: 'Route introuvable', code: 'route_not_found' })
   })
 
   app.use((error: unknown, _req: Request, res: Response, _next: NextFunction) => {
     if (error instanceof HttpError) {
-      res.status(error.status).json({ error: error.message, details: error.details })
+      res.status(error.status).json({
+        error: error.message,
+        code: error.code,
+        // Texte français des problèmes, lisible dans les journaux et avec curl, et repli du client
+        details: error.issues.map(({ field, message }) => field === undefined ? message : `${field} : ${message}`),
+        issues: error.issues.map(({ field, code, params }) => ({ field, code, params })),
+      })
       return
     }
     // Erreurs du client détectées par Express (JSON mal formé, corps trop gros…)
     const status = clientErrorStatus(error)
     if (status !== undefined) {
-      res.status(status).json({ error: 'Requête invalide' })
+      res.status(status).json({ error: 'Requête invalide', code: 'bad_request' })
       return
     }
     console.error(error)
-    res.status(500).json({ error: 'Erreur interne du serveur' })
+    res.status(500).json({ error: 'Erreur interne du serveur', code: 'internal_error' })
   })
 
   return app

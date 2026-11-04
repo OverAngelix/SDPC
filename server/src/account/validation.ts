@@ -1,4 +1,6 @@
 import { PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH } from '../auth/validation.js'
+import { bodyNotObject, issue } from '../errors.js'
+import type { Issue } from '../interfaces/error.js'
 import type { ChangePasswordBody, DeleteAccountBody } from '../interfaces/account.js'
 import type { ValidationResult } from '../interfaces/validation.js'
 
@@ -7,11 +9,11 @@ function isRecord (value: unknown): value is Record<string, unknown> {
 }
 
 /** Mot de passe saisi pour prouver son identité : seul un texte raisonnable est exigé, la vérification dit s'il est bon. */
-function checkProvided (field: string, value: unknown, errors: string[]): string | undefined {
+function checkProvided (field: string, value: unknown, errors: Issue[]): string | undefined {
   if (typeof value !== 'string' || value === '') {
-    errors.push(`${field} : mot de passe requis`)
+    errors.push(issue(field, 'required', 'mot de passe requis'))
   } else if (value.length > PASSWORD_MAX_LENGTH) {
-    errors.push(`${field} : ${PASSWORD_MAX_LENGTH} caractères au plus`)
+    errors.push(issue(field, 'too_long', `${PASSWORD_MAX_LENGTH} caractères au plus`, { max: PASSWORD_MAX_LENGTH }))
   } else {
     return value
   }
@@ -19,19 +21,19 @@ function checkProvided (field: string, value: unknown, errors: string[]): string
 }
 
 export function validateChangePassword (body: unknown): ValidationResult<ChangePasswordBody> {
-  if (!isRecord(body)) return { ok: false, errors: ['Le corps de la requête doit être un objet JSON'] }
+  if (!isRecord(body)) return { ok: false, errors: [bodyNotObject()] }
 
-  const errors: string[] = []
+  const errors: Issue[] = []
   const currentPassword = checkProvided('currentPassword', body.currentPassword, errors)
   const newPassword = body.newPassword
   if (typeof newPassword !== 'string' || newPassword === '') {
-    errors.push('newPassword : mot de passe requis')
+    errors.push(issue('newPassword', 'required', 'mot de passe requis'))
   } else if (newPassword.length < PASSWORD_MIN_LENGTH) {
-    errors.push(`newPassword : ${PASSWORD_MIN_LENGTH} caractères au moins`)
+    errors.push(issue('newPassword', 'too_short', `${PASSWORD_MIN_LENGTH} caractères au moins`, { min: PASSWORD_MIN_LENGTH }))
   } else if (newPassword.length > PASSWORD_MAX_LENGTH) {
-    errors.push(`newPassword : ${PASSWORD_MAX_LENGTH} caractères au plus`)
+    errors.push(issue('newPassword', 'too_long', `${PASSWORD_MAX_LENGTH} caractères au plus`, { max: PASSWORD_MAX_LENGTH }))
   } else if (newPassword === currentPassword) {
-    errors.push('newPassword : doit être différent du mot de passe actuel')
+    errors.push(issue('newPassword', 'must_differ', 'doit être différent du mot de passe actuel'))
   }
 
   if (errors.length > 0 || currentPassword === undefined || typeof newPassword !== 'string') return { ok: false, errors }
@@ -39,9 +41,9 @@ export function validateChangePassword (body: unknown): ValidationResult<ChangeP
 }
 
 export function validateDeleteAccount (body: unknown): ValidationResult<DeleteAccountBody> {
-  if (!isRecord(body)) return { ok: false, errors: ['Le corps de la requête doit être un objet JSON'] }
+  if (!isRecord(body)) return { ok: false, errors: [bodyNotObject()] }
 
-  const errors: string[] = []
+  const errors: Issue[] = []
   const password = checkProvided('password', body.password, errors)
   if (errors.length > 0 || password === undefined) return { ok: false, errors }
   return { ok: true, value: { password } }

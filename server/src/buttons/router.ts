@@ -15,7 +15,7 @@ export function buttonsRouter (store: ButtonStore) {
       res.json(store.list(userId(req)))
       return
     }
-    if (typeof parentId !== 'string') throw new HttpError(400, 'Paramètre parentId invalide')
+    if (typeof parentId !== 'string') throw new HttpError(400, 'invalid_parent_id', 'Paramètre parentId invalide')
     res.json(store.list(userId(req), parentId === ROOT_FILTER ? null : parentId))
   })
 

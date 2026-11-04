@@ -107,7 +107,27 @@ describe('/api/buttons', () => {
     const res = await call('POST', '', { ...action, url: 'javascript:alert(1)', label: '' })
     assert.equal(res.status, 400)
     assert.equal(res.body.error, 'Données invalides')
+    assert.equal(res.body.code, 'invalid_data')
     assert.equal(res.body.details.length, 2)
+    // Le client traduit à partir des codes ; le texte français reste en repli
+    assert.deepEqual(res.body.issues, [
+      { field: 'label', code: 'required' },
+      { field: 'url', code: 'url_scheme' },
+    ])
+    assert.deepEqual(res.body.details, ['label : texte non vide requis', 'url : seules les adresses http et https sont autorisées'])
+  })
+
+  it('répond avec un code et des paramètres pour chaque sorte d\'erreur', async () => {
+    const tooLong = await call('POST', '', { ...action, label: 'x'.repeat(51) })
+    assert.deepEqual(tooLong.body.issues, [{ field: 'label', code: 'too_long', params: { max: 50 } }])
+
+    assert.equal((await call('GET', '/inconnu')).body.code, 'button_not_found')
+    assert.equal((await call('GET', '?parentId=a&parentId=b')).body.code, 'invalid_parent_id')
+
+    await call('POST', '', action)
+    const taken = await call('POST', '', { ...action, label: 'Autre' })
+    assert.equal(taken.body.code, 'slot_taken')
+    assert.deepEqual(taken.body.issues, [{ field: 'position', code: 'slot_taken', params: { position: 0 } }])
   })
 
   it('répond 409 sur un emplacement occupé', async () => {
@@ -125,7 +145,7 @@ describe('/api/buttons', () => {
   it('répond 400 sur un JSON mal formé ou un corps absent', async () => {
     const malformed = await call('POST', '', '{pas du json')
     assert.equal(malformed.status, 400)
-    assert.deepEqual(malformed.body, { error: 'Requête invalide' })
+    assert.deepEqual(malformed.body, { error: 'Requête invalide', code: 'bad_request' })
     assert.equal((await call('POST', '')).status, 400)
   })
 

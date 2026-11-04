@@ -40,12 +40,12 @@ export function authenticate (auth: AuthStore): RequestHandler {
 
 /** Refuse (401) les requêtes sans session valide. À placer après `authenticate`. */
 export const requireAuth: RequestHandler = (req, _res, next) => {
-  if (req.user === undefined) throw new HttpError(401, 'Connexion requise')
+  if (req.user === undefined) throw new HttpError(401, 'session_required', 'Connexion requise')
   next()
 }
 
 /** Identifiant de la personne connectée : à utiliser dans les routes montées après `requireAuth`. */
 export function currentUserId (req: Request): string {
-  if (req.user === undefined) throw new HttpError(401, 'Connexion requise')
+  if (req.user === undefined) throw new HttpError(401, 'session_required', 'Connexion requise')
   return req.user.id
 }

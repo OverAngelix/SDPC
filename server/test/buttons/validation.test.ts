@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
 import { BUTTON_COLORS } from '../../src/buttons/constants.js'
 import type { Button } from '../../src/interfaces/button.js'
+import { errorTexts, text } from '../helpers/issues.js'
 import { mergeButtonPatch, validateButtonInput, validateMoveInput } from '../../src/buttons/validation.js'
 
 const action = { position: 0, label: 'YouTube', icon: 'mdi-youtube', type: 'action', url: 'https://www.youtube.com' }
@@ -10,6 +11,11 @@ const folder = { position: 1, label: 'Musique', icon: 'mdi-folder', type: 'folde
 function errorsOf (body: unknown): string[] {
   const result = validateButtonInput(body)
   assert.equal(result.ok, false)
+  return errorTexts(result)
+}
+
+function issuesOf (body: unknown) {
+  const result = validateButtonInput(body)
   return result.ok ? [] : result.errors
 }
 
@@ -117,6 +123,26 @@ describe('validateButtonInput', () => {
     assert.match(errorsOf({ ...action, parentId: '' })[0], /^parentId/)
   })
 
+  it('donne à chaque erreur un code et ses paramètres pour le client', () => {
+    const codeOf = (body: unknown) => issuesOf(body)[0]
+    assert.deepEqual(codeOf({ ...action, label: '   ' }), { field: 'label', code: 'required', message: 'texte non vide requis' })
+    assert.deepEqual(codeOf({ ...action, label: 'x'.repeat(51) })?.params, { max: 50 })
+    assert.equal(codeOf({ ...action, icon: 'youtube' })?.code, 'invalid_icon')
+    assert.equal(codeOf({ ...action, type: 'script' })?.code, 'invalid_choice')
+    assert.deepEqual(codeOf({ ...action, type: 'script' })?.params, { values: 'action, folder' })
+    assert.deepEqual(codeOf({ ...action, color: 'noir' })?.code, 'invalid_choice')
+    assert.deepEqual(codeOf({ ...action, position: 99 })?.params, { min: 0, max: 27 })
+    assert.equal(codeOf({ ...action, parentId: 12 })?.code, 'invalid_parent')
+    assert.equal(codeOf({ ...action, position: 0, parentId: 'abc' })?.code, 'reserved_slot')
+    assert.equal(codeOf({ ...action, url: '' })?.code, 'required')
+    assert.equal(codeOf({ ...action, url: 'ftp://exemple.fr' })?.code, 'url_scheme')
+    assert.equal(codeOf({ ...action, url: 'pas une url' })?.code, 'invalid_url')
+    assert.deepEqual(codeOf({ ...action, url: `https://exemple.fr/${'a'.repeat(2048)}` })?.params, { max: 2048 })
+    assert.equal(codeOf({ ...folder, url: 'https://exemple.fr' })?.code, 'url_forbidden')
+    assert.equal(codeOf('texte')?.code, 'body_not_object')
+    assert.equal(text(issuesOf('texte')[0]!), 'Le corps de la requête doit être un objet JSON')
+  })
+
   it('cumule les erreurs', () => {
     // libellé, icône, emplacement et URL (absente sur une action) ; parentId vaut null par défaut
     const errors = errorsOf({ label: '', icon: 'x', type: 'action', position: 99 })
@@ -201,7 +227,7 @@ describe('validateMoveInput', () => {
   it('refuse l\'emplacement 0 dans un dossier : il est réservé au retour', () => {
     const result = validateMoveInput('abc', { position: 0 })
     assert.equal(result.ok, false)
-    assert.match(result.ok ? '' : result.errors[0]!, /réservé/)
+    assert.match(errorTexts(result)[0] ?? '', /réservé/)
   })
 
   it('refuse un emplacement absent, hors grille ou qui n\'est pas un entier', () => {

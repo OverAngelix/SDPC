@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { HttpError } from '../errors.js'
+import { HttpError, issue } from '../errors.js'
 import type { Button, ButtonColor } from '../interfaces/button.js'
 import type { Db } from '../interfaces/database.js'
 import { mergeButtonPatch, validateButtonInput, validateMoveInput } from './validation.js'
@@ -51,13 +51,13 @@ export class ButtonStore {
 
   get (userId: string, id: string): Button {
     const row = this.db.prepare(`SELECT ${COLUMNS} FROM buttons WHERE id = ? AND user_id = ?`).get(id, userId) as ButtonRow | undefined
-    if (row === undefined) throw new HttpError(404, 'Bouton introuvable')
+    if (row === undefined) throw new HttpError(404, 'button_not_found', 'Bouton introuvable')
     return toButton(row)
   }
 
   async create (userId: string, body: unknown): Promise<Button> {
     const result = validateButtonInput(body)
-    if (!result.ok) throw new HttpError(400, INVALID_DATA, result.errors)
+    if (!result.ok) throw new HttpError(400, 'invalid_data', INVALID_DATA, result.errors)
 
     const input = result.value
     this.assertParentIsFolder(userId, input.parentId)
@@ -73,12 +73,14 @@ export class ButtonStore {
   async update (userId: string, id: string, patch: unknown): Promise<Button> {
     const current = this.get(userId, id)
     const result = mergeButtonPatch(current, patch)
-    if (!result.ok) throw new HttpError(400, INVALID_DATA, result.errors)
+    if (!result.ok) throw new HttpError(400, 'invalid_data', INVALID_DATA, result.errors)
 
     const input = result.value
     if (input.position !== current.position) this.assertSlotFree(userId, input.parentId, input.position)
     if (current.type === 'folder' && input.type === 'action' && this.list(userId, id).length > 0) {
-      throw new HttpError(409, 'Un dossier non vide ne peut pas devenir une action', ['type : vider le dossier d\'abord'])
+      throw new HttpError(409, 'folder_not_empty', 'Un dossier non vide ne peut pas devenir une action', [
+        issue('type', 'empty_folder_first', 'vider le dossier d\'abord'),
+      ])
     }
 
     const updated: Button = { id, ...input }
@@ -95,7 +97,7 @@ export class ButtonStore {
   async move (userId: string, id: string, body: unknown): Promise<Button[]> {
     const current = this.get(userId, id)
     const result = validateMoveInput(current.parentId, body)
-    if (!result.ok) throw new HttpError(400, INVALID_DATA, result.errors)
+    if (!result.ok) throw new HttpError(400, 'invalid_data', INVALID_DATA, result.errors)
 
     const position = result.value
     if (position === current.position) return []
@@ -138,13 +140,15 @@ export class ButtonStore {
     if (parentId === null) return
     const parent = this.db.prepare('SELECT type FROM buttons WHERE id = ? AND user_id = ?').get(parentId, userId) as { type: string } | undefined
     if (parent?.type !== 'folder') {
-      throw new HttpError(400, INVALID_DATA, ['parentId : dossier introuvable'])
+      throw new HttpError(400, 'invalid_data', INVALID_DATA, [issue('parentId', 'parent_not_found', 'dossier introuvable')])
     }
   }
 
   private assertSlotFree (userId: string, parentId: string | null, position: number): void {
     if (this.list(userId, parentId).some(button => button.position === position)) {
-      throw new HttpError(409, 'Emplacement déjà occupé', [`position : l'emplacement ${position} est pris dans ce dossier`])
+      throw new HttpError(409, 'slot_taken', 'Emplacement déjà occupé', [
+        issue('position', 'slot_taken', `l'emplacement ${position} est pris dans ce dossier`, { position }),
+      ])
     }
   }
 }
