@@ -1,3 +1,5 @@
+import type { LocaleSetting } from './locale.js'
+
 /** `system` suit le thème de l'appareil */
 export type Theme = 'light' | 'dark' | 'system'
 
@@ -9,4 +11,6 @@ export interface Settings {
   /** Survol et animations de la grille */
   effectsEnabled: boolean
   theme: Theme
+  /** Langue des textes ; `system` suit celle de l'appareil */
+  locale: LocaleSetting
 }

@@ -57,5 +57,8 @@ export const MIGRATIONS: readonly string[] = [
     effects_enabled INTEGER NOT NULL DEFAULT 1 CHECK (effects_enabled IN (0, 1)),
     theme           TEXT NOT NULL DEFAULT 'system' CHECK (theme IN ('light', 'dark', 'system'))
   );
+  `,  // 5 : langue de l'application (fiche 12), `system` suit celle de l'appareil
+  `
+  ALTER TABLE user_settings ADD COLUMN locale TEXT NOT NULL DEFAULT 'system' CHECK (locale IN ('fr', 'en', 'system'));
   `,
 ]

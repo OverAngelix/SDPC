@@ -47,10 +47,19 @@ describe('SettingsStore', () => {
     assert.equal((db.prepare('SELECT count(*) AS n FROM user_settings').get() as { n: number }).n, 1)
   })
 
-  it('enregistre les quatre réglages à la fois, booléens compris', async () => {
-    const all = { soundEnabled: false, volume: 0, effectsEnabled: false, theme: 'light' as const }
+  it('enregistre les cinq réglages à la fois, booléens compris', async () => {
+    const all = { soundEnabled: false, volume: 0, effectsEnabled: false, theme: 'light' as const, locale: 'en' as const }
     assert.deepEqual(await store.update(userId, all), all)
     assert.deepEqual(await store.update(userId, { soundEnabled: true, effectsEnabled: true }), { ...all, soundEnabled: true, effectsEnabled: true })
+  })
+
+  it('enregistre la langue : valeur par défaut system, puis fr ou en', async () => {
+    assert.equal(store.get(userId).locale, 'system')
+    assert.equal((await store.update(userId, { locale: 'en' })).locale, 'en')
+    assert.equal((await store.update(userId, { locale: 'fr' })).locale, 'fr')
+    assert.equal((await store.update(userId, { locale: 'system' })).locale, 'system')
+    // Les autres réglages ne bougent pas
+    assert.deepEqual(await store.update(userId, { locale: 'en' }), { ...DEFAULT_SETTINGS, locale: 'en' })
   })
 
   it('conserve les réglages dans la base', async () => {
@@ -62,16 +71,17 @@ describe('SettingsStore', () => {
     await store.update(userId, { volume: 40 })
     await rejectsWith(store.update(userId, { volume: 101 }), 400)
     await rejectsWith(store.update(userId, { theme: 'rouge' }), 400)
+    await rejectsWith(store.update(userId, { locale: 'de' }), 400)
     await rejectsWith(store.update(userId, { inconnu: true }), 400)
     assert.equal(store.get(userId).volume, 40)
   })
 
   it('garde les réglages de chaque personne séparés', async () => {
     const other = createUser(db, 'marie@exemple.fr')
-    await store.update(userId, { volume: 10, theme: 'dark' })
+    await store.update(userId, { volume: 10, theme: 'dark', locale: 'en' })
     await store.update(other, { volume: 90 })
 
-    assert.deepEqual(store.get(userId), { ...DEFAULT_SETTINGS, volume: 10, theme: 'dark' })
+    assert.deepEqual(store.get(userId), { ...DEFAULT_SETTINGS, volume: 10, theme: 'dark', locale: 'en' })
     assert.deepEqual(store.get(other), { ...DEFAULT_SETTINGS, volume: 90 })
   })
 
@@ -85,5 +95,6 @@ describe('SettingsStore', () => {
     await store.update(userId, {})
     assert.throws(() => db.prepare('UPDATE user_settings SET volume = 101 WHERE user_id = ?').run(userId), /CHECK/)
     assert.throws(() => db.prepare("UPDATE user_settings SET theme = 'rouge' WHERE user_id = ?").run(userId), /CHECK/)
+    assert.throws(() => db.prepare("UPDATE user_settings SET locale = 'de' WHERE user_id = ?").run(userId), /CHECK/)
   })
 })

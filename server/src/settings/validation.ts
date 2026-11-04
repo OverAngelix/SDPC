@@ -1,6 +1,7 @@
+import type { LocaleSetting } from '../interfaces/locale.js'
 import type { Settings, Theme } from '../interfaces/settings.js'
 import type { ValidationResult } from '../interfaces/validation.js'
-import { THEMES, VOLUME_MAX, VOLUME_MIN } from './constants.js'
+import { LOCALE_SETTINGS, THEMES, VOLUME_MAX, VOLUME_MIN } from './constants.js'
 
 function isRecord (value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -31,6 +32,12 @@ export function validateSettingsPatch (body: unknown): ValidationResult<Partial<
         const theme = THEMES.find((candidate): candidate is Theme => candidate === field)
         if (theme === undefined) errors.push(`theme : l'une de ces valeurs attendue (${THEMES.join(', ')})`)
         else value.theme = theme
+        break
+      }
+      case 'locale': {
+        const locale = LOCALE_SETTINGS.find((candidate): candidate is LocaleSetting => candidate === field)
+        if (locale === undefined) errors.push(`locale : l'une de ces valeurs attendue (${LOCALE_SETTINGS.join(', ')})`)
+        else value.locale = locale
         break
       }
       default:

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import Database from 'better-sqlite3'
 import { afterEach, beforeEach, describe, it } from 'node:test'
 import type { Db } from '../../src/interfaces/database.js'
 import { MEMORY_DATABASE, openDatabase } from '../../src/db/database.js'
@@ -75,6 +76,27 @@ describe('openDatabase', () => {
       assert.throws(() => insert.run('b', first, 'd', 1, 'B', 'mdi-home', 'folder'), /UNIQUE/)
       // Une autre personne a sa propre grille
       insert.run('m', second, null, 0, 'M', 'mdi-home', 'folder')
+    } finally {
+      db.close()
+    }
+  })
+
+  it('migre une base existante : les réglages déjà enregistrés gardent la langue system', () => {
+    const file = join(dir, 'avant-langue.db')
+    // Une base telle que la livrait la version précédente (migrations 1 à 4)
+    const old = new Database(file)
+    old.pragma('foreign_keys = ON')
+    for (const migration of MIGRATIONS.slice(0, 4)) old.exec(migration)
+    old.pragma('user_version = 4')
+    const userId = createUser(old)
+    old.prepare('INSERT INTO user_settings (user_id, volume) VALUES (?, 40)').run(userId)
+    old.close()
+
+    const db = openDatabase(file)
+    try {
+      assert.equal(db.pragma('user_version', { simple: true }), MIGRATIONS.length)
+      const row = db.prepare('SELECT volume, locale FROM user_settings WHERE user_id = ?').get(userId)
+      assert.deepEqual(row, { volume: 40, locale: 'system' })
     } finally {
       db.close()
     }

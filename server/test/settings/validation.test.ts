@@ -4,9 +4,9 @@ import { validateSettingsPatch } from '../../src/settings/validation.js'
 
 describe('validateSettingsPatch', () => {
   it('accepte chaque réglage, y compris les bornes du volume', () => {
-    assert.deepEqual(validateSettingsPatch({ soundEnabled: false, volume: 0, effectsEnabled: false, theme: 'dark' }), {
+    assert.deepEqual(validateSettingsPatch({ soundEnabled: false, volume: 0, effectsEnabled: false, theme: 'dark', locale: 'en' }), {
       ok: true,
-      value: { soundEnabled: false, volume: 0, effectsEnabled: false, theme: 'dark' },
+      value: { soundEnabled: false, volume: 0, effectsEnabled: false, theme: 'dark', locale: 'en' },
     })
     assert.deepEqual(validateSettingsPatch({ volume: 100 }), { ok: true, value: { volume: 100 } })
   })
@@ -41,6 +41,17 @@ describe('validateSettingsPatch', () => {
   it('refuse un thème inconnu', () => {
     for (const theme of ['rouge', '', null, 1]) {
       assert.equal(validateSettingsPatch({ theme }).ok, false, String(theme))
+    }
+  })
+
+  it('accepte fr, en et system pour la langue, et refuse le reste', () => {
+    for (const locale of ['fr', 'en', 'system']) {
+      assert.deepEqual(validateSettingsPatch({ locale }), { ok: true, value: { locale } })
+    }
+    for (const locale of ['de', 'FR', '', null, 1]) {
+      const result = validateSettingsPatch({ locale })
+      assert.equal(result.ok, false, String(locale))
+      if (!result.ok) assert.ok(result.errors[0].startsWith('locale'))
     }
   })
 
