@@ -33,7 +33,7 @@ const logoutMock = vi.mocked(logout)
 const deleteAccountMock = vi.mocked(deleteAccount)
 const fetchSettingsMock = vi.mocked(fetchSettings)
 
-const darkSettings = { soundEnabled: false, volume: 30, effectsEnabled: false, theme: 'dark' as const }
+const darkSettings = { soundEnabled: false, volume: 30, effectsEnabled: false, theme: 'dark' as const, locale: 'system' as const }
 
 const jean: User = { id: 'u1', email: 'jean@exemple.fr' }
 const credentials: Credentials = { email: 'jean@exemple.fr', password: 'motdepasse' }

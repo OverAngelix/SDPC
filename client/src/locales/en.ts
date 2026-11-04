@@ -6,6 +6,11 @@ const en: Messages = {
     fr: 'Français',
     en: 'English',
   },
+
+  settings: {
+    language: 'Language',
+    deviceLanguage: 'Device',
+  },
 }
 
 export default en

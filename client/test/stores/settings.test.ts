@@ -1,7 +1,8 @@
 import type { Settings } from '@/interfaces/settings'
 import { createPinia, setActivePinia } from 'pinia'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { fetchSettings, updateSettings } from '@/api/settings'
+import { i18n } from '@/plugins/i18n'
 import { DEFAULT_SETTINGS, useSettingsStore } from '@/stores/settings'
 import { playSound } from '@/utils/sounds'
 
@@ -12,7 +13,7 @@ const playSoundMock = vi.mocked(playSound)
 const fetchSettingsMock = vi.mocked(fetchSettings)
 const updateSettingsMock = vi.mocked(updateSettings)
 
-const saved: Settings = { soundEnabled: false, volume: 40, effectsEnabled: false, theme: 'dark' }
+const saved: Settings = { soundEnabled: false, volume: 40, effectsEnabled: false, theme: 'dark', locale: 'en' }
 
 describe('settings store', () => {
   beforeEach(() => {
@@ -28,6 +29,7 @@ describe('settings store', () => {
     expect(settings.volume).toBe(100)
     expect(settings.effectsEnabled).toBe(true)
     expect(settings.theme).toBe('system')
+    expect(settings.locale).toBe('system')
     expect(settings.error).toBeNull()
   })
 
@@ -35,7 +37,7 @@ describe('settings store', () => {
     fetchSettingsMock.mockResolvedValue(saved)
     const settings = useSettingsStore()
     await settings.load()
-    expect([settings.soundEnabled, settings.volume, settings.effectsEnabled, settings.theme]).toEqual([false, 40, false, 'dark'])
+    expect([settings.soundEnabled, settings.volume, settings.effectsEnabled, settings.theme, settings.locale]).toEqual([false, 40, false, 'dark', 'en'])
   })
 
   it('load laisse remonter l\'erreur du serveur et garde les valeurs actuelles', async () => {
@@ -50,7 +52,7 @@ describe('settings store', () => {
     const settings = useSettingsStore()
     await settings.load()
     settings.reset()
-    expect({ soundEnabled: settings.soundEnabled, volume: settings.volume, effectsEnabled: settings.effectsEnabled, theme: settings.theme }).toEqual(DEFAULT_SETTINGS)
+    expect({ soundEnabled: settings.soundEnabled, volume: settings.volume, effectsEnabled: settings.effectsEnabled, theme: settings.theme, locale: settings.locale }).toEqual(DEFAULT_SETTINGS)
   })
 
   it('change applique tout de suite, enregistre seulement ce qui change et réussit', async () => {
@@ -100,6 +102,73 @@ describe('settings store', () => {
     updateSettingsMock.mockResolvedValue(DEFAULT_SETTINGS)
     await settings.change({ volume: 10 })
     expect(settings.error).toBeNull()
+  })
+
+  describe('langue', () => {
+    // La langue de l'appareil, pour le choix `system`
+    beforeEach(() => {
+      vi.stubGlobal('navigator', { languages: ['fr-FR'] })
+    })
+
+    afterEach(() => {
+      vi.unstubAllGlobals()
+    })
+
+    it('suit la langue de l\'appareil tant que rien n\'est choisi', () => {
+      useSettingsStore()
+      expect(i18n.global.locale.value).toBe('fr')
+    })
+
+    it('load applique la langue du compte', async () => {
+      fetchSettingsMock.mockResolvedValue(saved)
+      await useSettingsStore().load()
+      expect(i18n.global.locale.value).toBe('en')
+    })
+
+    it('change applique la langue tout de suite, avant l\'enregistrement', async () => {
+      let applied: string | undefined
+      const settings = useSettingsStore()
+      updateSettingsMock.mockImplementation(async () => {
+        applied = i18n.global.locale.value
+        return { ...DEFAULT_SETTINGS, locale: 'en' }
+      })
+
+      await expect(settings.change({ locale: 'en' })).resolves.toBe(true)
+
+      expect(applied).toBe('en')
+      expect(updateSettingsMock).toHaveBeenCalledWith({ locale: 'en' })
+    })
+
+    it('change remet la langue précédente quand le serveur refuse', async () => {
+      updateSettingsMock.mockRejectedValue(new Error('réseau'))
+      const settings = useSettingsStore()
+
+      await expect(settings.change({ locale: 'en' })).resolves.toBe(false)
+
+      expect(settings.locale).toBe('system')
+      expect(i18n.global.locale.value).toBe('fr')
+    })
+
+    it('system suit la langue de l\'appareil, y compris une autre langue que le français', async () => {
+      vi.stubGlobal('navigator', { languages: ['de-DE'] })
+      updateSettingsMock.mockResolvedValue(DEFAULT_SETTINGS)
+      const settings = useSettingsStore()
+      await settings.change({ locale: 'fr' })
+      expect(i18n.global.locale.value).toBe('fr')
+
+      await settings.change({ locale: 'system' })
+      expect(i18n.global.locale.value).toBe('en')
+    })
+
+    it('reset revient à la langue de l\'appareil (déconnexion)', async () => {
+      fetchSettingsMock.mockResolvedValue(saved)
+      const settings = useSettingsStore()
+      await settings.load()
+      expect(i18n.global.locale.value).toBe('en')
+
+      settings.reset()
+      expect(i18n.global.locale.value).toBe('fr')
+    })
   })
 
   it('joue les sons au volume choisi, seulement quand le son est activé', async () => {

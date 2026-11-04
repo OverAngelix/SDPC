@@ -101,6 +101,31 @@
             value="system"
           />
         </v-btn-toggle>
+
+        <v-divider class="my-4" />
+
+        <h3 class="text-subtitle-1 mb-2">{{ t('settings.language') }}</h3>
+
+        <!-- Les noms des langues s'écrivent dans leur langue, pour qu'on retrouve la sienne dans une interface qu'on ne lit pas -->
+        <v-btn-toggle
+          block
+          color="primary"
+          density="comfortable"
+          divided
+          mandatory
+          :model-value="settings.locale"
+          variant="outlined"
+          @update:model-value="changeLocale"
+        >
+          <v-btn
+            v-for="locale in LOCALES"
+            :key="locale"
+            :text="t(`languages.${locale}`)"
+            :value="locale"
+          />
+
+          <v-btn :text="t('settings.deviceLanguage')" value="system" />
+        </v-btn-toggle>
       </v-card-text>
 
       <v-card-actions class="justify-end">
@@ -111,14 +136,18 @@
 </template>
 
 <script lang="ts" setup>
+  import type { LocaleSetting } from '@/interfaces/locale'
   import type { Theme } from '@/interfaces/settings'
   import { onBeforeUnmount, ref, watch } from 'vue'
+  import { useI18n } from 'vue-i18n'
   import { useDisplay } from 'vuetify'
+  import { LOCALES } from '@/locales/constants'
   import { useSettingsStore } from '@/stores/settings'
 
   const open = defineModel<boolean>({ default: false })
 
   const settings = useSettingsStore()
+  const { t } = useI18n()
   // Plein écran sur téléphone, comme le formulaire d'un bouton
   const { xs } = useDisplay()
 
@@ -154,6 +183,10 @@
 
   function changeTheme (theme: Theme | null) {
     if (theme !== null) settings.change({ theme })
+  }
+
+  function changeLocale (locale: LocaleSetting | null) {
+    if (locale !== null) settings.change({ locale })
   }
 </script>
 

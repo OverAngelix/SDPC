@@ -8,4 +8,10 @@ export default {
     fr: 'Français',
     en: 'English',
   },
+
+  /** Fenêtre « Configuration de l'application » */
+  settings: {
+    language: 'Langue',
+    deviceLanguage: 'Appareil',
+  },
 }

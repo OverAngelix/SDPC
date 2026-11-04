@@ -2,9 +2,11 @@ import type { ApiErrorMessage } from '@/interfaces/api'
 import type { Settings } from '@/interfaces/settings'
 import type { SoundName } from '@/interfaces/sound'
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { fetchSettings, updateSettings } from '@/api/settings'
+import { setLocale } from '@/plugins/i18n'
 import { describeApiError } from '@/utils/apiError'
+import { resolveLocale } from '@/utils/locale'
 import { playSound } from '@/utils/sounds'
 
 /** Valeurs avant connexion et pour un compte qui n'a rien enregistré (les mêmes que celles du serveur) */
@@ -13,6 +15,7 @@ export const DEFAULT_SETTINGS: Settings = {
   volume: 100,
   effectsEnabled: true,
   theme: 'system',
+  locale: 'system',
 }
 
 /** Réglages de l'application : ceux du compte connecté, communs à tous ses appareils. */
@@ -21,11 +24,12 @@ export const useSettingsStore = defineStore('settings', () => {
   const volume = ref(DEFAULT_SETTINGS.volume)
   const effectsEnabled = ref(DEFAULT_SETTINGS.effectsEnabled)
   const theme = ref(DEFAULT_SETTINGS.theme)
+  const locale = ref(DEFAULT_SETTINGS.locale)
   // Dernier échec d'enregistrement, pour que la fenêtre des réglages l'affiche
   const error = ref<ApiErrorMessage | null>(null)
 
   function current (): Settings {
-    return { soundEnabled: soundEnabled.value, volume: volume.value, effectsEnabled: effectsEnabled.value, theme: theme.value }
+    return { soundEnabled: soundEnabled.value, volume: volume.value, effectsEnabled: effectsEnabled.value, theme: theme.value, locale: locale.value }
   }
 
   function apply (settings: Partial<Settings>) {
@@ -41,7 +45,13 @@ export const useSettingsStore = defineStore('settings', () => {
     if (settings.theme !== undefined) {
       theme.value = settings.theme
     }
+    if (settings.locale !== undefined) {
+      locale.value = settings.locale
+    }
   }
+
+  // La langue des textes suit le réglage tout de suite (chargement, changement, retour arrière, déconnexion)
+  watch(locale, value => setLocale(resolveLocale(value)), { immediate: true, flush: 'sync' })
 
   /** Reprend les réglages du compte connecté. */
   async function load () {
@@ -80,5 +90,5 @@ export const useSettingsStore = defineStore('settings', () => {
     }
   }
 
-  return { soundEnabled, volume, effectsEnabled, theme, error, load, reset, change, play }
+  return { soundEnabled, volume, effectsEnabled, theme, locale, error, load, reset, change, play }
 })
