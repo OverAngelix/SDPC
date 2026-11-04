@@ -52,7 +52,7 @@
           @end="saveVolume"
         >
           <template #append>
-            <span class="volume-value text-body-2">{{ volumeDraft }} %</span>
+            <span class="volume-value text-body-2">{{ t('settings.volumeValue', { value: volumeDraft }) }}</span>
           </template>
         </v-slider>
 

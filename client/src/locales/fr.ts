@@ -86,6 +86,7 @@ export default {
 
   /** Grille et états communs à la grille et à sa configuration */
   grid: {
+    empty: 'Aucun bouton ici. Ajoutez-en depuis « Mon compte », Configuration de la grille.',
     loading: 'Chargement des boutons…',
     loadFailed: 'Impossible de charger les boutons : le serveur est injoignable.',
     refreshFailed: 'Impossible d\'actualiser les boutons : le serveur est injoignable.',
@@ -188,6 +189,7 @@ export default {
     sound: 'Son',
     soundEnabled: 'Son activé',
     volume: 'Volume',
+    volumeValue: '{value} %',
     effects: 'Effets',
     effectsEnabled: 'Effets visuels (survol, animations)',
     theme: 'Thème',

@@ -77,6 +77,7 @@ const en: Messages = {
   },
 
   grid: {
+    empty: 'No buttons here. Add some from “My account”, Grid settings.',
     loading: 'Loading buttons…',
     loadFailed: 'Could not load the buttons: the server is unreachable.',
     refreshFailed: 'Could not refresh the buttons: the server is unreachable.',
@@ -171,6 +172,7 @@ const en: Messages = {
     sound: 'Sound',
     soundEnabled: 'Sound on',
     volume: 'Volume',
+    volumeValue: '{value}%',
     effects: 'Effects',
     effectsEnabled: 'Visual effects (hover, animations)',
     theme: 'Theme',

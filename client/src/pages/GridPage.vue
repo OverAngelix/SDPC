@@ -2,7 +2,7 @@
   <v-container class="page-centered pa-2 pa-sm-4">
     <grid-status :home="{ name: 'grid' }" :path="path">
       <p v-if="isEmpty" class="text-medium-emphasis text-center mb-4">
-        Aucun bouton ici. Ajoutez-en depuis « Mon compte », Configuration de la grille.
+        {{ t('grid.empty') }}
       </p>
 
       <button-grid
@@ -19,6 +19,7 @@
 <script lang="ts" setup>
   import type { Button } from '@/interfaces/button'
   import { onMounted } from 'vue'
+  import { useI18n } from 'vue-i18n'
   import ButtonGrid from '@/components/ButtonGrid.vue'
   import GridStatus from '@/components/GridStatus.vue'
   import { useFolderNavigation } from '@/composables/folderNavigation'
@@ -27,6 +28,7 @@
   import { isHttpUrl } from '@/utils/url'
 
   const store = useButtonsStore()
+  const { t } = useI18n()
   const settings = useSettingsStore()
   const { folderId, path, slots, isEmpty, openFolder, goBack } = useFolderNavigation({ root: 'grid', folder: 'folder' })
 
