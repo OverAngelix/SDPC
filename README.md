@@ -13,9 +13,13 @@ Un Stream Deck logiciel pour PC, dans l'esprit des Stream Deck d'Elgato : une gr
 L'écran principal est la grille. Le menu **Mon compte** de la barre du haut (un burger sur téléphone) donne accès à :
 
 - **Grille** et **Configuration de la grille** : lancer ses raccourcis, ou créer, modifier, déplacer et supprimer les boutons ;
-- **Configuration de l'application** : son (actif ou non, volume), effets visuels (survol, animations), thème (clair, sombre, celui de l'appareil). Ces réglages sont enregistrés sur le compte et suivent la personne d'un appareil à l'autre ;
+- **Configuration de l'application** : son (actif ou non, volume), effets visuels (survol, animations), thème (clair, sombre, celui de l'appareil), langue (français, English, celle de l'appareil). Ces réglages sont enregistrés sur le compte et suivent la personne d'un appareil à l'autre ;
 - **Mon compte** : changer son mot de passe (le mot de passe actuel est redemandé, les autres appareils sont déconnectés), effacer la grille (tous les boutons du compte, après confirmation) ou supprimer son compte (avec son mot de passe, définitif) ;
 - **Déconnexion**.
+
+### Langues
+
+L'application est disponible en **français** et en **anglais**, au choix dans « Configuration de l'application » (ou celle de l'appareil, qui est aussi celle des pages de connexion). Les textes sont dans `client/src/locales/` : `fr.ts` (référence) et `en.ts`. Pour ajouter une langue : un fichier `xx.ts` de même forme, son nom dans `languages`, `LOCALES` (client, `locales/constants.ts`) et la liste du serveur (`server/src/settings/constants.ts`) ; le test `client/test/locales/` signale ce qui manque. Le serveur n'envoie que des codes d'erreur, traduits par le client.
 
 ## Stack
 
@@ -69,6 +73,7 @@ Les comptes et les boutons sont conservés côté serveur dans une base SQLite, 
 | [09 — Comptes utilisateur et base de données SQLite](docs/feature/09-comptes-base-de-donnees.md) | Livré | OverAngelix |
 | [10 — Fenêtre « Mon compte » : mot de passe, remise à zéro et suppression](docs/feature/10-fenetre-mon-compte.md) | Livré | OverAngelix |
 | [11 — Menu « Mon compte » et réglages de l'application](docs/feature/11-menu-compte-reglages.md) | Livré | OverAngelix |
+| [12 — Internationalisation (français et anglais)](docs/feature/12-i18n.md) | Livré | OverAngelix |
 
 La liste complète et le détail de chaque feature (TODO, implémentation) sont dans [`docs/feature/`](docs/feature/README.md).
 

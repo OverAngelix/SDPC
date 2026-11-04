@@ -134,6 +134,7 @@ Démarrage ou connexion : GET /api/auth/me → GET /api/settings → thème, vol
 | Volume | `volume` | `volume` | entier de 0 à 100 | 100 |
 | Effets visuels | `effectsEnabled` | `effects_enabled` | booléen | actifs |
 | Thème | `theme` | `theme` | `light`, `dark`, `system` | `system` |
+| Langue | `locale` | `locale` | `fr`, `en`, `system` | `system` (ajoutée par la [feature 12](12-i18n.md)) |
 
 ```sql
 CREATE TABLE user_settings (

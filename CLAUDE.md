@@ -32,7 +32,8 @@ Installation reproductible : `npm ci` dans chaque dossier.
 
 ## Conventions
 
-- Textes visibles par l'utilisateur et documentation en français ; identifiants de code (variables, fonctions, fichiers) en anglais.
+- Documentation en français ; identifiants de code (variables, fonctions, fichiers) en anglais.
+- Textes visibles par l'utilisateur : jamais en dur dans les composants, les stores ou les utilitaires. Ils vivent dans `client/src/locales/` (`fr.ts` définit la forme, `en.ts` la reproduit, `vue-i18n`) et s'affichent par `t('zone.cle')` ; le serveur n'envoie que des codes d'erreur (`server/src/constants.ts`), que le client traduit (`errors.<code>`, `issues.<code>`). Une règle de lint et un test (`client/test/locales/`) vérifient que rien ne manque.
 - Tests serveur : tous dans `server/test/`, jamais à côté du code de `src/`. L'arborescence reflète celle de `src/` (`src/buttons/store.ts` → `test/buttons/store.test.ts`) et les outils partagés vont dans `test/helpers/`. Lancés par `npm test` (`node:test` via `tsx`).
 - Tests client : tous dans `client/test/`, jamais à côté du code de `src/`, avec la même règle que le serveur (`src/stores/buttons.ts` → `test/stores/buttons.test.ts`). Lancés par `npm test` (Vitest, qui ne parcourt que `test/`).
 - Interfaces et types partagés : dans `src/interfaces/` du client **et du serveur** (`client/src/interfaces/`, `server/src/interfaces/`), un fichier par sujet (ex. `button.ts`), jamais dans les fichiers qui les utilisent (`api/`, `stores/`, `buttons/store.ts`, `app.ts`…). Seuls restent sur place les types privés d'un fichier (non exportés), comme la forme d'une ligne de base de données. Les constantes (`COLUMNS`, `BUTTON_COLORS`, `DEFAULT_SETTINGS`…) ne sont pas des interfaces : elles vont dans un fichier `constants.ts` du dossier concerné.

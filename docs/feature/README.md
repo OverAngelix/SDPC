@@ -15,7 +15,7 @@ Une fiche par feature : explication, TODO, implémentation et personne active. N
 | 09 | [Comptes utilisateur et base de données SQLite](09-comptes-base-de-donnees.md) | Livré | OverAngelix |
 | 10 | [Fenêtre « Mon compte » : mot de passe, remise à zéro et suppression](10-fenetre-mon-compte.md) | Livré | OverAngelix |
 | 11 | [Menu « Mon compte » et réglages de l'application](11-menu-compte-reglages.md) | Livré | OverAngelix |
-| 12 | [Internationalisation (français et anglais)](12-i18n.md) | À faire | OverAngelix |
+| 12 | [Internationalisation (français et anglais)](12-i18n.md) | Livré | OverAngelix |
 
 Ordre de réalisation : 02 → 03 → 04 → 05 → 06 → 07 → 08 → 09 → 11 → 10 → 12
 
