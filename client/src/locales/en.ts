@@ -7,6 +7,24 @@ const en: Messages = {
     en: 'English',
   },
 
+  validation: {
+    required: 'Required',
+    minLength: 'At least {min} characters',
+  },
+
+  auth: {
+    loginTitle: 'Sign in',
+    registerTitle: 'Create an account',
+    email: 'Email address',
+    password: 'Password',
+    remember: 'Remember me',
+    rememberHint: 'Keeps your email address on this device for your next sign-in',
+    submitLogin: 'Sign in',
+    submitRegister: 'Create my account',
+    haveAccount: 'I already have an account',
+    createAccount: 'Create an account',
+  },
+
   menu: {
     open: 'Menu',
     account: 'My account',

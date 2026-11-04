@@ -9,6 +9,26 @@ export default {
     en: 'English',
   },
 
+  /** Messages de validation des champs, communs à tous les formulaires */
+  validation: {
+    required: 'Champ requis',
+    minLength: '{min} caractères au moins',
+  },
+
+  /** Pages Connexion et Créer un compte */
+  auth: {
+    loginTitle: 'Connexion',
+    registerTitle: 'Créer un compte',
+    email: 'Adresse e-mail',
+    password: 'Mot de passe',
+    remember: 'Se souvenir de moi',
+    rememberHint: 'Garde votre adresse e-mail sur cet appareil pour la prochaine connexion',
+    submitLogin: 'Se connecter',
+    submitRegister: 'Créer mon compte',
+    haveAccount: 'J\'ai déjà un compte',
+    createAccount: 'Créer un compte',
+  },
+
   /** Barre d'application, menu et tiroir du compte */
   menu: {
     open: 'Menu',

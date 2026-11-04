@@ -2,7 +2,7 @@
   <v-container class="page-centered pa-2 pa-sm-4">
     <v-card class="mx-auto w-100" max-width="420">
       <v-form @submit.prevent="submit">
-        <v-card-title class="pt-4">{{ isRegister ? 'Créer un compte' : 'Connexion' }}</v-card-title>
+        <v-card-title class="pt-4">{{ isRegister ? t('auth.registerTitle') : t('auth.loginTitle') }}</v-card-title>
 
         <v-card-text>
           <v-alert
@@ -22,7 +22,7 @@
             v-model="email"
             autocomplete="username"
             :autofocus="savedLogin === null"
-            label="Adresse e-mail"
+            :label="t('auth.email')"
             :rules="[required]"
             type="email"
           />
@@ -31,8 +31,8 @@
             v-model="password"
             :autocomplete="isRegister ? 'new-password' : 'current-password'"
             :autofocus="savedLogin !== null"
-            :hint="isRegister ? '8 caractères au moins' : undefined"
-            label="Mot de passe"
+            :hint="isRegister ? t('validation.minLength', { min: MIN_PASSWORD_LENGTH }) : undefined"
+            :label="t('auth.password')"
             :persistent-hint="isRegister"
             :rules="isRegister ? [required, minLength] : [required]"
             type="password"
@@ -42,8 +42,8 @@
             v-model="remember"
             density="compact"
             hide-details
-            label="Se souvenir de moi"
-            title="Garde votre adresse e-mail sur cet appareil pour la prochaine connexion"
+            :label="t('auth.remember')"
+            :title="t('auth.rememberHint')"
           />
         </v-card-text>
 
@@ -52,14 +52,14 @@
             block
             color="primary"
             :loading="loading"
-            :text="isRegister ? 'Créer mon compte' : 'Se connecter'"
+            :text="isRegister ? t('auth.submitRegister') : t('auth.submitLogin')"
             type="submit"
             variant="flat"
           />
 
           <v-btn
             block
-            :text="isRegister ? 'J\'ai déjà un compte' : 'Créer un compte'"
+            :text="isRegister ? t('auth.haveAccount') : t('auth.createAccount')"
             :to="{ name: isRegister ? 'login' : 'register', query: route.query }"
             variant="text"
           />
@@ -73,6 +73,7 @@
   import type { ApiErrorMessage } from '@/interfaces/api'
   import type { SubmitEventPromise } from 'vuetify'
   import { computed, ref } from 'vue'
+  import { useI18n } from 'vue-i18n'
   import { useRoute, useRouter } from 'vue-router'
   import { safeRedirect } from '@/router/guard'
   import { useAuthStore } from '@/stores/auth'
@@ -84,6 +85,7 @@
   const MIN_PASSWORD_LENGTH = 8
 
   const auth = useAuthStore()
+  const { t } = useI18n()
   const route = useRoute()
   const router = useRouter()
 
@@ -96,8 +98,8 @@
   const loading = ref(false)
   const error = ref<ApiErrorMessage | null>(null)
 
-  const required = (value: string) => value.trim() !== '' || 'Champ requis'
-  const minLength = (value: string) => value.length >= MIN_PASSWORD_LENGTH || `${MIN_PASSWORD_LENGTH} caractères au moins`
+  const required = (value: string) => value.trim() !== '' || t('validation.required')
+  const minLength = (value: string) => value.length >= MIN_PASSWORD_LENGTH || t('validation.minLength', { min: MIN_PASSWORD_LENGTH })
 
   async function submit (event: SubmitEventPromise) {
     // Vuetify valide les champs avant de rendre la main
