@@ -172,7 +172,13 @@ export default {
     gridConfig: 'Configuration de la grille',
     appSettings: 'Configuration de l\'application',
     accountWindow: 'Mon compte',
+    bigPicture: 'Big picture',
     logout: 'Déconnexion',
+  },
+
+  /** Mode big picture : la grille en plein cadre */
+  bigPicture: {
+    exit: 'Revenir au mode normal',
   },
 
   /** Messages affichés par l'application elle-même */

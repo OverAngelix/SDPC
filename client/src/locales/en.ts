@@ -157,7 +157,12 @@ const en: Messages = {
     gridConfig: 'Grid settings',
     appSettings: 'App settings',
     accountWindow: 'My account',
+    bigPicture: 'Big picture',
     logout: 'Sign out',
+  },
+
+  bigPicture: {
+    exit: 'Back to normal mode',
   },
 
   notices: {

@@ -71,6 +71,7 @@
   import SettingsDialog from '@/components/SettingsDialog.vue'
   import { guardRoute } from '@/router/guard'
   import { useAuthStore } from '@/stores/auth'
+  import { useBigPictureStore } from '@/stores/bigPicture'
   import { useButtonsStore } from '@/stores/buttons'
   import { useSettingsStore } from '@/stores/settings'
 
@@ -89,6 +90,7 @@
   const notice = ref(false)
   const noticeText = ref('')
   const buttons = useButtonsStore()
+  const bigPicture = useBigPictureStore()
   // Rien à effacer : une fois les boutons chargés, une grille vide grise le bouton de la fenêtre « Mon compte »
   const gridEmpty = computed(() => buttons.loaded && buttons.buttons.length === 0)
   const theme = useTheme()
@@ -125,11 +127,23 @@
         accountOpen.value = true
         break
       }
+      case 'bigPicture': {
+        enterBigPicture()
+        break
+      }
       case 'logout': {
         signOut()
         break
       }
     }
+  }
+
+  // Le mode ne vaut que pour la grille : depuis la configuration, on l'ouvre d'abord
+  async function enterBigPicture () {
+    if (onConfig.value) {
+      await router.push('/')
+    }
+    bigPicture.enter()
   }
 
   function onCleared (count: number) {

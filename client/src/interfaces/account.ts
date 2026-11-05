@@ -1,5 +1,5 @@
 /** Les entrées du menu « Mon compte » */
-export type AccountAction = 'grid' | 'config' | 'settings' | 'account' | 'logout'
+export type AccountAction = 'grid' | 'config' | 'settings' | 'account' | 'bigPicture' | 'logout'
 
 /** Corps de `PUT /api/account/password` */
 export interface ChangePasswordPayload {

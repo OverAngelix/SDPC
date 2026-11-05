@@ -29,6 +29,12 @@
         :title="t('menu.accountWindow')"
         @click="emit('select', 'account')"
       />
+
+      <v-list-item
+        prepend-icon="mdi-fullscreen"
+        :title="t('menu.bigPicture')"
+        @click="emit('select', 'bigPicture')"
+      />
     </template>
 
     <v-divider v-if="part === 'all'" class="my-1" />
