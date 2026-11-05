@@ -1,6 +1,7 @@
 <template>
   <div
     class="grid"
+    :class="{ 'grid-fill': fill }"
     :style="{ '--columns': shape.columns, '--rows': shape.rows }"
   >
     <button-tile
@@ -44,6 +45,8 @@
     slots: (Button | null)[]
     /** Affiche le bouton retour à la première case (dans un dossier) */
     back?: boolean
+    /** Big picture : la grille remplit l'écran (marges réduites, cases sans plafond, toujours entière à l'écran) */
+    fill?: boolean
     /** Mode configuration : les emplacements libres se remplissent, les boutons se modifient et se suppriment */
     editable?: boolean
     /** Déplacement au doigt : le bouton en attente de sa destination, marqué dans la grille */
@@ -167,6 +170,7 @@
     /* Hauteur prise par la barre d'application et les marges autour de la grille */
     --reserve: 200px;
     --gap: 12px;
+    --height: 100vh;
     /* Taille maximale d'une case : sur un grand écran, la grille garde à peu près la place qu'elle avait
        avec plus de cases, sans que celles-ci ne grandissent démesurément */
     --tile-max: 124px;
@@ -178,13 +182,19 @@
     margin-inline: auto;
     /* La grille entière tient dans la hauteur de l'écran (dvh : la barre d'adresse mobile ne la fausse pas),
        sans dépasser la largeur disponible */
-    max-width: min(100%, var(--max-width), calc((100vh - var(--reserve)) * var(--columns) / var(--rows)));
+    max-width: min(100%, var(--max-width), calc((var(--height) - var(--reserve)) * var(--columns) / var(--rows)));
   }
 
   @supports (height: 100dvh) {
     .grid {
-      max-width: min(100%, var(--max-width), calc((100dvh - var(--reserve)) * var(--columns) / var(--rows)));
+      --height: 100dvh;
     }
+  }
+
+  /* Big picture : plus de barre ; la réserve est la bande du bouton de repli et les marges (voir GridPage) */
+  .grid.grid-fill {
+    --reserve: 68px;
+    --tile-max: 2000px;
   }
 
   /* Téléphone : moins de marges, cases plus serrées donc plus grandes */
@@ -193,12 +203,16 @@
       --reserve: 84px;
       --gap: 6px;
     }
+
+    .grid.grid-fill {
+      --reserve: 62px;
+    }
   }
 
   /* Téléphone couché : la hauteur est trop courte pour y faire tenir la grille, on la laisse défiler
      plutôt que de réduire les cases à quelques pixels */
   @media (orientation: landscape) and (max-height: 500px) {
-    .grid {
+    .grid:not(.grid-fill) {
       max-width: 100%;
     }
   }

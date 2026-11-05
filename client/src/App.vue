@@ -1,6 +1,7 @@
 <template>
   <v-app>
-    <v-app-bar density="comfortable">
+    <!-- Big picture : la grille seule, sans barre -->
+    <v-app-bar v-if="!bigPicture.active" density="comfortable">
       <v-app-bar-title>
         <router-link class="app-title" to="/">SDPC</router-link>
       </v-app-bar-title>
@@ -18,7 +19,7 @@
     </v-app-bar>
 
     <account-drawer
-      v-if="auth.user"
+      v-if="auth.user && !bigPicture.active"
       v-model="drawer"
       :email="auth.user.email"
       :on-config="onConfig"
