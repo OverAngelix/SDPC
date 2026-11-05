@@ -20,27 +20,27 @@ Aujourd'hui la grille partage l'écran avec la barre d'application et des marges
 
 ### Étape 1 — État du mode (client)
 
-- [ ] Store Pinia `client/src/stores/bigPicture.ts` : `active`, `enter()`, `exit()`
-- [ ] Tests client : inactif au départ, entrer, sortir
+- [x] Store Pinia `client/src/stores/bigPicture.ts` : `active`, `enter()`, `exit()`
+- [x] Tests client : inactif au départ, entrer, sortir
 
 ### Étape 2 — Entrée du menu (client)
 
-- [ ] `'bigPicture'` dans `AccountAction` (`interfaces/account.ts`)
-- [ ] Entrée dans `AccountMenuItems.vue` (menu déroulant et tiroir)
-- [ ] `App.vue` : l'action ouvre la grille si on est sur la configuration, puis active le mode
-- [ ] Textes `menu.bigPicture` et `bigPicture.exit` dans `locales/fr.ts` et `en.ts`
+- [x] `'bigPicture'` dans `AccountAction` (`interfaces/account.ts`)
+- [x] Entrée dans `AccountMenuItems.vue` (menu déroulant et tiroir)
+- [x] `App.vue` : l'action ouvre la grille si on est sur la configuration, puis active le mode
+- [x] Textes `menu.bigPicture` et `bigPicture.exit` dans `locales/fr.ts` et `en.ts`
 
 ### Étape 3 — Grille plein cadre (client)
 
-- [ ] `App.vue` : barre d'application masquée tant que le mode est actif
-- [ ] `ButtonGrid.vue` : prop `fill` (marges réduites, plafond des cases levé, la grille tient toujours dans l'écran)
-- [ ] `GridPage.vue` : bouton de repli en haut à gauche, touche Échap, sortie du mode au démontage de la page
+- [x] `App.vue` : barre d'application masquée tant que le mode est actif
+- [x] `ButtonGrid.vue` : prop `fill` (marges réduites, plafond des cases levé, la grille tient toujours dans l'écran)
+- [x] `GridPage.vue` : bouton de repli en haut à gauche, touche Échap, sortie du mode au démontage de la page
 
 ### Étape 4 — Documentation
 
-- [ ] `CLAUDE.md` : le big picture dans le périmètre de la V1
-- [ ] README des features : retrait de « Plein écran ou mode kiosque » de « Plus tard » (le vrai plein écran du navigateur y reste)
-- [ ] Fiche mise à jour, vérification manuelle (voir plus bas)
+- [x] `CLAUDE.md` : le big picture dans le périmètre de la V1
+- [x] README des features : retrait de « Plein écran ou mode kiosque » de « Plus tard » (le vrai plein écran du navigateur y reste)
+- [x] Fiche mise à jour, vérification manuelle (voir plus bas)
 
 ## Décisions
 
@@ -81,7 +81,7 @@ Page grille quittée (retour navigateur, déconnexion) → bigPicture.exit()
 
 ### Validation
 
-- [ ] Type-check, lint, tests et build sans erreur côté client
+- [x] Type-check, lint, tests (171) et build sans erreur côté client
 - [ ] Parcours vérifié sur ordinateur et sur téléphone (portrait et paysage)
 
 ### Vérifier à la main

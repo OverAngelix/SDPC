@@ -22,7 +22,7 @@ Ordre de réalisation : 02 → 03 → 04 → 05 → 06 → 07 → 08 → 09 → 
 
 ## Plus tard
 
-- Plein écran ou mode kiosque pour la grille.
+- Vrai plein écran du navigateur (API Fullscreen) pour le big picture.
 - Rendre commun les types
 - Deploiement serveur OVH
 - Image de fond de la grille (réglage de l'application, après la feature 11).

@@ -13,6 +13,7 @@ Un Stream Deck logiciel pour PC, dans l'esprit des Stream Deck d'Elgato : une gr
 L'écran principal est la grille. Le menu **Mon compte** de la barre du haut (un burger sur téléphone) donne accès à :
 
 - **Grille** et **Configuration de la grille** : lancer ses raccourcis, ou créer, modifier, déplacer et supprimer les boutons ;
+- **Big picture** : la grille seule, en plein cadre, sans barre d'application. Le bouton en haut à gauche (ou la touche Échap) revient au mode normal ;
 - **Configuration de l'application** : son (actif ou non, volume), effets visuels (survol, animations), thème (clair, sombre, celui de l'appareil), langue (français, English, celle de l'appareil). Ces réglages sont enregistrés sur le compte et suivent la personne d'un appareil à l'autre ;
 - **Mon compte** : changer son mot de passe (le mot de passe actuel est redemandé, les autres appareils sont déconnectés), effacer la grille (tous les boutons du compte, après confirmation) ou supprimer son compte (avec son mot de passe, définitif) ;
 - **Déconnexion**.
@@ -74,6 +75,7 @@ Les comptes et les boutons sont conservés côté serveur dans une base SQLite, 
 | [10 — Fenêtre « Mon compte » : mot de passe, remise à zéro et suppression](docs/feature/10-fenetre-mon-compte.md) | Livré | OverAngelix |
 | [11 — Menu « Mon compte » et réglages de l'application](docs/feature/11-menu-compte-reglages.md) | Livré | OverAngelix |
 | [12 — Internationalisation (français et anglais)](docs/feature/12-i18n.md) | Livré | OverAngelix |
+| [13 — Big picture : la grille en plein cadre](docs/feature/13-big-picture.md) | En cours | OverAngelix |
 
 La liste complète et le détail de chaque feature (TODO, implémentation) sont dans [`docs/feature/`](docs/feature/README.md).
 
