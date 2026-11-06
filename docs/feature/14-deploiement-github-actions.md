@@ -34,9 +34,9 @@ SDPC se déploie sur le VPS OVH de la même façon qu'awesome-navigation : deux 
 ### Étape 3 — Serveur derrière Traefik
 
 - [ ] Express derrière un proxy : `trust proxy` pilotée par une variable d'environnement, sinon `req.ip` (limiteur de tentatives de connexion) vaut toujours l'adresse de Traefik
-- [ ] Sur le VPS (manifests hors dépôt) : `sdpc-client/` et `sdpc-server/` dans `/home/deploy/apps-k3s/` (`deployment`, `service`, `ingressroute`, `middleware`), annotations Keel, sonde sur `/api/health`, `data/` en `hostPath`, `kubectl apply -f .`
-- [ ] Route `/api` du serveur sur le même domaine que le client, sans `stripPrefix`
-- [ ] Domaine et HTTPS (le cookie de session est `Secure` en production)
+- [x] Sur le VPS (manifests hors dépôt) : `sdpc-client/` et `sdpc-server/` dans `/home/deploy/apps-k3s/` (`deployment`, `service`, `ingressroute`, `middleware`), annotations Keel, sonde sur `/api/health`, `data/` en `hostPath`, `kubectl apply -f .`
+- [x] Route `/api` du serveur sur le même domaine que le client, sans `stripPrefix`
+- [x] Domaine et HTTPS (le cookie de session est `Secure` en production)
 
 ### Étape 4 — Documentation
 
