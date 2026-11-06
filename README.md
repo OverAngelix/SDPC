@@ -13,7 +13,7 @@ Un Stream Deck logiciel pour PC, dans l'esprit des Stream Deck d'Elgato : une gr
 L'écran principal est la grille. Le menu **Mon compte** de la barre du haut (un burger sur téléphone) donne accès à :
 
 - **Grille** et **Configuration de la grille** : lancer ses raccourcis, ou créer, modifier, déplacer et supprimer les boutons ;
-- **Big picture** : la grille seule, en plein cadre, sans barre d'application. Le bouton en haut à gauche (ou la touche Échap) revient au mode normal ;
+- **Big picture** : la grille seule, en plein cadre, sans barre d'application. Un bouton tout à droite de la barre (ou la touche F) l'active, le même bouton en haut à droite (ou Échap) revient au mode normal. Le mode est retenu sur l'appareil ;
 - **Configuration de l'application** : son (actif ou non, volume), effets visuels (survol, animations), thème (clair, sombre, celui de l'appareil), langue (français, English, celle de l'appareil). Ces réglages sont enregistrés sur le compte et suivent la personne d'un appareil à l'autre ;
 - **Mon compte** : changer son mot de passe (le mot de passe actuel est redemandé, les autres appareils sont déconnectés), effacer la grille (tous les boutons du compte, après confirmation) ou supprimer son compte (avec son mot de passe, définitif) ;
 - **Déconnexion**.

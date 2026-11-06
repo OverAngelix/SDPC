@@ -11,7 +11,7 @@ Un Stream Deck logiciel pour PC, dans l'esprit des Stream Deck d'Elgato : une gr
 
 ## Périmètre de la V1
 
-- Une page web affichant la grille, et une page pour configurer les boutons (créer, modifier, supprimer : type, icône, libellé, URL, contenu des dossiers), ouverte depuis le menu « Mon compte » de la barre d'application. Ce menu donne aussi accès aux réglages de l'application (son, volume, effets, thème, enregistrés sur le compte), au **big picture** (la grille seule en plein cadre, bouton de repli en haut à gauche), à la fenêtre « Mon compte » (changer son mot de passe, effacer la grille, supprimer son compte) et à la déconnexion.
+- Une page web affichant la grille, et une page pour configurer les boutons (créer, modifier, supprimer : type, icône, libellé, URL, contenu des dossiers), ouverte depuis le menu « Mon compte » de la barre d'application. Ce menu donne aussi accès aux réglages de l'application (son, volume, effets, thème, enregistrés sur le compte), au **big picture** (la grille seule en plein cadre, bouton de repli en haut à droite, retenue dans le navigateur), à la fenêtre « Mon compte » (changer son mot de passe, effacer la grille, supprimer son compte) et à la déconnexion.
 - Chaque personne a un **compte** (e-mail et mot de passe) et sa propre grille ; sans connexion, seule la page de connexion est accessible.
 - La configuration est conservée côté serveur, dans une base SQLite (`server/data/sdpc.db`).
 - Pas de plugin, pas d'intégration à un logiciel de streaming.

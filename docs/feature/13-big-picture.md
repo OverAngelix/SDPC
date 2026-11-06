@@ -13,7 +13,8 @@ Aujourd'hui la grille partage l'écran avec la barre d'application et des marges
 
 - Une entrée **Big picture** dans le menu « Mon compte » (et dans son tiroir sur téléphone) active le mode.
 - La barre d'application disparaît ; les cases grandissent pour remplir l'écran, avec leur icône et leur libellé.
-- Un **bouton de repli** (icône seule) en haut à gauche, ou la touche Échap, ramène au mode normal.
+- Un **bouton** d'agrandissement tout à droite de la barre d'application active le mode (touche F aussi) ; le **bouton de repli**, à la même place en haut à droite, ou la touche Échap, ramène au mode normal.
+- Le mode est **retenu sur l'appareil** : après un rechargement de la page, la grille se rouvre en big picture.
 - Les dossiers et les actions marchent comme d'habitude : ouvrir un dossier, revenir par la case 0, lancer une URL dans un nouvel onglet.
 
 ## TODO
@@ -34,7 +35,14 @@ Aujourd'hui la grille partage l'écran avec la barre d'application et des marges
 
 - [x] `App.vue` : barre d'application masquée tant que le mode est actif
 - [x] `ButtonGrid.vue` : prop `fill` (marges réduites, plafond des cases levé, la grille tient toujours dans l'écran)
-- [x] `GridPage.vue` : bouton de repli en haut à gauche, touche Échap, sortie du mode au démontage de la page
+- [x] `GridPage.vue` : bouton de repli en haut à droite, touche Échap, sortie du mode au démontage de la page, message « grille vide » masqué
+
+### Étape 3 bis — Raccourci et mémoire du mode (client)
+
+- [x] Bouton d'agrandissement tout à droite de la barre (pages grille et dossier), touche F pour basculer
+- [x] Mode retenu dans le navigateur (`localStorage`, clé `sdpc.bigPicture`) : `utils/rememberedBigPicture.ts`, lu et écrit par le store
+- [x] Barre et mode ne valent que sur la grille : un mode retenu ne masque jamais la barre sur la configuration ou la connexion
+- [x] Tests client : lecture, écriture, stockage refusé, store (mémorisation, rechargement, bascule)
 
 ### Étape 4 — Documentation
 
@@ -44,13 +52,14 @@ Aujourd'hui la grille partage l'écran avec la barre d'application et des marges
 
 ## Décisions
 
-- **Un état transitoire, pas un réglage du compte.** Le mode se choisit sur le moment (un second écran, un affichage) : il n'est pas enregistré, un rechargement de la page revient au mode normal.
-- **Uniquement sur la grille** (routes `grid` et `folder`). Quitter la page (retour du navigateur vers la configuration, déconnexion) sort du mode. La navigation entre dossiers reste possible dans le mode.
+- **Retenu sur l'appareil, pas sur le compte.** Le mode se choisit pour un écran (un second écran, un affichage) : il est mémorisé dans le navigateur (`localStorage`), pas dans les réglages du compte. Un rechargement rouvre la grille en big picture ; sans stockage disponible (navigation privée), il n'est simplement pas retenu.
+- **Uniquement sur la grille** (routes `grid` et `folder`). Quitter la page grille (retour du navigateur vers la configuration, déconnexion) sort du mode et l'oublie. La navigation entre dossiers reste possible dans le mode. Un mode retenu n'a aucun effet hors de la grille : la barre reste affichée sur la configuration et la connexion.
 - **Page agrandie, pas l'API Fullscreen du navigateur.** On masque la barre et on agrandit la grille dans la fenêtre. Le vrai plein écran (qui n'existe pas sur iOS Safari) reste dans « Plus tard ».
 - **Libellés conservés.** Les cases gardent icône et libellé ; seul le bouton de repli est une icône seule.
-- **Bouton de repli hors de la grille.** Une bande est réservée en haut de l'écran : le bouton ne recouvre jamais la case 0, qui est le retour d'un dossier.
+- **Le bouton de repli prend la place du raccourci d'entrée** : tout à droite de la barre, puis, une fois la barre retirée, au même endroit de l'écran. Une bande est réservée en haut : il ne recouvre jamais une case.
+- **Message « grille vide » masqué** dans le mode : il fait déborder la grille hors de l'écran, et il renvoie vers un menu qui n'y est pas.
 - **La grille tient toujours dans l'écran**, y compris sur téléphone couché, où le mode normal la laisse défiler (feature 07).
-- **Entrée par le menu seulement** pour l'instant, pas de bouton sur la grille.
+- **Trois entrées** : le menu « Mon compte », le bouton de la barre (grille et dossiers) et la touche F (ignorée pendant une saisie ou quand une fenêtre ou un menu est ouvert).
 
 ## Implémentation
 
@@ -58,11 +67,12 @@ Aujourd'hui la grille partage l'écran avec la barre d'application et des marges
 
 ```
 Menu « Mon compte » → Big picture
-  → store bigPicture.active = true
+  → store bigPicture.active = true (retenu dans localStorage)
   → App.vue : barre d'application retirée
   → GridPage : bouton de repli affiché, ButtonGrid en mode fill (cases agrandies)
 
-Bouton de repli ou Échap → bigPicture.exit() → mode normal
+Bouton de repli, Échap ou F → mode normal (et oublié)
+Rechargement de la page → le mode retenu est relu : la grille se rouvre en big picture
 Page grille quittée (retour navigateur, déconnexion) → bigPicture.exit()
 ```
 
@@ -70,18 +80,19 @@ Page grille quittée (retour navigateur, déconnexion) → bigPicture.exit()
 
 | Fichier | Rôle |
 | --- | --- |
-| `client/src/stores/bigPicture.ts` | État du mode |
+| `client/src/stores/bigPicture.ts` | État du mode, mémorisé |
+| `client/src/utils/rememberedBigPicture.ts` | Lecture et écriture du mode dans le navigateur |
 | `client/src/interfaces/account.ts` | Action `bigPicture` du menu |
 | `client/src/components/AccountMenuItems.vue` | Entrée du menu |
-| `client/src/App.vue` | Barre masquée, traitement de l'action |
+| `client/src/App.vue` | Barre masquée, bouton d'entrée, traitement de l'action |
 | `client/src/components/ButtonGrid.vue` | Mode `fill` |
-| `client/src/pages/GridPage.vue` | Bouton de repli, Échap, sortie au démontage |
+| `client/src/pages/GridPage.vue` | Bouton de repli, touches Échap et F, sortie au démontage |
 | `client/src/locales/fr.ts`, `en.ts` | Textes |
-| `client/test/stores/bigPicture.test.ts` | Tests |
+| `client/test/stores/bigPicture.test.ts`, `test/utils/rememberedBigPicture.test.ts` | Tests |
 
 ### Validation
 
-- [x] Type-check, lint, tests (171) et build sans erreur côté client
+- [x] Type-check, lint, tests (179) et build sans erreur côté client
 - [ ] Parcours vérifié sur ordinateur et sur téléphone (portrait et paysage)
 
 ### Vérifier à la main
@@ -91,9 +102,11 @@ cd server && npm run dev
 cd client && npm run dev -- --host
 ```
 
-1. Menu « Mon compte » → Big picture : barre disparue, grille plein écran, libellés visibles, bouton de repli en haut à gauche sans recouvrir une case.
-2. Bouton de repli, puis Échap : retour au mode normal, dans le même dossier.
-3. Ouvrir un dossier dans le mode puis revenir par la case 0 : le mode reste actif ; lancer une action ouvre un nouvel onglet.
-4. Depuis le mode, retour du navigateur vers la configuration : mode normal.
-5. Portrait téléphone (4 × 7), téléphone couché (la grille tient dans l'écran), écran 16:9, thème sombre, effets coupés.
-6. Changer de langue : le libellé du menu et l'infobulle du bouton suivent.
+1. Bouton d'agrandissement tout à droite de la barre (ou menu « Mon compte » → Big picture, ou touche F) : barre disparue, grille plein écran, libellés visibles, bouton de repli en haut à droite à la même place, sans recouvrir une case.
+2. Bouton de repli, Échap ou F : retour au mode normal, dans le même dossier. Dans un dossier vide, la grille tient entière à l'écran.
+3. Recharger la page en big picture : la grille se rouvre en big picture ; en mode normal, elle reste normale.
+4. Ouvrir un dossier dans le mode puis revenir par la case 0 : le mode reste actif ; lancer une action ouvre un nouvel onglet.
+5. Depuis le mode, retour du navigateur vers la configuration : mode normal.
+6. Portrait téléphone (4 × 7), téléphone couché (la grille tient dans l'écran), écran 16:9, thème sombre, effets coupés.
+7. Changer de langue : le libellé du menu et les infobulles des boutons suivent.
+8. Saisir un « f » dans un champ ou avec une fenêtre ouverte (réglages, mon compte) : le mode ne bascule pas.
