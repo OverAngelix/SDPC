@@ -1,4 +1,4 @@
-# Même domaine que le client : seul /api part vers le serveur, sans stripPrefix
+# Accès direct à l'API sur son propre sous-domaine (le client, lui, passe par /api de son ingressroute)
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
@@ -8,7 +8,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`<DOMAINE>`) && PathPrefix(`/api`)
+    - match: Host(`<API_DOMAINE>`)
       kind: Rule
       services:
         - name: <APP>-server
@@ -25,7 +25,7 @@ spec:
   entryPoints:
     - web
   routes:
-    - match: Host(`<DOMAINE>`) && PathPrefix(`/api`)
+    - match: Host(`<API_DOMAINE>`)
       kind: Rule
       services:
         - name: <APP>-server

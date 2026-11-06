@@ -1,4 +1,4 @@
-# Le client prend tout le domaine ; /api est repris par la route du serveur (règle plus longue)
+# Le client porte le domaine ; /api part vers le serveur (règle plus longue, sans stripPrefix)
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
@@ -8,6 +8,11 @@ spec:
   entryPoints:
     - websecure
   routes:
+    - match: Host(`<DOMAINE>`) && PathPrefix(`/api`)
+      kind: Rule
+      services:
+        - name: <APP>-server
+          port: <PORT>
     - match: Host(`<DOMAINE>`)
       kind: Rule
       services:

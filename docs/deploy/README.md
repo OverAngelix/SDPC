@@ -1,6 +1,6 @@
 # Déploiement : à quoi sert chaque fichier
 
-Guide générique, sans rien de propre à un projet : les noms, le registre et le domaine sont des repères entre chevrons (`<APP>`, `<REGISTRE>`, `<DOMAINE>`, `<PORT>`) à remplacer. Il sert de modèle pour déployer une autre application client + serveur de la même façon. Le déploiement de ce dépôt est décrit dans [`DEPLOY.md`](../../DEPLOY.md).
+Guide générique, sans rien de propre à un projet : les noms, le registre et le domaine sont des repères entre chevrons (`<APP>`, `<REGISTRE>`, `<DOMAINE>`, `<API_DOMAINE>`, `<PORT>`) à remplacer. Il sert de modèle pour déployer une autre application client + serveur de la même façon. Le déploiement de ce dépôt est décrit dans [`DEPLOY.md`](../../DEPLOY.md).
 
 ## Principe
 
@@ -12,7 +12,7 @@ git push main
                      └─ K3s : Deployment → Service → IngressRoute (Traefik, HTTPS)
 ```
 
-Deux images indépendantes : le **client** (fichiers statiques servis par nginx) et le **serveur** (API Node). Un seul domaine : Traefik envoie `/api` au serveur et le reste au client.
+Deux images indépendantes : le **client** (fichiers statiques servis par nginx) et le **serveur** (API Node). Un seul domaine pour l'application : l'`IngressRoute` du **client** envoie `/api` au serveur et le reste au client. Le serveur a en plus sa propre `IngressRoute`, sur un sous-domaine d'API (`<API_DOMAINE>`).
 
 ## Ce qui vit dans le dépôt
 
@@ -36,7 +36,8 @@ Un dossier par application, par exemple `/home/deploy/apps-k3s/<APP>-client/` et
 | --- | --- |
 | `deployment.yaml` | Décrit le pod : image à tirer, port, ressources, sondes de santé, volume. Les annotations **Keel** y déclenchent la mise à jour automatique. `imagePullSecrets` donne l'accès au registre privé. |
 | `service.yaml` | Adresse interne stable vers le pod (nom + port) que Traefik vise. |
-| `ingressroute.yaml` | Règles Traefik : domaine, chemin (`/api` pour le serveur), HTTPS (certificat Let's Encrypt) et version HTTP qui redirige vers HTTPS. |
+| `ingressroute.yaml` (client) | Règles Traefik du domaine : `Host(...) && PathPrefix(...)` sur `/api` vers le service du serveur, `Host(...)` seul pour tout le reste vers le client ; HTTPS (certificat Let's Encrypt) et version HTTP qui redirige vers HTTPS. |
+| `ingressroute.yaml` (serveur) | Accès direct à l'API sur son sous-domaine (`<API_DOMAINE>`), HTTPS et redirection HTTP. Le client n'en dépend pas. |
 | [`middleware.yaml`](middleware.yaml) | Redirection HTTP → HTTPS (`https-redirect`). **Commun** à tous les projets d'un namespace : à créer une seule fois. |
 | `data/` (serveur) | Dossier monté dans le pod pour la base de données. À sauvegarder : sans lui, tout disparaît à chaque mise à jour. |
 
@@ -53,6 +54,7 @@ Un dossier par application, par exemple `/home/deploy/apps-k3s/<APP>-client/` et
 - **Noms uniques par namespace** : copier les manifests d'un autre projet sans renommer écrase ce projet. Faire `grep -rn <ancien-nom> .` avant `kubectl apply`.
 - **Même nom, même `app:`** : le `selector` du Service et le label du Deployment doivent être identiques, sinon le Service n'atteint aucun pod.
 - **Ports** : `containerPort` (Deployment), `targetPort` et `port` (Service), `port` (IngressRoute) doivent correspondre.
+- **La route `/api` est dans l'`IngressRoute` du client**, avec `PathPrefix`, pas dans celle du serveur (qui n'a que son sous-domaine, sans `PathPrefix`). Sans elle, les appels `/api` tombent sur nginx, qui répond 502.
 - **Pas de `stripPrefix`** sur `/api` si le serveur attend `/api` dans l'URL.
 - **Une seule réplique** pour un serveur à base SQLite (`strategy: Recreate`).
 - **DNS** : le domaine doit pointer vers le VPS avant la première demande de certificat.

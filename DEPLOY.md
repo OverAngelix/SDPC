@@ -37,7 +37,7 @@ kubectl -n dev rollout restart deployment/sdpc-client
 
 ## Routage
 
-L'image client appelle `/api` en relatif (`VITE_API_URL` par défaut). Traefik route `/api` du domaine vers le serveur, **sans `stripPrefix`** (le serveur attend `/api` dans l'URL) ; le reste va au client. Traefik donne la priorité à la règle la plus longue, donc `/api` part bien vers le serveur. Sans cette route, nginx répond 502 sur `/api/`.
+L'image client appelle `/api` en relatif (`VITE_API_URL` par défaut). L'`IngressRoute` du client route `/api` du domaine vers le serveur, **sans `stripPrefix`** (le serveur attend `/api` dans l'URL) ; le reste va au client. Traefik donne la priorité à la règle la plus longue, donc `/api` part bien vers le serveur. Sans cette route, nginx répond 502 sur `/api/`.
 
 ## Manifests
 
@@ -69,7 +69,29 @@ Points à respecter dans ces manifests :
 - Annotations Keel et `imagePullPolicy: Always` sur les deux `Deployment` ; serveur en `strategy: Recreate`, une seule réplique.
 - Serveur : port 4000, sonde sur `/api/health`, `data/` monté sur `/app/data` (`hostPath`, `DirectoryOrCreate`). Sans ce volume, comptes et boutons disparaissent à chaque mise à jour de l'image.
 - Client : port 80.
-- `IngressRoute` du serveur : `Host(<domaine>) && PathPrefix(`/api`)`, sans `stripPrefix` ; celle du client : `Host(<domaine>)`.
+- `IngressRoute` du **client** : deux routes sur le domaine, plus la version HTTP avec `https-redirect`. La route `/api` utilise `PathPrefix` et ne doit pas avoir de `stripPrefix` :
+
+  ```yaml
+  routes:
+    - match: Host(`<domaine>`) && PathPrefix(`/api`)
+      services:
+        - name: sdpc-server
+          port: 4000
+    - match: Host(`<domaine>`)
+      services:
+        - name: sdpc-client
+          port: 80
+  ```
+
+- `IngressRoute` du **serveur** : son sous-domaine d'API seul, sans `PathPrefix` :
+
+  ```yaml
+  routes:
+    - match: Host(`<domaine-api>`)
+      services:
+        - name: sdpc-server
+          port: 4000
+  ```
 
 ## Sauvegarde
 
