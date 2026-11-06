@@ -157,12 +157,11 @@ const en: Messages = {
     gridConfig: 'Grid settings',
     appSettings: 'App settings',
     accountWindow: 'My account',
-    bigPicture: 'Big picture',
+    bigPicture: 'Big picture (F)',
     logout: 'Sign out',
   },
 
   bigPicture: {
-    enter: 'Switch to big picture (F key)',
     exit: 'Back to normal mode (Esc)',
   },
 

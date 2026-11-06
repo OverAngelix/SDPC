@@ -16,15 +16,6 @@
         :on-config="onConfig"
         @select="onAccountAction"
       />
-
-      <!-- Raccourci du big picture, tout à droite : le bouton de repli s'affiche à la même place (voir GridPage) -->
-      <v-btn
-        v-if="auth.user && onGrid"
-        :aria-label="t('bigPicture.enter')"
-        icon="mdi-fullscreen"
-        :title="t('bigPicture.enter')"
-        @click="bigPicture.enter()"
-      />
     </v-app-bar>
 
     <account-drawer

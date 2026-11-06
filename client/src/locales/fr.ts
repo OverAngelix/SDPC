@@ -172,13 +172,12 @@ export default {
     gridConfig: 'Configuration de la grille',
     appSettings: 'Configuration de l\'application',
     accountWindow: 'Mon compte',
-    bigPicture: 'Big picture',
+    bigPicture: 'Big picture (F)',
     logout: 'Déconnexion',
   },
 
   /** Mode big picture : la grille en plein cadre */
   bigPicture: {
-    enter: 'Passer en big picture (touche F)',
     exit: 'Revenir au mode normal (Échap)',
   },
 

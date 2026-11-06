@@ -89,7 +89,7 @@
   }
 
   .big-picture-exit {
-    /* À la place du raccourci de la barre d'application (voir App.vue) */
+    /* En haut à droite, là où s'ouvre le menu « Mon compte » qui active le mode */
     position: fixed;
     top: 4px;
     right: 12px;
