@@ -17,13 +17,12 @@ Une fiche par feature : explication, TODO, implémentation et personne active. N
 | 11 | [Menu « Mon compte » et réglages de l'application](11-menu-compte-reglages.md) | Livré | OverAngelix |
 | 12 | [Internationalisation (français et anglais)](12-i18n.md) | Livré | OverAngelix |
 | 13 | [Big picture : la grille en plein cadre](13-big-picture.md) | En cours | OverAngelix |
+| 14 | [Déploiement avec GitHub Actions](14-deploiement-github-actions.md) | En cours | OverAngelix |
 
-Ordre de réalisation : 02 → 03 → 04 → 05 → 06 → 07 → 08 → 09 → 11 → 10 → 12 → 13
+Ordre de réalisation : 02 → 03 → 04 → 05 → 06 → 07 → 08 → 09 → 11 → 10 → 12 → 13 → 14
 
 ## Plus tard
 
 - Vrai plein écran du navigateur (API Fullscreen) pour le big picture.
-- Rendre commun les types
-- Deploiement serveur OVH
 - Image de fond de la grille (réglage de l'application, après la feature 11).
 - **Grille modulable** : nombre de colonnes et de lignes configurable (aujourd'hui fixe : 7 × 4, 4 × 7 en portrait, emplacements 0 à 27 ; l'emplacement 0 d'un dossier est le retour).

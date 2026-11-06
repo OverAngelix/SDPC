@@ -76,6 +76,7 @@ Les comptes et les boutons sont conservés côté serveur dans une base SQLite, 
 | [11 — Menu « Mon compte » et réglages de l'application](docs/feature/11-menu-compte-reglages.md) | Livré | OverAngelix |
 | [12 — Internationalisation (français et anglais)](docs/feature/12-i18n.md) | Livré | OverAngelix |
 | [13 — Big picture : la grille en plein cadre](docs/feature/13-big-picture.md) | En cours | OverAngelix |
+| [14 — Déploiement avec GitHub Actions](docs/feature/14-deploiement-github-actions.md) | En cours | OverAngelix |
 
 La liste complète et le détail de chaque feature (TODO, implémentation) sont dans [`docs/feature/`](docs/feature/README.md).
 
