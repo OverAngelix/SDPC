@@ -178,7 +178,8 @@ export default {
 
   /** Mode big picture : la grille en plein cadre */
   bigPicture: {
-    exit: 'Revenir au mode normal',
+    enter: 'Passer en big picture (touche F)',
+    exit: 'Revenir au mode normal (Échap)',
   },
 
   /** Messages affichés par l'application elle-même */

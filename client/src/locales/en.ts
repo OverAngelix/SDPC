@@ -162,7 +162,8 @@ const en: Messages = {
   },
 
   bigPicture: {
-    exit: 'Back to normal mode',
+    enter: 'Switch to big picture (F key)',
+    exit: 'Back to normal mode (Esc)',
   },
 
   notices: {

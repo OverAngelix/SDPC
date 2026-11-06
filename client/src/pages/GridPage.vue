@@ -9,14 +9,12 @@
       :aria-label="t('bigPicture.exit')"
       class="big-picture-exit"
       icon="mdi-fullscreen-exit"
-      size="small"
       :title="t('bigPicture.exit')"
-      variant="tonal"
       @click="bigPicture.exit()"
     />
 
     <grid-status :home="{ name: 'grid' }" :path="path">
-      <p v-if="isEmpty" class="text-medium-emphasis text-center mb-4">
+      <p v-if="isEmpty && !bigPicture.active" class="text-medium-emphasis text-center mb-4">
         {{ t('grid.empty') }}
       </p>
 
@@ -60,8 +58,14 @@
     }
   }
 
+  // F bascule le mode, Échap en sort. Ignoré pendant une saisie ou quand une fenêtre ou un menu est ouvert
   function onKeydown (event: KeyboardEvent) {
-    if (event.key === 'Escape' && bigPicture.active) bigPicture.exit()
+    if (event.key === 'Escape' && bigPicture.active) {
+      bigPicture.exit()
+    } else if (event.key.toLowerCase() === 'f' && !event.ctrlKey && !event.metaKey && !event.altKey && !event.repeat) {
+      const target = event.target instanceof Element ? event.target : null
+      if (!target?.closest('input, textarea, select, [contenteditable], .v-overlay')) bigPicture.toggle()
+    }
   }
 
   // Recharge à chaque ouverture de l'onglet : la configuration a pu changer entre-temps
@@ -78,16 +82,17 @@
 </script>
 
 <style scoped>
-  /* Big picture : une bande en haut pour le bouton de repli, qui ne recouvre ainsi jamais la case de retour
+  /* Big picture : une bande en haut pour le bouton de repli, qui ne recouvre ainsi jamais une case
      (la réserve de hauteur de la grille, voir ButtonGrid, en tient compte) */
   .big-picture-page {
     padding: 56px 12px 12px;
   }
 
   .big-picture-exit {
+    /* À la place du raccourci de la barre d'application (voir App.vue) */
     position: fixed;
-    top: 8px;
-    left: 8px;
+    top: 4px;
+    right: 12px;
     z-index: 10;
   }
 

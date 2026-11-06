@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <!-- Big picture : la grille seule, sans barre -->
-    <v-app-bar v-if="!bigPicture.active" density="comfortable">
+    <v-app-bar v-if="!bigPictureOn" density="comfortable">
       <v-app-bar-title>
         <router-link class="app-title" to="/">SDPC</router-link>
       </v-app-bar-title>
@@ -16,10 +16,19 @@
         :on-config="onConfig"
         @select="onAccountAction"
       />
+
+      <!-- Raccourci du big picture, tout à droite : le bouton de repli s'affiche à la même place (voir GridPage) -->
+      <v-btn
+        v-if="auth.user && onGrid"
+        :aria-label="t('bigPicture.enter')"
+        icon="mdi-fullscreen"
+        :title="t('bigPicture.enter')"
+        @click="bigPicture.enter()"
+      />
     </v-app-bar>
 
     <account-drawer
-      v-if="auth.user && !bigPicture.active"
+      v-if="auth.user && !bigPictureOn"
       v-model="drawer"
       :email="auth.user.email"
       :on-config="onConfig"
@@ -106,6 +115,10 @@
       if (destination !== true) router.replace(destination)
     }
   })
+
+  // La grille et ses dossiers : le big picture ne vaut que là, même retenu d'une visite précédente
+  const onGrid = computed(() => route.name === 'grid' || route.name === 'folder')
+  const bigPictureOn = computed(() => bigPicture.active && onGrid.value)
 
   // La page de configuration de la grille (dossiers compris) : son entrée du menu est surlignée
   const onConfig = computed(() => route.path === '/config' || route.path.startsWith('/config/'))
