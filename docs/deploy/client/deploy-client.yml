@@ -1,0 +1,46 @@
+name: Deploy Client
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'client/**'
+      - '.github/workflows/deploy-client.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      REGISTRY_URL: ${{ secrets.REGISTRY_URL }}
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install, lint, type-check and test
+        working-directory: client
+        run: |
+          npm ci
+          npm run lint
+          npm run type-check
+          npm test
+
+      - name: Build Docker image
+        run: docker build -f client/docker/Dockerfile -t $REGISTRY_URL/<APP>-client:latest client
+
+      - name: Login to private registry
+        run: echo "$REGISTRY_PASSWORD" | docker login "$REGISTRY_URL" -u "$REGISTRY_USERNAME" --password-stdin
+
+      - name: Push Docker image
+        run: docker push $REGISTRY_URL/<APP>-client:latest

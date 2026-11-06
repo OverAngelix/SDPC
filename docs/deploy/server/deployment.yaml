@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    keel.sh/policy: force
+    keel.sh/trigger: poll
+    keel.sh/pollSchedule: "@every 1m"
+  name: <APP>-server
+  namespace: dev
+spec:
+  replicas: 1
+  # Une seule réplique à la fois : la base SQLite est sur disque local
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: <APP>-server
+  template:
+    metadata:
+      labels:
+        app: <APP>-server
+    spec:
+      automountServiceAccountToken: false
+      imagePullSecrets:
+        - name: registry-pull-secret
+      containers:
+        - name: <APP>-server
+          image: <REGISTRE>/<APP>-server:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: <PORT>
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: <PORT>
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: <PORT>
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            failureThreshold: 3
+      volumes:
+        - name: data
+          hostPath:
+            path: /home/deploy/apps-k3s/<APP>-server/data
+            type: DirectoryOrCreate

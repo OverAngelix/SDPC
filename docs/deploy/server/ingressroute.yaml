@@ -1,0 +1,34 @@
+# Même domaine que le client : seul /api part vers le serveur, sans stripPrefix
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: <APP>-server
+  namespace: dev
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`<DOMAINE>`) && PathPrefix(`/api`)
+      kind: Rule
+      services:
+        - name: <APP>-server
+          port: <PORT>
+  tls:
+    certResolver: letsencrypt
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: <APP>-server-http
+  namespace: dev
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`<DOMAINE>`) && PathPrefix(`/api`)
+      kind: Rule
+      services:
+        - name: <APP>-server
+          port: <PORT>
+      middlewares:
+        - name: https-redirect
