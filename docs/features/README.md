@@ -18,8 +18,9 @@ Une fiche par feature : explication, TODO, implémentation et personne active. N
 | 12 | [Internationalisation (français et anglais)](12-i18n.md) | Livré | OverAngelix |
 | 13 | [Big picture : la grille en plein cadre](13-big-picture.md) | En cours | OverAngelix |
 | 14 | [Déploiement avec GitHub Actions](14-deploiement-github-actions.md) | En cours | OverAngelix |
+| 15 | [Écran de bienvenue](15-ecran-bienvenue.md) | Livré | OverAngelix |
 
-Ordre de réalisation : 02 → 03 → 04 → 05 → 06 → 07 → 08 → 09 → 11 → 10 → 12 → 13 → 14
+Ordre de réalisation : 02 → 03 → 04 → 05 → 06 → 07 → 08 → 09 → 11 → 10 → 12 → 13 → 14 → 15
 
 ## Plus tard
 
