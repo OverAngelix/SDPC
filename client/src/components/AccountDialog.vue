@@ -44,30 +44,34 @@
 
           <v-text-field
             v-model="currentPassword"
-            :append-inner-icon="showPasswords ? 'mdi-eye-off' : 'mdi-eye'"
+            :append-inner-icon="showCurrent ? 'mdi-eye-off' : 'mdi-eye'"
             autocomplete="current-password"
             :label="t('account.currentPassword')"
-            :type="showPasswords ? 'text' : 'password'"
-            @click:append-inner="showPasswords = !showPasswords"
+            :type="showCurrent ? 'text' : 'password'"
+            @click:append-inner="showCurrent = !showCurrent"
           />
 
           <v-text-field
             v-model="newPassword"
+            :append-inner-icon="showNew ? 'mdi-eye-off' : 'mdi-eye'"
             autocomplete="new-password"
             :error-messages="newPasswordError"
             :hint="t('validation.minLength', { min: PASSWORD_MIN_LENGTH })"
             :label="t('account.newPassword')"
             persistent-hint
-            :type="showPasswords ? 'text' : 'password'"
+            :type="showNew ? 'text' : 'password'"
+            @click:append-inner="showNew = !showNew"
           />
 
           <v-text-field
             v-model="confirmation"
+            :append-inner-icon="showConfirmation ? 'mdi-eye-off' : 'mdi-eye'"
             autocomplete="new-password"
             class="mt-2"
             :error-messages="confirmationError"
             :label="t('account.confirmPassword')"
-            :type="showPasswords ? 'text' : 'password'"
+            :type="showConfirmation ? 'text' : 'password'"
+            @click:append-inner="showConfirmation = !showConfirmation"
           />
 
           <v-btn
@@ -154,7 +158,10 @@
   const currentPassword = ref('')
   const newPassword = ref('')
   const confirmation = ref('')
-  const showPasswords = ref(false)
+  // Un œil par champ : on montre un mot de passe sans dévoiler les autres
+  const showCurrent = ref(false)
+  const showNew = ref(false)
+  const showConfirmation = ref(false)
   const changing = ref(false)
   const passwordError = ref<ApiErrorMessage | null>(null)
   const passwordChanged = ref(false)
@@ -190,7 +197,9 @@
     currentPassword.value = ''
     newPassword.value = ''
     confirmation.value = ''
-    showPasswords.value = false
+    showCurrent.value = false
+    showNew.value = false
+    showConfirmation.value = false
     passwordError.value = null
     passwordChanged.value = false
   }
