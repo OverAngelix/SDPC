@@ -29,13 +29,15 @@
 
           <v-text-field
             v-model="password"
+            :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
             :autocomplete="isRegister ? 'new-password' : 'current-password'"
             :autofocus="savedLogin !== null"
             :hint="isRegister ? t('validation.minLength', { min: MIN_PASSWORD_LENGTH }) : undefined"
             :label="t('auth.password')"
             :persistent-hint="isRegister"
             :rules="isRegister ? [required, minLength] : [required]"
-            type="password"
+            :type="showPassword ? 'text' : 'password'"
+            @click:append-inner="showPassword = !showPassword"
           />
 
           <v-checkbox
@@ -94,6 +96,7 @@
   const savedLogin = readRememberedLogin()
   const email = ref(savedLogin ?? '')
   const password = ref('')
+  const showPassword = ref(false)
   const remember = ref(savedLogin !== null)
   const loading = ref(false)
   const error = ref<ApiErrorMessage | null>(null)

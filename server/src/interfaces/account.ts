@@ -8,3 +8,5 @@ export interface ChangePasswordBody {
 export interface DeleteAccountBody {
   password: string
 }
+
+// Plus tard connexion avec le compte Google, Facebook, etc. pour la création de compte et la connexion
