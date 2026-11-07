@@ -181,6 +181,27 @@ export default {
     exit: 'Revenir au mode normal (Échap)',
   },
 
+  /** Écran de bienvenue : trois slides, une seule fois par appareil */
+  welcome: {
+    grid: {
+      title: 'Bienvenue sur SDPC',
+      text: 'Votre Stream Deck dans le navigateur : chaque bouton de la grille ouvre un site dans un nouvel onglet, en un clic.',
+    },
+    folders: {
+      title: 'Rangez en dossiers',
+      text: 'Un dossier ouvre une autre grille de boutons. Sa première case vous ramène en arrière.',
+    },
+    config: {
+      title: 'À vous de jouer',
+      text: 'Composez votre grille depuis « Mon compte », Configuration de la grille. La touche F l\'affiche en plein cadre.',
+    },
+    goTo: 'Aller à la slide {number}',
+    skip: 'Passer',
+    previous: 'Précédent',
+    next: 'Suivant',
+    start: 'C\'est parti',
+  },
+
   /** Messages affichés par l'application elle-même */
   notices: {
     signOutFailed: 'Déconnexion impossible : le serveur est injoignable.',

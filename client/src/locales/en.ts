@@ -165,6 +165,26 @@ const en: Messages = {
     exit: 'Back to normal mode (Esc)',
   },
 
+  welcome: {
+    grid: {
+      title: 'Welcome to SDPC',
+      text: 'Your Stream Deck in the browser: each button of the grid opens a website in a new tab, in one click.',
+    },
+    folders: {
+      title: 'Sort into folders',
+      text: 'A folder opens another grid of buttons. Its first slot takes you back.',
+    },
+    config: {
+      title: 'Your turn',
+      text: 'Build your grid from “My account”, Grid configuration. The F key shows it full frame.',
+    },
+    goTo: 'Go to slide {number}',
+    skip: 'Skip',
+    previous: 'Previous',
+    next: 'Next',
+    start: 'Let’s go',
+  },
+
   notices: {
     signOutFailed: 'Could not sign out: the server is unreachable.',
     gridCleared: 'Grid cleared ({count} button removed). | Grid cleared ({count} buttons removed).',
