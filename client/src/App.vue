@@ -32,6 +32,8 @@
 
     <settings-dialog v-if="auth.user" v-model="settingsOpen" />
 
+    <welcome-dialog v-if="auth.user" v-model="welcomeOpen" />
+
     <account-dialog
       v-if="auth.user"
       v-model="accountOpen"
@@ -70,11 +72,13 @@
   import ConfirmClearGrid from '@/components/ConfirmClearGrid.vue'
   import ConfirmDeleteAccount from '@/components/ConfirmDeleteAccount.vue'
   import SettingsDialog from '@/components/SettingsDialog.vue'
+  import WelcomeDialog from '@/components/WelcomeDialog.vue'
   import { guardRoute } from '@/router/guard'
   import { useAuthStore } from '@/stores/auth'
   import { useBigPictureStore } from '@/stores/bigPicture'
   import { useButtonsStore } from '@/stores/buttons'
   import { useSettingsStore } from '@/stores/settings'
+  import { readWelcomeSeen, writeWelcomeSeen } from '@/utils/rememberedWelcome'
 
   const auth = useAuthStore()
   const { t } = useI18n()
@@ -88,6 +92,7 @@
   const accountOpen = ref(false)
   const clearOpen = ref(false)
   const deleteOpen = ref(false)
+  const welcomeOpen = ref(false)
   const notice = ref(false)
   const noticeText = ref('')
   const buttons = useButtonsStore()
@@ -105,6 +110,14 @@
       const destination = guardRoute(route, false)
       if (destination !== true) router.replace(destination)
     }
+  })
+
+  // Écran de bienvenue : une fois connecté, une seule fois par appareil ; toute fermeture vaut « vu »
+  watch(() => auth.user, user => {
+    if (user && !readWelcomeSeen()) welcomeOpen.value = true
+  }, { immediate: true })
+  watch(welcomeOpen, isOpen => {
+    if (!isOpen) writeWelcomeSeen()
   })
 
   // La grille et ses dossiers : le big picture ne vaut que là, même retenu d'une visite précédente
