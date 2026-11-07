@@ -63,22 +63,22 @@ Les comptes et les boutons sont conservés côté serveur dans une base SQLite, 
 
 | Feature | Statut | Personne active |
 | --- | --- | --- |
-| [01 — Connexion client ↔ serveur](docs/feature/01-connexion-client-serveur.md) | Livré | OverAngelix |
-| [02 — API des boutons](docs/feature/02-api-boutons.md) | Livré | OverAngelix |
-| [03 — Grille de boutons](docs/feature/03-grille-boutons.md) | Livré | OverAngelix |
-| [04 — Configuration des boutons](docs/feature/04-configuration-boutons.md) | Livré | OverAngelix |
-| [05 — Glisser-déposer des boutons](docs/feature/05-glisser-deposer.md) | Livré | OverAngelix |
-| [06 — UX : couleurs et effets « juicy »](docs/feature/06-ux-couleurs-effets.md) | Livré | OverAngelix |
-| [07 — Responsive : grille adaptée au téléphone](docs/feature/07-responsive.md) | Livré | OverAngelix |
-| [08 — Grille de 28 cases (7 × 4, 4 × 7 en portrait)](docs/feature/08-grille-28-cases.md) | Livré | OverAngelix |
-| [09 — Comptes utilisateur et base de données SQLite](docs/feature/09-comptes-base-de-donnees.md) | Livré | OverAngelix |
-| [10 — Fenêtre « Mon compte » : mot de passe, remise à zéro et suppression](docs/feature/10-fenetre-mon-compte.md) | Livré | OverAngelix |
-| [11 — Menu « Mon compte » et réglages de l'application](docs/feature/11-menu-compte-reglages.md) | Livré | OverAngelix |
-| [12 — Internationalisation (français et anglais)](docs/feature/12-i18n.md) | Livré | OverAngelix |
-| [13 — Big picture : la grille en plein cadre](docs/feature/13-big-picture.md) | En cours | OverAngelix |
-| [14 — Déploiement avec GitHub Actions](docs/feature/14-deploiement-github-actions.md) | En cours | OverAngelix |
+| [01 — Connexion client ↔ serveur](docs/features/01-connexion-client-serveur.md) | Livré | OverAngelix |
+| [02 — API des boutons](docs/features/02-api-boutons.md) | Livré | OverAngelix |
+| [03 — Grille de boutons](docs/features/03-grille-boutons.md) | Livré | OverAngelix |
+| [04 — Configuration des boutons](docs/features/04-configuration-boutons.md) | Livré | OverAngelix |
+| [05 — Glisser-déposer des boutons](docs/features/05-glisser-deposer.md) | Livré | OverAngelix |
+| [06 — UX : couleurs et effets « juicy »](docs/features/06-ux-couleurs-effets.md) | Livré | OverAngelix |
+| [07 — Responsive : grille adaptée au téléphone](docs/features/07-responsive.md) | Livré | OverAngelix |
+| [08 — Grille de 28 cases (7 × 4, 4 × 7 en portrait)](docs/features/08-grille-28-cases.md) | Livré | OverAngelix |
+| [09 — Comptes utilisateur et base de données SQLite](docs/features/09-comptes-base-de-donnees.md) | Livré | OverAngelix |
+| [10 — Fenêtre « Mon compte » : mot de passe, remise à zéro et suppression](docs/features/10-fenetre-mon-compte.md) | Livré | OverAngelix |
+| [11 — Menu « Mon compte » et réglages de l'application](docs/features/11-menu-compte-reglages.md) | Livré | OverAngelix |
+| [12 — Internationalisation (français et anglais)](docs/features/12-i18n.md) | Livré | OverAngelix |
+| [13 — Big picture : la grille en plein cadre](docs/features/13-big-picture.md) | En cours | OverAngelix |
+| [14 — Déploiement avec GitHub Actions](docs/features/14-deploiement-github-actions.md) | En cours | OverAngelix |
 
-La liste complète et le détail de chaque feature (TODO, implémentation) sont dans [`docs/feature/`](docs/feature/README.md).
+La liste complète et le détail de chaque feature (TODO, implémentation) sont dans [`docs/features/`](docs/features/README.md).
 
 ## Licence
 

@@ -45,7 +45,7 @@ Cette feature **remplace les valeurs des fiches 02 à 07** : emplacements 0 à 2
 | `client/src/grid.ts` | `LANDSCAPE_SHAPE` 7 × 4, `PORTRAIT_SHAPE` 4 × 7 |
 | `client/src/components/ButtonGrid.vue` | Taille maximale d'une case (`--tile-max`) |
 | `client/test/grid.test.ts` | Formes, emplacements, vague d'apparition |
-| `CLAUDE.md`, `README.md`, `docs/feature/README.md` | Dimensions du projet |
+| `CLAUDE.md`, `README.md`, `docs/features/README.md` | Dimensions du projet |
 
 ### Validation
 
