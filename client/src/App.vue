@@ -8,29 +8,6 @@
 
       <v-spacer />
 
-      <!-- Mode invité : un rappel, et de quoi garder sa grille en créant un compte -->
-      <template v-if="guest.active">
-        <v-chip
-          class="me-2 d-none d-sm-flex"
-          prepend-icon="mdi-incognito"
-          size="small"
-          :text="t('guest.badge')"
-        />
-
-        <!-- Téléphone : l'icône seule -->
-        <v-btn
-          v-if="route.name !== 'register'"
-          :aria-label="t('guest.register')"
-          class="me-1"
-          color="primary"
-          :icon="xs ? 'mdi-account-plus' : false"
-          :prepend-icon="xs ? undefined : 'mdi-account-plus'"
-          :text="xs ? undefined : t('guest.register')"
-          :to="{ name: 'register' }"
-          variant="tonal"
-        />
-      </template>
-
       <!-- Sans connexion (pages Connexion et Créer un compte) : le titre seul -->
       <account-menu
         v-if="signedIn"
@@ -103,7 +80,7 @@
   import { computed, ref, watch } from 'vue'
   import { useI18n } from 'vue-i18n'
   import { useRoute, useRouter } from 'vue-router'
-  import { useDisplay, useTheme } from 'vuetify'
+  import { useTheme } from 'vuetify'
   import AccountDialog from '@/components/AccountDialog.vue'
   import AccountDrawer from '@/components/AccountDrawer.vue'
   import AccountMenu from '@/components/AccountMenu.vue'
@@ -123,7 +100,6 @@
   const guest = useGuestStore()
   // Une personne connectée ou un invité : la grille, ses dossiers et le menu sont accessibles
   const signedIn = computed(() => auth.user !== null || guest.active)
-  const { xs } = useDisplay()
   const retrying = ref(false)
   const { t } = useI18n()
   const settings = useSettingsStore()

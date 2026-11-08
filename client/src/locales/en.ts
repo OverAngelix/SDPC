@@ -174,8 +174,6 @@ const en: Messages = {
     title: 'Guest mode',
     text: 'Try SDPC without an account: your grid stays in this browser. Create an account whenever you like to keep it everywhere.',
     enter: 'Enter guest mode',
-    badge: 'Guest mode',
-    register: 'Create an account',
     registerInfo: 'Your guest grid and settings will be saved to this new account.',
     loginWarning: 'Warning: by signing in with an existing account, you will lose your guest grid.',
     migrationFailed: 'Your guest grid could not be saved to the account: it is kept in this browser.',

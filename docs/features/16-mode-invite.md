@@ -14,7 +14,6 @@ Aujourd'hui, il faut créer un compte avant de voir quoi que ce soit. Le **mode 
 - La page de connexion est remontée et suivie d'une seconde carte **« Mode invité »** : une phrase d'explication et un bouton **« Entrer en mode invité »**.
 - En mode invité, tout fonctionne comme avec un compte : grille, dossiers, configuration, glisser-déposer, réglages (son, volume, effets, thème, langue), big picture, écran de bienvenue.
 - La grille et les réglages de l'invité sont gardés **dans le navigateur** (`localStorage`), pas sur le serveur : rien n'est partagé entre appareils, et vider le cache du navigateur efface tout.
-- La barre d'application rappelle discrètement qu'on est invité, avec un bouton **« Créer un compte »** pour sauvegarder sa grille.
 - Le menu « Mon compte » devient le menu de l'invité : Configuration de la grille, Réglages, Big picture, **Effacer la grille**, **Créer un compte**, **Se connecter**, **Quitter le mode invité**. Pas de mot de passe à changer ni de compte à supprimer.
 - **Grille d'exemple** : un invité qui arrive et un nouveau compte ne partent pas d'une grille vide (voir plus bas).
 - **Créer un compte depuis le mode invité** : la grille et les réglages de l'invité deviennent ceux du nouveau compte, enregistrés en base.
@@ -66,7 +65,6 @@ Les libellés sont des noms propres : ils se lisent pareil en français et en an
 ### Étape 4 — Interface (client)
 
 - [x] `AuthForm.vue` (page de connexion) : formulaire remonté, seconde carte « Mode invité » avec le bouton « Entrer en mode invité »
-- [x] Barre d'application : pastille « Invité » et bouton « Créer un compte »
 - [x] Menu du compte en mode invité (voir plus haut) ; « Effacer la grille » réutilise `ConfirmClearGrid`
 - [x] `AuthForm.vue` en mode invité, création de compte : message « votre grille sera enregistrée sur le compte » ; connexion : alerte d'avertissement « Attention : en vous connectant avec un compte existant, vous allez perdre votre grille d'invité »
 - [x] Textes `guest.*` dans `locales/fr.ts` et `en.ts`, erreurs d'import dans `errors.*`
@@ -137,7 +135,7 @@ Nouvelle personne → « Créer un compte » (sans passer par le mode invité)
 | `client/src/router/guard.ts`, `index.ts` | Accès de l'invité |
 | `client/src/components/AuthForm.vue` | Carte « Mode invité », alertes de la connexion et de la création de compte |
 | `client/src/components/AccountMenuItems.vue`, `AccountMenu.vue`, `AccountDrawer.vue` | Menu de l'invité |
-| `client/src/App.vue` | Pastille et bouton « Créer un compte » dans la barre, actions du menu, message d'échec de la migration |
+| `client/src/App.vue` | Actions du menu, message d'échec de la migration |
 | `client/src/interfaces/account.ts` | Actions du menu de l'invité |
 | `client/src/locales/fr.ts`, `en.ts` | Textes `guest.*`, entrées du menu, codes de l'import |
 | `client/test/helpers/storage.ts` | Faux stockage du navigateur pour les tests |

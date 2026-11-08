@@ -190,8 +190,6 @@ export default {
     title: 'Mode invité',
     text: 'Essayez SDPC sans compte : votre grille reste dans ce navigateur. Créez un compte quand vous voulez pour la garder partout.',
     enter: 'Entrer en mode invité',
-    badge: 'Mode invité',
-    register: 'Créer un compte',
     registerInfo: 'Votre grille et vos réglages d\'invité seront enregistrés sur ce nouveau compte.',
     loginWarning: 'Attention : en vous connectant avec un compte existant, vous allez perdre votre grille d\'invité.',
     migrationFailed: 'Votre grille d\'invité n\'a pas pu être enregistrée sur le compte : elle est gardée dans ce navigateur.',
