@@ -30,3 +30,15 @@ export async function moveButton (id: string, position: number): Promise<Button[
 export async function clearButtons (): Promise<void> {
   await http.delete('/buttons')
 }
+
+/** La grille d'exemple d'un nouvel invité, sans connexion */
+export async function fetchExampleButtons (): Promise<Button[]> {
+  const { data } = await http.get<Button[]>('/buttons/example')
+  return data
+}
+
+/** Remplace toute la grille de la personne connectée (migration du mode invité) ; renvoie la grille enregistrée */
+export async function importButtons (buttons: Button[]): Promise<Button[]> {
+  const { data } = await http.post<Button[]>('/buttons/import', { buttons })
+  return data
+}
