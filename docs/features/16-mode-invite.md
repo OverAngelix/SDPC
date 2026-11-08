@@ -14,11 +14,11 @@ Aujourd'hui, il faut créer un compte avant de voir quoi que ce soit. Le **mode 
 - La page de connexion est remontée et suivie d'une seconde carte **« Mode invité »** : une phrase d'explication et un bouton **« Entrer en mode invité »**.
 - En mode invité, tout fonctionne comme avec un compte : grille, dossiers, configuration, glisser-déposer, réglages (son, volume, effets, thème, langue), big picture, écran de bienvenue.
 - La grille et les réglages de l'invité sont gardés **dans le navigateur** (`localStorage`), pas sur le serveur : rien n'est partagé entre appareils, et vider le cache du navigateur efface tout.
-- Le menu « Mon compte » devient le menu de l'invité : Configuration de la grille, Réglages, Big picture, **Effacer la grille**, **Créer un compte**, **Se connecter**, **Quitter le mode invité**. Pas de mot de passe à changer ni de compte à supprimer.
+- Le menu « Mon compte » devient le menu de l'invité : Grille, Configuration de la grille, Réglages, **Effacer la grille**, Big picture, **Créer un compte**, **Quitter le mode invité**. Pas de mot de passe à changer ni de compte à supprimer.
 - **Grille d'exemple** : un invité qui arrive et un nouveau compte ne partent pas d'une grille vide (voir plus bas).
 - **Créer un compte depuis le mode invité** : la grille et les réglages de l'invité deviennent ceux du nouveau compte, enregistrés en base.
-- **Se connecter à un compte existant depuis le mode invité** : c'est la grille du compte qui s'affiche ; celle de l'invité est abandonnée, sans question.
-- Dans les deux cas, les données de l'invité sont ensuite effacées du navigateur.
+- **Se connecter à un compte existant** (après avoir quitté le mode invité, ou par « J'ai déjà un compte » depuis la création de compte) : c'est la grille du compte qui s'affiche ; celle de l'invité **reste dans le navigateur**, « Entrer en mode invité » la retrouve.
+- Une fois connecté, la fenêtre « Mon compte » propose en dernier, en rouge, **« Supprimer la grille d'invité »**, seulement si ce navigateur en garde une. Une simple confirmation, sans mot de passe.
 
 ### Grille d'exemple
 
@@ -43,7 +43,7 @@ Les libellés sont des noms propres : ils se lisent pareil en français et en an
 
 - [x] `buttons/constants.ts` : `EXAMPLE_GRID`, la grille d'exemple (seule définition, client compris)
 - [x] `GET /api/buttons/example` : accessible sans connexion, renvoie la grille d'exemple (le client s'en sert pour un nouvel invité)
-- [x] Création de compte : la grille d'exemple est posée dans la même transaction que le compte, sauf si une grille d'invité est fournie (voir import)
+- [x] Création de compte : la grille d'exemple est posée juste après le compte ; un invité la remplace ensuite par la sienne (voir import)
 - [x] `POST /api/buttons/import` : reçoit une grille entière (identifiants provisoires, `parentId` qui s'y réfèrent), la valide comme le reste de l'API (types, URL, emplacements, emplacement 0 réservé dans un dossier, pas de doublon d'emplacement, pas de cycle, parents existants et de type dossier) et **remplace** la grille de la personne connectée en une seule transaction ; le serveur attribue de nouveaux identifiants et renvoie la grille créée
 - [x] Limite de taille (nombre de boutons) et codes d'erreur dans `constants.ts`
 - [x] Tests serveur : grille d'exemple valide selon les règles de l'API, posée à la création de compte, comptes existants non touchés ; import valide (racine et dossiers imbriqués), grille remplacée, refus sans rien écrire (cycle, parent inconnu, emplacement occupé, URL interdite), autre personne non touchée
@@ -66,15 +66,16 @@ Les libellés sont des noms propres : ils se lisent pareil en français et en an
 
 - [x] `AuthForm.vue` (page de connexion) : formulaire remonté, seconde carte « Mode invité » avec le bouton « Entrer en mode invité »
 - [x] Menu du compte en mode invité (voir plus haut) ; « Effacer la grille » réutilise `ConfirmClearGrid`
-- [x] `AuthForm.vue` en mode invité, création de compte : message « votre grille sera enregistrée sur le compte » ; connexion : alerte d'avertissement « Attention : en vous connectant avec un compte existant, vous allez perdre votre grille d'invité »
+- [x] `AuthForm.vue` en mode invité, création de compte : message « votre grille sera enregistrée sur le compte » ; pas d'alerte à la connexion, rien n'y est perdu
+- [x] `AccountDialog.vue` : section rouge « Grille d'invité » en dernier, si ce navigateur en garde une ; `ConfirmDeleteGuestGrid.vue` : confirmation, sans mot de passe
 - [x] Textes `guest.*` dans `locales/fr.ts` et `en.ts`, erreurs d'import dans `errors.*`
 
 ### Étape 5 — Migration (client)
 
 - [x] Création de compte depuis le mode invité : envoi de la grille (`/buttons/import`) et des réglages (`PATCH /settings`), puis effacement des données de l'invité
 - [x] En cas d'échec de l'envoi : le compte est ouvert (avec la grille d'exemple), les données de l'invité restent dans le navigateur, un message propose de réessayer
-- [x] Connexion à un compte existant depuis le mode invité : données de l'invité effacées, grille du compte chargée
-- [x] Tests client : migration réussie, échec conservant les données, connexion abandonnant la grille d'invité
+- [x] Connexion à un compte existant depuis le mode invité : grille du compte chargée, celle de l'invité gardée dans le navigateur
+- [x] Tests client : migration réussie, échec conservant les données, connexion gardant la grille d'invité
 
 ### Étape 6 — Documentation
 
@@ -89,9 +90,11 @@ Les libellés sont des noms propres : ils se lisent pareil en français et en an
 - **Grille d'exemple définie une seule fois, sur le serveur.** Le client la demande plutôt que d'en garder une copie qui finirait par diverger.
 - **Grille d'exemple pour les nouveaux comptes seulement** : les comptes existants gardent leur grille, même vide.
 - **Création de compte : la grille de l'invité part en base.** Le compte est neuf, il n'y a rien à perdre ; la grille d'exemple posée à la création est remplacée par celle de l'invité.
-- **Connexion à un compte existant : le compte gagne.** Pas de fenêtre de choix ni de fusion : la grille de l'invité est abandonnée. Le message sur la page de connexion prévient avant.
+- **Connexion à un compte existant : le compte gagne, sans rien effacer.** Pas de fenêtre de choix ni de fusion : la grille du compte s'affiche, celle de l'invité reste dans le navigateur. Rien n'étant perdu, aucune alerte à la connexion.
+- **Pas de « Se connecter » dans le menu de l'invité** : quelqu'un qui a un compte se connecte directement ; « Quitter le mode invité » ramène de toute façon à la page de connexion.
+- **Supprimer la grille d'invité depuis « Mon compte », sans mot de passe** : elle n'appartient pas au compte, seulement au navigateur, et n'importe qui devant l'écran peut déjà l'ouvrir en mode invité ou vider le cache.
 - **Import en un seul appel**, pas une suite de `POST /buttons` : une migration qui échoue à moitié laisserait une demi-grille. Le serveur réattribue les identifiants pour ne jamais faire confiance à ceux du navigateur.
-- **Les réglages suivent la grille** : migrés à la création de compte, abandonnés à la connexion.
+- **Les réglages suivent la grille** : migrés à la création de compte, gardés dans le navigateur avec elle à la connexion.
 - **Échec de la migration** : le compte est créé quand même (avec la grille d'exemple) et un message persistant propose « Réessayer ». La grille de l'invité reste dans le navigateur ; si la page est fermée, « Entrer en mode invité » la retrouve.
 - **Mêmes erreurs qu'avec le serveur** : les refus du mode invité (emplacement pris ou réservé, dossier non vide…) ont la forme d'une erreur de l'API, avec les mêmes codes, et s'affichent donc avec les mêmes messages.
 - **Quitter le mode invité ne supprime rien** : on revient à la page de connexion, et « Entrer en mode invité » retrouve la grille laissée. Pour repartir de zéro : « Effacer la grille ».
@@ -109,8 +112,9 @@ Invité → « Créer un compte » → RegisterPage
   → inscription réussie (grille d'exemple posée) → POST /buttons/import + PATCH /settings
   → données de l'invité effacées → grille du compte = grille de l'invité
 
-Invité → « Se connecter » → LoginPage
-  → connexion réussie → données de l'invité effacées → grille du compte
+Invité → « Quitter le mode invité » → LoginPage (grille d'invité gardée)
+  → connexion réussie → grille du compte
+  → « Mon compte » → « Supprimer la grille d'invité » → confirmation → effacée du navigateur
 
 Nouvelle personne → « Créer un compte » (sans passer par le mode invité)
   → inscription réussie → grille d'exemple
@@ -133,9 +137,10 @@ Nouvelle personne → « Créer un compte » (sans passer par le mode invité)
 | `client/src/stores/auth.ts` | Entrée et sortie du mode invité, migration et nouvel essai |
 | `client/src/stores/buttons.ts`, `settings.ts` | Navigateur en mode invité, serveur sinon |
 | `client/src/router/guard.ts`, `index.ts` | Accès de l'invité |
-| `client/src/components/AuthForm.vue` | Carte « Mode invité », alertes de la connexion et de la création de compte |
+| `client/src/components/AuthForm.vue` | Carte « Mode invité », message de la création de compte |
+| `client/src/components/AccountDialog.vue`, `ConfirmDeleteGuestGrid.vue` | Suppression de la grille d'invité gardée dans le navigateur |
 | `client/src/components/AccountMenuItems.vue`, `AccountMenu.vue`, `AccountDrawer.vue` | Menu de l'invité |
-| `client/src/App.vue` | Actions du menu, message d'échec de la migration |
+| `client/src/App.vue` | Actions du menu, présence d'une grille d'invité, message d'échec de la migration |
 | `client/src/interfaces/account.ts` | Actions du menu de l'invité |
 | `client/src/locales/fr.ts`, `en.ts` | Textes `guest.*`, entrées du menu, codes de l'import |
 | `client/test/helpers/storage.ts` | Faux stockage du navigateur pour les tests |
@@ -148,13 +153,19 @@ cd server && npm run dev
 cd client && npm run dev -- --host
 ```
 
-1. Déconnecté : le formulaire est en haut, la carte « Mode invité » en dessous ; « Entrer en mode invité » ouvre la grille d'exemple et l'écran de bienvenue.
-2. Le dossier Google s'ouvre, Maps et Gmail redirigent, le retour fonctionne.
-3. Créer des boutons, déplacer, changer le thème : recharger la page, tout est là.
-4. Quitter le mode invité puis revenir : la grille est retrouvée.
-5. Créer un compte depuis le mode invité : la grille et le thème sont sur le compte ; se connecter sur un autre navigateur, ils y sont.
-6. Nouvel invité, modifier la grille, se connecter à un compte existant : c'est la grille du compte qui s'affiche ; revenir en mode invité repart de la grille d'exemple.
-7. Créer un compte sans passer par le mode invité : grille d'exemple.
-8. Serveur arrêté au moment de la migration : le message de réessai s'affiche, la grille d'invité n'est pas perdue.
-9. Navigation privée avec stockage refusé : le mode invité fonctionne le temps de l'onglet.
-10. Thème sombre, téléphone portrait et paysage, langue anglaise.
+1. Déconnecté : le formulaire est en haut, la carte « Mode invité » en dessous ; « Entrer en mode invité » ouvre la grille d'exemple (GitHub, YouTube, dossier Google) et l'écran de bienvenue s'il n'a jamais été vu.
+2. Le dossier Google s'ouvre, Maps et Gmail redirigent dans un nouvel onglet, le retour fonctionne.
+3. Créer, modifier, déplacer (glisser-déposer et échange), supprimer un dossier non vide, changer le thème et la langue : recharger la page, tout est là et on reste en mode invité.
+4. Refus comme avec un compte : changer un dossier non vide en action affiche le même message.
+5. Menu de l'invité : « Invité » en en-tête ; pas d'entrée vers la fenêtre « Mon compte », pas de « Se connecter », pas de « Déconnexion » ; « Effacer la grille » vide la grille après confirmation. Même contenu dans le tiroir sur téléphone, « Créer un compte » et « Quitter le mode invité » ancrés en bas.
+6. Barre d'application : rien de propre à l'invité, seulement le titre et le menu.
+7. « Quitter le mode invité » : retour à la page de connexion ; « Entrer en mode invité » retrouve la grille et les réglages.
+8. « Créer un compte » depuis le mode invité : le message bleu annonce que la grille sera enregistrée ; après création, la grille et le thème de l'invité sont sur le compte ; se connecter depuis un autre navigateur, ils y sont. « Entrer en mode invité » (après déconnexion) repart de la grille d'exemple.
+9. Créer un compte sans passer par le mode invité : grille d'exemple.
+10. Nouvel invité, modifier la grille, « Quitter le mode invité », se connecter à un compte existant : aucune alerte ; c'est la grille du compte qui s'affiche.
+11. Dans ce même cas, « Mon compte » : la section rouge « Grille d'invité » est en dernier ; « Supprimer la grille d'invité » demande confirmation (sans mot de passe), affiche « Grille d'invité supprimée. » et la section disparaît. Après déconnexion, « Entrer en mode invité » repart de la grille d'exemple.
+12. Sans grille d'invité dans le navigateur : pas de section « Grille d'invité » dans « Mon compte ».
+13. Serveur arrêté juste après la création du compte (au moment de la migration) : le message rouge avec « Réessayer » s'affiche ; serveur relancé, « Réessayer » enregistre la grille de l'invité.
+14. Serveur arrêté au premier « Entrer en mode invité » : l'invité part d'une grille vide.
+15. Navigation privée avec stockage refusé : le mode invité fonctionne le temps de l'onglet.
+16. Thème sombre, téléphone portrait et paysage, langue anglaise.
