@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
-import { BUTTON_COLORS } from '../../src/buttons/constants.js'
+import { BUTTON_COLORS, EXAMPLE_GRID, IMPORT_MAX_BUTTONS } from '../../src/buttons/constants.js'
 import type { Button } from '../../src/interfaces/button.js'
 import { errorTexts, text } from '../helpers/issues.js'
-import { mergeButtonPatch, validateButtonInput, validateMoveInput } from '../../src/buttons/validation.js'
+import { mergeButtonPatch, validateButtonInput, validateImport, validateMoveInput } from '../../src/buttons/validation.js'
 
 const action = { position: 0, label: 'YouTube', icon: 'mdi-youtube', type: 'action', url: 'https://www.youtube.com' }
 const folder = { position: 1, label: 'Musique', icon: 'mdi-folder', type: 'folder' }
@@ -240,5 +240,67 @@ describe('validateMoveInput', () => {
     for (const body of [undefined, null, 'texte', 3, []]) {
       assert.equal(validateMoveInput(null, body).ok, false)
     }
+  })
+})
+
+describe('validateImport', () => {
+  const games = { ...folder, id: 'games', parentId: null }
+  const mario = { ...action, id: 'mario', parentId: 'games', position: 1 }
+  const mail = { ...action, id: 'mail', parentId: null, position: 2 }
+
+  function importIssues (body: unknown) {
+    const result = validateImport(body)
+    assert.equal(result.ok, false)
+    return result.ok ? [] : result.errors.map(({ field, code }) => ({ field, code }))
+  }
+
+  it('accepte une grille avec dossiers imbriqués et place chaque dossier avant son contenu', () => {
+    const result = validateImport({ buttons: [mario, mail, games] })
+    assert.ok(result.ok)
+    assert.deepEqual(result.value.map(button => button.id), ['mail', 'games', 'mario'])
+  })
+
+  it('accepte une grille vide', () => {
+    assert.deepEqual(validateImport({ buttons: [] }), { ok: true, value: [] })
+  })
+
+  it('accepte la grille d\'exemple telle quelle', () => {
+    const result = validateImport({ buttons: EXAMPLE_GRID })
+    assert.ok(result.ok)
+    assert.deepEqual(result.value, EXAMPLE_GRID)
+  })
+
+  it('refuse un corps sans liste de boutons ou une liste trop longue', () => {
+    assert.deepEqual(importIssues([]), [{ field: undefined, code: 'body_not_object' }])
+    assert.deepEqual(importIssues({ buttons: 'x' }), [{ field: 'buttons', code: 'array_expected' }])
+    const many = Array.from({ length: IMPORT_MAX_BUTTONS + 1 }, (_, index) => ({ ...action, id: `b${index}` }))
+    assert.deepEqual(importIssues({ buttons: many }), [{ field: 'buttons', code: 'too_many_buttons' }])
+  })
+
+  it('situe chaque problème sur son bouton', () => {
+    assert.deepEqual(importIssues({ buttons: [mail, { ...action, label: '' }] }), [
+      { field: 'buttons[1].id', code: 'required' },
+      { field: 'buttons[1].label', code: 'required' },
+    ])
+    assert.deepEqual(importIssues({ buttons: ['x'] }), [
+      { field: 'buttons[0].id', code: 'required' },
+      { field: 'buttons[0]', code: 'body_not_object' },
+    ])
+  })
+
+  it('refuse un identifiant en double et un emplacement partagé', () => {
+    assert.deepEqual(importIssues({ buttons: [mail, { ...mail, position: 3 }] }), [{ field: 'buttons[1].id', code: 'duplicate_id' }])
+    assert.deepEqual(importIssues({ buttons: [mail, { ...mail, id: 'other' }] }), [{ field: 'buttons[1].position', code: 'slot_taken' }])
+  })
+
+  it('refuse un parent inconnu ou qui n\'est pas un dossier', () => {
+    assert.deepEqual(importIssues({ buttons: [mario] }), [{ field: 'buttons[0].parentId', code: 'parent_not_found' }])
+    assert.deepEqual(importIssues({ buttons: [mail, { ...mario, parentId: 'mail' }] }), [{ field: 'buttons[1].parentId', code: 'parent_not_found' }])
+  })
+
+  it('refuse des dossiers qui se contiennent l\'un l\'autre', () => {
+    const a = { ...folder, id: 'a', parentId: 'b' }
+    const b = { ...folder, id: 'b', parentId: 'a' }
+    assert.deepEqual(importIssues({ buttons: [mail, a, b] }), [{ field: 'buttons', code: 'folder_cycle' }])
   })
 })

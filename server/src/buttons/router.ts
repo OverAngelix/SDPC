@@ -36,6 +36,11 @@ export function buttonsRouter (store: ButtonStore) {
     res.json(await store.move(userId(req), req.params.id, req.body))
   })
 
+  // Remplace toute la grille (migration du mode invité vers un compte)
+  router.post('/import', async (req, res) => {
+    res.json(await store.import(userId(req), req.body))
+  })
+
   // Efface toute la grille de la personne connectée
   router.delete('/', async (req, res) => {
     await store.clear(userId(req))

@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto'
 import { HttpError, issue } from '../errors.js'
 import type { Button, ButtonColor } from '../interfaces/button.js'
 import type { Db } from '../interfaces/database.js'
-import { mergeButtonPatch, validateButtonInput, validateMoveInput } from './validation.js'
+import { mergeButtonPatch, validateButtonInput, validateImport, validateMoveInput } from './validation.js'
 
 const INVALID_DATA = 'Données invalides'
 const COLUMNS = 'id, parent_id, position, label, icon, type, color, url'
@@ -134,6 +134,30 @@ export class ButtonStore {
       this.db.prepare('DELETE FROM buttons WHERE user_id = ?').run(userId)
       return count
     })()
+  }
+
+  /** Remplace toute la grille de la personne par celle reçue (`{ buttons }`, voir `validateImport`). */
+  async import (userId: string, body: unknown): Promise<Button[]> {
+    const result = validateImport(body)
+    if (!result.ok) throw new HttpError(400, 'invalid_data', INVALID_DATA, result.errors)
+    return this.replace(userId, result.value)
+  }
+
+  /**
+   * Remplace toute la grille de la personne, en une transaction. Les boutons sont déjà validés, chaque dossier
+   * avant son contenu ; ils reçoivent de nouveaux identifiants. Renvoie la grille enregistrée.
+   */
+  replace (userId: string, buttons: readonly Button[]): Button[] {
+    const ids = new Map(buttons.map(button => [button.id, randomUUID()]))
+    const created = buttons.map(button => ({ ...button, id: ids.get(button.id)!, parentId: button.parentId === null ? null : ids.get(button.parentId)! }))
+    const insert = this.db.prepare(`INSERT INTO buttons (${COLUMNS}, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+    this.db.transaction(() => {
+      this.db.prepare('DELETE FROM buttons WHERE user_id = ?').run(userId)
+      for (const button of created) {
+        insert.run(button.id, button.parentId, button.position, button.label, button.icon, button.type, button.color ?? null, button.url ?? null, userId)
+      }
+    })()
+    return created
   }
 
   private assertParentIsFolder (userId: string, parentId: string | null): void {

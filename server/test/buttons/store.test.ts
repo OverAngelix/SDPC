@@ -3,6 +3,7 @@ import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, it } from 'node:test'
+import { EXAMPLE_GRID } from '../../src/buttons/constants.js'
 import { HttpError } from '../../src/errors.js'
 import { ButtonStore } from '../../src/buttons/store.js'
 import type { Db } from '../../src/interfaces/database.js'
@@ -283,6 +284,44 @@ describe('ButtonStore', () => {
       await store.create(userId, action)
       await store.clear(userId)
       assert.equal((await store.create(userId, action)).position, 0)
+    })
+  })
+
+  describe('import et replace', () => {
+    const games = { ...folder, id: 'games', parentId: null }
+    const mario = { ...action, id: 'mario', parentId: 'games', position: 1 }
+
+    it('remplace la grille par celle reçue, avec de nouveaux identifiants', async () => {
+      const store = new ButtonStore(db)
+      await store.create(userId, { ...action, position: 5 })
+
+      const created = await store.import(userId, { buttons: [mario, games] })
+
+      assert.deepEqual(store.list(userId), created)
+      const [parent, child] = created
+      assert.equal(parent?.label, 'Musique')
+      assert.notEqual(parent?.id, 'games')
+      assert.equal(child?.parentId, parent?.id)
+      assert.equal(child?.position, 1)
+    })
+
+    it('refuse une grille invalide sans rien écrire (400)', async () => {
+      const store = new ButtonStore(db)
+      const kept = await store.create(userId, action)
+      await rejectsWith(store.import(userId, { buttons: [mario] }), 400)
+      await rejectsWith(store.import(userId, { buttons: [games, { ...mario, url: 'javascript:alert(1)' }] }), 400)
+      assert.deepEqual(store.list(userId), [kept])
+    })
+
+    it('pose la grille d\'exemple et ne touche pas à la grille des autres personnes', async () => {
+      const store = new ButtonStore(db)
+      const other = createUser(db, 'marie@exemple.fr')
+      const theirs = await store.create(other, action)
+
+      store.replace(userId, EXAMPLE_GRID)
+
+      assert.deepEqual(store.list(userId).map(({ label, position }) => ({ label, position })), EXAMPLE_GRID.map(({ label, position }) => ({ label, position })))
+      assert.deepEqual(store.list(other), [theirs])
     })
   })
 

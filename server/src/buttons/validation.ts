@@ -2,7 +2,7 @@ import { bodyNotObject, issue } from '../errors.js'
 import type { Button, ButtonColor, ButtonInput, ButtonType } from '../interfaces/button.js'
 import type { Issue } from '../interfaces/error.js'
 import type { ValidationResult } from '../interfaces/validation.js'
-import { BACK_SLOT, BUTTON_COLORS, SLOTS } from './constants.js'
+import { BACK_SLOT, BUTTON_COLORS, IMPORT_MAX_BUTTONS, SLOTS } from './constants.js'
 
 export const LABEL_MAX_LENGTH = 50
 export const URL_MAX_LENGTH = 2048
@@ -145,4 +145,65 @@ export function validateMoveInput (parentId: string | null, body: unknown): Vali
   if ('error' in position) return { ok: false, errors: [position.error] }
   if (parentId !== null && position.value === BACK_SLOT) return { ok: false, errors: [RESERVED_SLOT_ERROR] }
   return { ok: true, value: position.value }
+}
+
+// Le champ d'un problème relevé sur le bouton `index` d'un import : `buttons[3].label`
+function importIssue (index: number, error: Issue): Issue {
+  return { ...error, field: error.field === undefined ? `buttons[${index}]` : `buttons[${index}].${error.field}` }
+}
+
+/**
+ * Valide une grille entière (`{ buttons }`) : chaque bouton comme à la création, avec un identifiant provisoire
+ * auquel les `parentId` se réfèrent. Les parents doivent être des dossiers de la grille, sans cycle, et deux boutons
+ * ne partagent pas un emplacement. Renvoie les boutons dans un ordre où chaque dossier précède son contenu.
+ */
+export function validateImport (body: unknown): ValidationResult<Button[]> {
+  if (!isRecord(body)) return { ok: false, errors: [bodyNotObject()] }
+
+  const { buttons } = body
+  if (!Array.isArray(buttons)) return { ok: false, errors: [issue('buttons', 'array_expected', 'liste de boutons attendue')] }
+  if (buttons.length > IMPORT_MAX_BUTTONS) {
+    return { ok: false, errors: [issue('buttons', 'too_many_buttons', `${IMPORT_MAX_BUTTONS} boutons au plus`, { max: IMPORT_MAX_BUTTONS })] }
+  }
+
+  const errors: Issue[] = []
+  const parsed: Button[] = []
+  buttons.forEach((entry: unknown, index) => {
+    const id = isRecord(entry) && typeof entry.id === 'string' && entry.id !== '' ? entry.id : undefined
+    if (id === undefined) errors.push(importIssue(index, issue('id', 'required', 'identifiant requis')))
+    const result = validateButtonInput(entry)
+    if (!result.ok) errors.push(...result.errors.map(error => importIssue(index, error)))
+    else if (id !== undefined) parsed.push({ id, ...result.value })
+  })
+  if (errors.length > 0) return { ok: false, errors }
+
+  // Sans erreur, `parsed` suit l'ordre de la requête : l'index d'un bouton est celui de son problème
+  const byId = new Map<string, Button>()
+  const slots = new Set<string>()
+  parsed.forEach((button, index) => {
+    if (byId.has(button.id)) errors.push(importIssue(index, issue('id', 'duplicate_id', 'identifiant déjà utilisé dans la grille')))
+    byId.set(button.id, button)
+    const slot = `${button.parentId ?? ''}|${button.position}`
+    if (slots.has(slot)) {
+      errors.push(importIssue(index, issue('position', 'slot_taken', `l'emplacement ${button.position} est pris dans ce dossier`, { position: button.position })))
+    }
+    slots.add(slot)
+  })
+  parsed.forEach((button, index) => {
+    if (button.parentId !== null && byId.get(button.parentId)?.type !== 'folder') {
+      errors.push(importIssue(index, issue('parentId', 'parent_not_found', 'dossier introuvable')))
+    }
+  })
+  if (errors.length > 0) return { ok: false, errors }
+
+  // De la racine vers les dossiers : un bouton jamais atteint appartient à des dossiers qui se contiennent l'un l'autre
+  const ordered = parsed.filter(button => button.parentId === null)
+  for (let index = 0; index < ordered.length; index++) {
+    const folder = ordered[index]!
+    if (folder.type === 'folder') ordered.push(...parsed.filter(button => button.parentId === folder.id))
+  }
+  if (ordered.length < parsed.length) {
+    return { ok: false, errors: [issue('buttons', 'folder_cycle', 'des dossiers se contiennent les uns les autres')] }
+  }
+  return { ok: true, value: ordered }
 }

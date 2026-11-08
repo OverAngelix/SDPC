@@ -1,5 +1,7 @@
 import type { Response } from 'express'
 import { Router } from 'express'
+import { EXAMPLE_GRID } from '../buttons/constants.js'
+import type { ButtonStore } from '../buttons/store.js'
 import { HttpError } from '../errors.js'
 import type { AuthRouterOptions } from '../interfaces/auth.js'
 import type { LoginLimiter } from './loginLimiter.js'
@@ -7,7 +9,7 @@ import { requireAuth, SESSION_COOKIE, sessionCookieOptions, sessionToken } from 
 import { SESSION_MS } from './store.js'
 import type { AuthStore } from './store.js'
 
-export function authRouter (auth: AuthStore, limiter: LoginLimiter, { secureCookie }: AuthRouterOptions) {
+export function authRouter (auth: AuthStore, buttons: ButtonStore, limiter: LoginLimiter, { secureCookie }: AuthRouterOptions) {
   const router = Router()
 
   const cookieOptions = sessionCookieOptions(secureCookie)
@@ -18,6 +20,8 @@ export function authRouter (auth: AuthStore, limiter: LoginLimiter, { secureCook
 
   router.post('/register', async (req, res) => {
     const user = await auth.register(req.body)
+    // Un nouveau compte ne part pas d'une grille vide (un invité qui migre la remplace ensuite par la sienne)
+    buttons.replace(user.id, EXAMPLE_GRID)
     startSession(res, user.id)
     res.status(201).json(user)
   })

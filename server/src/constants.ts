@@ -44,4 +44,8 @@ export const ISSUE_CODES = [
   'invalid_url',
   'empty_folder_first',
   'slot_taken',
+  'array_expected',
+  'too_many_buttons',
+  'duplicate_id',
+  'folder_cycle',
 ] as const

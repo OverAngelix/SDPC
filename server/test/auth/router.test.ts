@@ -52,6 +52,13 @@ describe('/api/auth', () => {
     assert.deepEqual(me.body, res.body)
   })
 
+  it('POST /register pose la grille d\'exemple sur le nouveau compte', async () => {
+    const res = await call('POST', '/register', { email: 'exemple@exemple.fr', password: 'motdepasse' })
+    assert.equal(res.status, 201)
+    const labels = server.store.list(res.body.id).map(button => button.label)
+    assert.deepEqual(labels, ['GitHub', 'YouTube', 'Google', 'Maps', 'Gmail'])
+  })
+
   it('POST /register refuse les données invalides (400) et une adresse déjà prise (409)', async () => {
     assert.equal((await call('POST', '/register', { email: 'nope', password: 'x' })).status, 400)
     const res = await call('POST', '/register', credentials)

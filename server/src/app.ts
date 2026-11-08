@@ -5,6 +5,7 @@ import { accountRouter } from './account/router.js'
 import { LoginLimiter } from './auth/loginLimiter.js'
 import { authenticate, requireAuth } from './auth/middleware.js'
 import { authRouter } from './auth/router.js'
+import { EXAMPLE_GRID } from './buttons/constants.js'
 import { buttonsRouter } from './buttons/router.js'
 import { HttpError } from './errors.js'
 import type { AppOptions } from './interfaces/app.js'
@@ -27,8 +28,12 @@ export function createApp ({ store, auth, settings, account, limiter = new Login
   app.get('/api/health', (_req: Request, res: Response) => {
     res.json({ status: 'ok' })
   })
-  app.use('/api/auth', authRouter(auth, limiter, { secureCookie }))
+  app.use('/api/auth', authRouter(auth, store, limiter, { secureCookie }))
   app.use('/api/account', requireAuth, accountRouter(account, limiter, { secureCookie }))
+  // Sans connexion : la grille de départ d'un invité
+  app.get('/api/buttons/example', (_req: Request, res: Response) => {
+    res.json(EXAMPLE_GRID)
+  })
   app.use('/api/buttons', requireAuth, buttonsRouter(store))
   app.use('/api/settings', requireAuth, settingsRouter(settings))
 

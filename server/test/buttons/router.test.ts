@@ -182,6 +182,27 @@ describe('/api/buttons', () => {
     assert.equal((await call('POST', `/${inside.id}/move`, {})).status, 400)
     assert.equal((await call('POST', '/fantome/move', { position: 3 })).status, 404)
   })
+  it('POST /import remplace la grille (200), 400 sans rien écrire si elle est invalide', async () => {
+    const kept = (await call('POST', '', { ...action, position: 5 })).body
+    const games = { ...folder, id: 'games', parentId: null }
+
+    const invalid = await call('POST', '/import', { buttons: [games, { ...action, id: 'x', parentId: 'inconnu', position: 1 }] })
+    assert.equal(invalid.status, 400)
+    assert.deepEqual(invalid.body.issues[0], { field: 'buttons[1].parentId', code: 'parent_not_found' })
+    assert.deepEqual((await call('GET', '')).body, [kept])
+
+    const imported = await call('POST', '/import', { buttons: [games, { ...action, id: 'x', parentId: 'games', position: 1 }] })
+    assert.equal(imported.status, 200)
+    assert.equal(imported.body.length, 2)
+    assert.deepEqual((await call('GET', '')).body, imported.body)
+  })
+
+  it('GET /example donne la grille d\'exemple sans connexion', async () => {
+    const res = await callAs(undefined, 'GET', '/example')
+    assert.equal(res.status, 200)
+    assert.deepEqual(res.body.map((button: { label: string }) => button.label), ['GitHub', 'YouTube', 'Google', 'Maps', 'Gmail'])
+  })
+
   describe('authentification et isolation', () => {
     it('répond 401 sans session ou avec un jeton inconnu, sur chaque route', async () => {
       for (const cookie of [undefined, 'sdpc_session=inconnu']) {
@@ -191,6 +212,7 @@ describe('/api/buttons', () => {
         assert.equal((await callAs(cookie, 'PATCH', '/x', { label: 'y' })).status, 401)
         assert.equal((await callAs(cookie, 'POST', '/x/move', { position: 3 })).status, 401)
         assert.equal((await callAs(cookie, 'DELETE', '/x')).status, 401)
+        assert.equal((await callAs(cookie, 'POST', '/import', { buttons: [] })).status, 401)
       }
     })
 
