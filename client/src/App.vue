@@ -41,8 +41,16 @@
       v-model="accountOpen"
       :email="auth.user.email"
       :grid-empty="gridEmpty"
+      :guest-grid="guestGrid"
       @clear="clearOpen = true"
       @delete="deleteOpen = true"
+      @delete-guest="deleteGuestOpen = true"
+    />
+
+    <confirm-delete-guest-grid
+      v-if="auth.user"
+      v-model="deleteGuestOpen"
+      @deleted="onGuestGridDeleted"
     />
 
     <confirm-clear-grid
@@ -86,6 +94,7 @@
   import AccountMenu from '@/components/AccountMenu.vue'
   import ConfirmClearGrid from '@/components/ConfirmClearGrid.vue'
   import ConfirmDeleteAccount from '@/components/ConfirmDeleteAccount.vue'
+  import ConfirmDeleteGuestGrid from '@/components/ConfirmDeleteGuestGrid.vue'
   import SettingsDialog from '@/components/SettingsDialog.vue'
   import WelcomeDialog from '@/components/WelcomeDialog.vue'
   import { guardRoute } from '@/router/guard'
@@ -94,6 +103,7 @@
   import { useButtonsStore } from '@/stores/buttons'
   import { useGuestStore } from '@/stores/guest'
   import { useSettingsStore } from '@/stores/settings'
+  import { readGuestButtons } from '@/utils/guestStorage'
   import { readWelcomeSeen, writeWelcomeSeen } from '@/utils/rememberedWelcome'
 
   const auth = useAuthStore()
@@ -112,6 +122,9 @@
   const accountOpen = ref(false)
   const clearOpen = ref(false)
   const deleteOpen = ref(false)
+  const deleteGuestOpen = ref(false)
+  // Une grille d'invité reste-t-elle dans ce navigateur ? Relu à chaque ouverture de la fenêtre « Mon compte »
+  const guestGrid = ref(false)
   const welcomeOpen = ref(false)
   const notice = ref(false)
   const noticeText = ref('')
@@ -162,6 +175,7 @@
         break
       }
       case 'account': {
+        guestGrid.value = readGuestButtons() !== null
         accountOpen.value = true
         break
       }
@@ -181,10 +195,6 @@
         router.push({ name: 'register' })
         break
       }
-      case 'login': {
-        router.push({ name: 'login' })
-        break
-      }
       case 'leaveGuest': {
         auth.leaveGuest()
         break
@@ -202,6 +212,12 @@
 
   function onCleared (count: number) {
     noticeText.value = t('notices.gridCleared', count)
+    notice.value = true
+  }
+
+  function onGuestGridDeleted () {
+    guestGrid.value = false
+    noticeText.value = t('notices.guestGridDeleted')
     notice.value = true
   }
 

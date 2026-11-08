@@ -19,13 +19,13 @@
             </ul>
           </v-alert>
 
-          <!-- Invité : ce que devient sa grille selon qu'il se connecte ou crée un compte -->
+          <!-- Invité qui crée son compte : sa grille part avec lui -->
           <v-alert
-            v-if="guest.active"
+            v-if="guest.active && isRegister"
             class="mb-4"
             density="compact"
-            :text="isRegister ? t('guest.registerInfo') : t('guest.loginWarning')"
-            :type="isRegister ? 'info' : 'warning'"
+            :text="t('guest.registerInfo')"
+            type="info"
             variant="tonal"
           />
 

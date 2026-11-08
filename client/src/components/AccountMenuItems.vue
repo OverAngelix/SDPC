@@ -56,12 +56,6 @@
       />
 
       <v-list-item
-        prepend-icon="mdi-login"
-        :title="t('menu.login')"
-        @click="emit('select', 'login')"
-      />
-
-      <v-list-item
         prepend-icon="mdi-exit-run"
         :title="t('menu.leaveGuest')"
         @click="emit('select', 'leaveGuest')"
@@ -83,7 +77,7 @@
 
   withDefaults(defineProps<{
     email: string
-    /** Mode invité : pas de compte, mais de quoi en créer un ou se connecter */
+    /** Mode invité : pas de compte, mais de quoi en créer un */
     guest?: boolean
     /** On est sur la page de configuration de la grille (sinon sur la grille) : son entrée est surlignée */
     onConfig: boolean

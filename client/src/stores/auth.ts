@@ -74,10 +74,8 @@ export const useAuthStore = defineStore('auth', () => {
   // Les erreurs du serveur (400, 401, 409, 429) remontent au formulaire, qui les affiche
   async function signIn (credentials: Credentials) {
     const signedIn = await login(credentials)
-    // La grille du compte remplace celle de l'invité (la page de connexion prévient)
-    if (guest.active) {
-      guest.discard()
-    }
+    // La grille du compte s'affiche ; celle de l'invité reste dans le navigateur (supprimable depuis « Mon compte »)
+    guest.leave()
     useButtonsStore().reset()
     user.value = signedIn
     await loadSettings()

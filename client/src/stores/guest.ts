@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { clearGuestData, readGuestActive, writeGuestActive } from '@/utils/guestStorage'
+import { readGuestActive, writeGuestActive } from '@/utils/guestStorage'
 
 /** Le mode invité : l'application sans compte, la grille et les réglages gardés dans le navigateur (fiche 16). */
 export const useGuestStore = defineStore('guest', () => {
@@ -18,11 +18,5 @@ export const useGuestStore = defineStore('guest', () => {
     writeGuestActive(false)
   }
 
-  /** Quitte le mode invité et efface tout ce qu'il a laissé sur l'appareil. */
-  function discard () {
-    active.value = false
-    clearGuestData()
-  }
-
-  return { active, enter, leave, discard }
+  return { active, enter, leave }
 })

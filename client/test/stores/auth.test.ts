@@ -295,7 +295,7 @@ describe('auth store', () => {
       expect(useSettingsStore().volume).toBe(100)
     })
 
-    it('signIn depuis le mode invité abandonne sa grille pour celle du compte', async () => {
+    it('signIn depuis le mode invité affiche la grille du compte et garde celle de l\'invité dans le navigateur', async () => {
       guestWithGrid()
       loginMock.mockResolvedValue(jean)
       fetchSettingsMock.mockResolvedValue(darkSettings)
@@ -303,7 +303,8 @@ describe('auth store', () => {
       await auth.signIn(credentials)
       expect(auth.user).toEqual(jean)
       expect(useGuestStore().active).toBe(false)
-      expect(data.size).toBe(0)
+      expect(data.has(GUEST_STORAGE_KEY)).toBe(false)
+      expect(data.has(GUEST_BUTTONS_KEY)).toBe(true)
       expect(importButtonsMock).not.toHaveBeenCalled()
       expect(useSettingsStore().volume).toBe(30)
     })

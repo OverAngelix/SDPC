@@ -113,6 +113,23 @@
           variant="outlined"
           @click="emit('delete')"
         />
+
+        <!-- Seulement si ce navigateur garde une grille d'invité (mode invité quitté ou connexion depuis le mode invité) -->
+        <template v-if="guestGrid">
+          <v-divider class="my-6" />
+
+          <h3 class="text-subtitle-1 text-error mb-1">{{ t('account.guestGridTitle') }}</h3>
+          <p class="text-medium-emphasis mb-3">{{ t('account.guestGridText') }}</p>
+
+          <v-btn
+            block
+            color="error"
+            prepend-icon="mdi-incognito-off"
+            :text="t('account.deleteGuestGrid')"
+            variant="outlined"
+            @click="emit('delete-guest')"
+          />
+        </template>
       </v-card-text>
 
       <v-card-actions class="justify-end">
@@ -141,13 +158,17 @@
     email: string
     /** La grille n'a aucun bouton : « Effacer la grille » est grisée */
     gridEmpty?: boolean
+    /** Ce navigateur garde une grille d'invité : on propose de la supprimer */
+    guestGrid?: boolean
   }>()
 
   const emit = defineEmits<{
     /** Ouvrir la confirmation de l'effacement de la grille */
-    clear: []
+    'clear': []
     /** Ouvrir la confirmation de la suppression du compte */
-    delete: []
+    'delete': []
+    /** Ouvrir la confirmation de la suppression de la grille d'invité */
+    'delete-guest': []
   }>()
 
   const settings = useSettingsStore()

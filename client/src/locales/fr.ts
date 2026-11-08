@@ -180,7 +180,6 @@ export default {
     logout: 'Déconnexion',
     clearGrid: 'Effacer la grille',
     register: 'Créer un compte',
-    login: 'Se connecter',
     leaveGuest: 'Quitter le mode invité',
   },
 
@@ -191,7 +190,6 @@ export default {
     text: 'Essayez SDPC sans compte : votre grille reste dans ce navigateur. Créez un compte quand vous voulez pour la garder partout.',
     enter: 'Entrer en mode invité',
     registerInfo: 'Votre grille et vos réglages d\'invité seront enregistrés sur ce nouveau compte.',
-    loginWarning: 'Attention : en vous connectant avec un compte existant, vous allez perdre votre grille d\'invité.',
     migrationFailed: 'Votre grille d\'invité n\'a pas pu être enregistrée sur le compte : elle est gardée dans ce navigateur.',
     retry: 'Réessayer',
     migrated: 'Grille d\'invité enregistrée sur le compte.',
@@ -228,6 +226,7 @@ export default {
     signOutFailed: 'Déconnexion impossible : le serveur est injoignable.',
     gridCleared: 'Grille effacée ({count} bouton supprimé). | Grille effacée ({count} boutons supprimés).',
     accountDeleted: 'Compte supprimé.',
+    guestGridDeleted: 'Grille d\'invité supprimée.',
   },
 
   /** Fenêtre « Configuration de l'application » */
@@ -265,6 +264,15 @@ export default {
     deleteTitle: 'Supprimer le compte',
     deleteText: 'Supprime définitivement votre compte, votre grille et vos réglages.',
     deleteAccount: 'Supprimer mon compte',
+    guestGridTitle: 'Grille d\'invité',
+    guestGridText: 'Ce navigateur garde la grille et les réglages du mode invité. Les supprimer ne touche pas à votre compte.',
+    deleteGuestGrid: 'Supprimer la grille d\'invité',
+  },
+
+  /** Confirmation de la suppression de la grille d'invité */
+  deleteGuestGrid: {
+    title: 'Supprimer la grille d\'invité de ce navigateur ?',
+    confirm: 'Supprimer',
   },
 
   /** Confirmation de l'effacement de la grille */

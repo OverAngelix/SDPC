@@ -30,12 +30,4 @@ describe('guest store', () => {
     expect(data.has(GUEST_STORAGE_KEY)).toBe(false)
     expect(data.get(GUEST_BUTTONS_KEY)).toBe('[]')
   })
-
-  it('discard quitte le mode invité et efface sa grille', () => {
-    const data = stubStorage({ [GUEST_STORAGE_KEY]: '1', [GUEST_BUTTONS_KEY]: '[]' })
-    const guest = useGuestStore()
-    guest.discard()
-    expect(guest.active).toBe(false)
-    expect(data.size).toBe(0)
-  })
 })

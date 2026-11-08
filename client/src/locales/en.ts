@@ -165,7 +165,6 @@ const en: Messages = {
     logout: 'Sign out',
     clearGrid: 'Clear the grid',
     register: 'Create an account',
-    login: 'Sign in',
     leaveGuest: 'Leave guest mode',
   },
 
@@ -175,7 +174,6 @@ const en: Messages = {
     text: 'Try SDPC without an account: your grid stays in this browser. Create an account whenever you like to keep it everywhere.',
     enter: 'Enter guest mode',
     registerInfo: 'Your guest grid and settings will be saved to this new account.',
-    loginWarning: 'Warning: by signing in with an existing account, you will lose your guest grid.',
     migrationFailed: 'Your guest grid could not be saved to the account: it is kept in this browser.',
     retry: 'Retry',
     migrated: 'Guest grid saved to the account.',
@@ -209,6 +207,7 @@ const en: Messages = {
     signOutFailed: 'Could not sign out: the server is unreachable.',
     gridCleared: 'Grid cleared ({count} button removed). | Grid cleared ({count} buttons removed).',
     accountDeleted: 'Account deleted.',
+    guestGridDeleted: 'Guest grid deleted.',
   },
 
   settings: {
@@ -243,6 +242,14 @@ const en: Messages = {
     deleteTitle: 'Delete the account',
     deleteText: 'Permanently deletes your account, your grid and your settings.',
     deleteAccount: 'Delete my account',
+    guestGridTitle: 'Guest grid',
+    guestGridText: 'This browser keeps the grid and settings from guest mode. Deleting them does not affect your account.',
+    deleteGuestGrid: 'Delete the guest grid',
+  },
+
+  deleteGuestGrid: {
+    title: 'Delete the guest grid from this browser?',
+    confirm: 'Delete',
   },
 
   clearGrid: {
