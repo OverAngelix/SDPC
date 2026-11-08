@@ -19,11 +19,11 @@ Une fiche par feature : explication, TODO, implémentation et personne active. N
 | 13 | [Big picture : la grille en plein cadre](13-big-picture.md) | En cours | OverAngelix |
 | 14 | [Déploiement avec GitHub Actions](14-deploiement-github-actions.md) | En cours | OverAngelix |
 | 15 | [Écran de bienvenue](15-ecran-bienvenue.md) | Livré | OverAngelix |
+| 16 | [Mode invité et migration vers un compte](16-mode-invite.md) | En cours | OverAngelix |
 
-Ordre de réalisation : 02 → 03 → 04 → 05 → 06 → 07 → 08 → 09 → 11 → 10 → 12 → 13 → 14 → 15
+Ordre de réalisation : 02 → 03 → 04 → 05 → 06 → 07 → 08 → 09 → 11 → 10 → 12 → 13 → 14 → 15 → 16
 
 ## Plus tard
 
-- Mode deconnecté avec possibilite de se connecter et de tout migrer dans un compte si on apprecie l'app
 - Image de fond de la grille (réglage de l'application, après la feature 11) + Icones personalisés
 - **Grille modulable** : nombre de colonnes et de lignes configurable (aujourd'hui fixe : 7 × 4, 4 × 7 en portrait, emplacements 0 à 27 ; l'emplacement 0 d'un dossier est le retour).
