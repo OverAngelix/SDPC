@@ -26,12 +26,15 @@ export function safeRedirect (value: unknown): string {
   return value
 }
 
-/** `true` pour laisser passer, sinon la destination de remplacement. */
-export function guardRoute (to: GuardTarget, loggedIn: boolean): true | RouteLocationRaw {
+/**
+ * `true` pour laisser passer, sinon la destination de remplacement. Un invité (fiche 16) voit tout,
+ * pages publiques comprises : c'est par elles qu'il se connecte ou crée son compte.
+ */
+export function guardRoute (to: GuardTarget, loggedIn: boolean, guest = false): true | RouteLocationRaw {
   if (to.meta.public === true) {
     return loggedIn ? { path: '/' } : true
   }
-  if (loggedIn) {
+  if (loggedIn || guest) {
     return true
   }
   return to.fullPath === '/' ? { name: 'login' } : { name: 'login', query: { redirect: to.fullPath } }

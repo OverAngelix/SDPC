@@ -4,7 +4,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { fetchSettings, updateSettings } from '@/api/settings'
 import { i18n } from '@/plugins/i18n'
 import { DEFAULT_SETTINGS, useSettingsStore } from '@/stores/settings'
+import { GUEST_SETTINGS_KEY, GUEST_STORAGE_KEY } from '@/utils/guestStorage'
 import { playSound } from '@/utils/sounds'
+import { stubStorage } from '../helpers/storage'
 
 vi.mock('@/utils/sounds', () => ({ playSound: vi.fn() }))
 vi.mock('@/api/settings', () => ({ fetchSettings: vi.fn(), updateSettings: vi.fn() }))
@@ -184,5 +186,25 @@ describe('settings store', () => {
     await settings.change({ soundEnabled: false })
     settings.play('launch')
     expect(playSoundMock).toHaveBeenCalledTimes(2)
+  })
+
+  describe('mode invité', () => {
+    afterEach(() => {
+      vi.unstubAllGlobals()
+    })
+
+    it('load et change passent par le navigateur, sans le serveur', async () => {
+      const data = stubStorage({ [GUEST_STORAGE_KEY]: '1', [GUEST_SETTINGS_KEY]: JSON.stringify({ volume: 20 }) })
+      const settings = useSettingsStore()
+
+      await settings.load()
+      expect(settings.volume).toBe(20)
+      expect(settings.theme).toBe('system')
+
+      expect(await settings.change({ theme: 'dark' })).toBe(true)
+      expect(JSON.parse(data.get(GUEST_SETTINGS_KEY)!)).toEqual({ ...DEFAULT_SETTINGS, volume: 20, theme: 'dark' })
+      expect(fetchSettingsMock).not.toHaveBeenCalled()
+      expect(updateSettingsMock).not.toHaveBeenCalled()
+    })
   })
 })

@@ -4,6 +4,7 @@ import GridPage from '@/pages/GridPage.vue'
 import LoginPage from '@/pages/LoginPage.vue'
 import RegisterPage from '@/pages/RegisterPage.vue'
 import { useAuthStore } from '@/stores/auth'
+import { useGuestStore } from '@/stores/guest'
 import { guardRoute } from './guard'
 
 const router = createRouter({
@@ -30,13 +31,13 @@ const router = createRouter({
   ],
 })
 
-// Tout le reste demande d'être connecté ; on attend d'abord de savoir si une session est déjà ouverte
+// Tout le reste demande d'être connecté (ou invité) ; on attend d'abord de savoir si une session est déjà ouverte
 router.beforeEach(async to => {
   const auth = useAuthStore()
   if (!auth.ready) {
     await auth.restore()
   }
-  return guardRoute(to, auth.user !== null)
+  return guardRoute(to, auth.user !== null, useGuestStore().active)
 })
 
 export default router

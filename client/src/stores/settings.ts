@@ -5,7 +5,9 @@ import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
 import { fetchSettings, updateSettings } from '@/api/settings'
 import { setLocale } from '@/plugins/i18n'
+import { useGuestStore } from '@/stores/guest'
 import { describeApiError } from '@/utils/apiError'
+import { readGuestSettings, writeGuestSettings } from '@/utils/guestStorage'
 import { resolveLocale } from '@/utils/locale'
 import { playSound } from '@/utils/sounds'
 
@@ -18,7 +20,7 @@ export const DEFAULT_SETTINGS: Settings = {
   locale: 'system',
 }
 
-/** Réglages de l'application : ceux du compte connecté, communs à tous ses appareils. */
+/** Réglages de l'application : ceux du compte connecté, communs à tous ses appareils, ou ceux de l'invité, dans le navigateur. */
 export const useSettingsStore = defineStore('settings', () => {
   const soundEnabled = ref(DEFAULT_SETTINGS.soundEnabled)
   const volume = ref(DEFAULT_SETTINGS.volume)
@@ -53,8 +55,12 @@ export const useSettingsStore = defineStore('settings', () => {
   // La langue des textes suit le réglage tout de suite (chargement, changement, retour arrière, déconnexion)
   watch(locale, value => setLocale(resolveLocale(value)), { immediate: true, flush: 'sync' })
 
-  /** Reprend les réglages du compte connecté. */
+  /** Reprend les réglages du compte connecté, ou ceux de l'invité. */
   async function load () {
+    if (useGuestStore().active) {
+      apply({ ...DEFAULT_SETTINGS, ...readGuestSettings() })
+      return
+    }
     apply(await fetchSettings())
   }
 
@@ -73,6 +79,10 @@ export const useSettingsStore = defineStore('settings', () => {
     const previous = Object.fromEntries(Object.keys(patch).map(key => [key, before[key as keyof Settings]])) as Partial<Settings>
     error.value = null
     apply(patch)
+    if (useGuestStore().active) {
+      writeGuestSettings(current())
+      return true
+    }
     try {
       await updateSettings(patch)
       return true

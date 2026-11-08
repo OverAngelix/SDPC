@@ -1,9 +1,11 @@
 import type { Button } from '@/interfaces/button'
 import { createPinia, setActivePinia } from 'pinia'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { clearButtons, createButton, deleteButton, fetchButtons, moveButton, updateButton } from '@/api/buttons'
 import { SLOTS } from '@/grid'
 import { useButtonsStore } from '@/stores/buttons'
+import { GUEST_BUTTONS_KEY, GUEST_STORAGE_KEY } from '@/utils/guestStorage'
+import { stubStorage } from '../helpers/storage'
 
 vi.mock('@/api/buttons', () => ({
   fetchButtons: vi.fn(),
@@ -353,6 +355,29 @@ describe('buttons store', () => {
       await expect(store.clear()).rejects.toThrow('réseau')
 
       expect(store.buttons).toEqual([games, mail])
+    })
+  })
+
+  describe('mode invité', () => {
+    afterEach(() => {
+      vi.unstubAllGlobals()
+    })
+
+    it('lit et écrit la grille dans le navigateur, sans le serveur', async () => {
+      const data = stubStorage({ [GUEST_STORAGE_KEY]: '1', [GUEST_BUTTONS_KEY]: JSON.stringify([games, mail]) })
+      const store = useButtonsStore()
+
+      await store.load()
+      expect(store.buttons).toEqual([games, mail])
+
+      const created = await store.create({ parentId: null, position: 9, label: 'Zelda', icon: 'mdi-sword', type: 'action', url: 'https://zelda.example' })
+      expect(JSON.parse(data.get(GUEST_BUTTONS_KEY)!)).toEqual([games, mail, created])
+
+      await store.remove('games')
+      expect(store.buttons).toEqual([mail, created])
+      expect(fetchButtonsMock).not.toHaveBeenCalled()
+      expect(createButtonMock).not.toHaveBeenCalled()
+      expect(deleteButtonMock).not.toHaveBeenCalled()
     })
   })
 })

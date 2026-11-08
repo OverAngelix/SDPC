@@ -1,8 +1,15 @@
 import type { Button, ButtonInput, ButtonPatch } from '@/interfaces/button'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import { clearButtons, createButton, deleteButton, fetchButtons, moveButton, updateButton } from '@/api/buttons'
+import * as serverButtons from '@/api/buttons'
+import * as guestButtons from '@/api/guestButtons'
 import { buildSlots, collectSubtree } from '@/grid'
+import { useGuestStore } from '@/stores/guest'
+
+// En mode invité, les mêmes opérations se font dans le navigateur au lieu du serveur
+function source () {
+  return useGuestStore().active ? guestButtons : serverButtons
+}
 
 export const useButtonsStore = defineStore('buttons', () => {
   const buttons = ref<Button[]>([])
@@ -17,7 +24,7 @@ export const useButtonsStore = defineStore('buttons', () => {
     loading.value = true
     error.value = false
     try {
-      buttons.value = await fetchButtons()
+      buttons.value = await source().fetchButtons()
       loaded.value = true
     } catch {
       error.value = true
@@ -59,26 +66,26 @@ export const useButtonsStore = defineStore('buttons', () => {
   // Les écritures laissent remonter l'erreur du serveur (400, 409…) : c'est le formulaire qui l'affiche.
   // La réponse du serveur met la liste à jour, sans recharger tous les boutons.
   async function create (input: ButtonInput) {
-    const created = await createButton(input)
+    const created = await source().createButton(input)
     buttons.value = [...buttons.value, created]
     return created
   }
 
   async function update (id: string, patch: ButtonPatch) {
-    const updated = await updateButton(id, patch)
+    const updated = await source().updateButton(id, patch)
     buttons.value = buttons.value.map(button => button.id === id ? updated : button)
     return updated
   }
 
   // Si l'emplacement est occupé, les deux boutons échangent leur place : le serveur renvoie les deux
   async function move (id: string, position: number) {
-    const changed = await moveButton(id, position)
+    const changed = await source().moveButton(id, position)
     buttons.value = buttons.value.map(button => changed.find(candidate => candidate.id === button.id) ?? button)
     return changed
   }
 
   async function remove (id: string) {
-    await deleteButton(id)
+    await source().deleteButton(id)
     // Le serveur supprime aussi le contenu d'un dossier
     const removed = collectSubtree(buttons.value, id)
     buttons.value = buttons.value.filter(button => !removed.has(button.id))
@@ -86,7 +93,7 @@ export const useButtonsStore = defineStore('buttons', () => {
 
   // Efface toute la grille : le serveur supprime aussi les dossiers et leur contenu
   async function clear () {
-    await clearButtons()
+    await source().clearButtons()
     buttons.value = []
   }
 

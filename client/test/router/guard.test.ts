@@ -22,6 +22,12 @@ describe('guardRoute', () => {
     expect(guardRoute(publicPage('/register'), false)).toBe(true)
   })
 
+  it('laisse un invité sur les pages protégées et sur les pages publiques (pour se connecter ou créer son compte)', () => {
+    expect(guardRoute(page('/config/folder/abc'), false, true)).toBe(true)
+    expect(guardRoute(publicPage('/login'), false, true)).toBe(true)
+    expect(guardRoute(publicPage('/register'), false, true)).toBe(true)
+  })
+
   it('renvoie une personne déjà connectée de la connexion vers la grille', () => {
     expect(guardRoute(publicPage('/login'), true)).toEqual({ path: '/' })
   })
