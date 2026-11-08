@@ -8,6 +8,7 @@
   >
     <account-menu-items
       :email="email"
+      :guest="guest"
       :on-config="onConfig"
       part="main"
       @select="choose"
@@ -16,6 +17,7 @@
     <template #append>
       <account-menu-items
         :email="email"
+        :guest="guest"
         :on-config="onConfig"
         part="logout"
         @select="choose"
@@ -30,6 +32,7 @@
 
   defineProps<{
     email: string
+    guest: boolean
     onConfig: boolean
   }>()
 

@@ -1,5 +1,6 @@
 <template>
-  <v-container class="page-centered pa-2 pa-sm-4">
+  <!-- Le formulaire en haut de la page, le mode invité en dessous -->
+  <v-container class="pa-2 pa-sm-4 pt-sm-12">
     <v-card class="mx-auto w-100" max-width="420">
       <v-form @submit.prevent="submit">
         <v-card-title class="pt-4">{{ isRegister ? t('auth.registerTitle') : t('auth.loginTitle') }}</v-card-title>
@@ -17,6 +18,16 @@
               <li v-for="detail in error.details" :key="detail">{{ detail }}</li>
             </ul>
           </v-alert>
+
+          <!-- Invité : ce que devient sa grille selon qu'il se connecte ou crée un compte -->
+          <v-alert
+            v-if="guest.active"
+            class="mb-4"
+            density="compact"
+            :text="isRegister ? t('guest.registerInfo') : t('guest.loginWarning')"
+            :type="isRegister ? 'info' : 'warning'"
+            variant="tonal"
+          />
 
           <v-text-field
             v-model="email"
@@ -68,6 +79,28 @@
         </v-card-actions>
       </v-form>
     </v-card>
+
+    <v-card
+      v-if="!isRegister && !guest.active"
+      class="mx-auto w-100 mt-4"
+      max-width="420"
+    >
+      <v-card-title class="pt-4">{{ t('guest.title') }}</v-card-title>
+
+      <v-card-text>{{ t('guest.text') }}</v-card-text>
+
+      <v-card-actions class="pb-4 px-4">
+        <v-btn
+          block
+          :disabled="loading"
+          :loading="entering"
+          prepend-icon="mdi-incognito"
+          :text="t('guest.enter')"
+          variant="tonal"
+          @click="enterGuest"
+        />
+      </v-card-actions>
+    </v-card>
   </v-container>
 </template>
 
@@ -79,6 +112,7 @@
   import { useRoute, useRouter } from 'vue-router'
   import { safeRedirect } from '@/router/guard'
   import { useAuthStore } from '@/stores/auth'
+  import { useGuestStore } from '@/stores/guest'
   import { describeApiError } from '@/utils/apiError'
   import { readRememberedLogin, writeRememberedLogin } from '@/utils/rememberedLogin'
 
@@ -87,6 +121,7 @@
   const MIN_PASSWORD_LENGTH = 8
 
   const auth = useAuthStore()
+  const guest = useGuestStore()
   const { t } = useI18n()
   const route = useRoute()
   const router = useRouter()
@@ -99,10 +134,21 @@
   const showPassword = ref(false)
   const remember = ref(savedLogin !== null)
   const loading = ref(false)
+  const entering = ref(false)
   const error = ref<ApiErrorMessage | null>(null)
 
   const required = (value: string) => value.trim() !== '' || t('validation.required')
   const minLength = (value: string) => value.length >= MIN_PASSWORD_LENGTH || t('validation.minLength', { min: MIN_PASSWORD_LENGTH })
+
+  async function enterGuest () {
+    entering.value = true
+    try {
+      await auth.enterGuest()
+      await router.replace(safeRedirect(route.query.redirect))
+    } finally {
+      entering.value = false
+    }
+  }
 
   async function submit (event: SubmitEventPromise) {
     // Vuetify valide les champs avant de rendre la main

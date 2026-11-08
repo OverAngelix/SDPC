@@ -21,6 +21,7 @@
     <v-card min-width="280">
       <account-menu-items
         :email="email"
+        :guest="guest"
         :on-config="onConfig"
         @select="emit('select', $event)"
       />
@@ -36,6 +37,7 @@
 
   defineProps<{
     email: string
+    guest: boolean
     onConfig: boolean
   }>()
 

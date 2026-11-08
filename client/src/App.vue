@@ -8,20 +8,45 @@
 
       <v-spacer />
 
+      <!-- Mode invité : un rappel, et de quoi garder sa grille en créant un compte -->
+      <template v-if="guest.active">
+        <v-chip
+          class="me-2 d-none d-sm-flex"
+          prepend-icon="mdi-incognito"
+          size="small"
+          :text="t('guest.badge')"
+        />
+
+        <!-- Téléphone : l'icône seule -->
+        <v-btn
+          v-if="route.name !== 'register'"
+          :aria-label="t('guest.register')"
+          class="me-1"
+          color="primary"
+          :icon="xs ? 'mdi-account-plus' : false"
+          :prepend-icon="xs ? undefined : 'mdi-account-plus'"
+          :text="xs ? undefined : t('guest.register')"
+          :to="{ name: 'register' }"
+          variant="tonal"
+        />
+      </template>
+
       <!-- Sans connexion (pages Connexion et Créer un compte) : le titre seul -->
       <account-menu
-        v-if="auth.user"
+        v-if="signedIn"
         v-model:drawer="drawer"
-        :email="auth.user.email"
+        :email="auth.user?.email ?? ''"
+        :guest="guest.active"
         :on-config="onConfig"
         @select="onAccountAction"
       />
     </v-app-bar>
 
     <account-drawer
-      v-if="auth.user && !bigPictureOn"
+      v-if="signedIn && !bigPictureOn"
       v-model="drawer"
-      :email="auth.user.email"
+      :email="auth.user?.email ?? ''"
+      :guest="guest.active"
       :on-config="onConfig"
       @select="onAccountAction"
     />
@@ -30,9 +55,9 @@
       <router-view />
     </v-main>
 
-    <settings-dialog v-if="auth.user" v-model="settingsOpen" />
+    <settings-dialog v-if="signedIn" v-model="settingsOpen" />
 
-    <welcome-dialog v-if="auth.user" v-model="welcomeOpen" />
+    <welcome-dialog v-if="signedIn" v-model="welcomeOpen" />
 
     <account-dialog
       v-if="auth.user"
@@ -44,7 +69,7 @@
     />
 
     <confirm-clear-grid
-      v-if="auth.user"
+      v-if="signedIn"
       v-model="clearOpen"
       @cleared="onCleared"
     />
@@ -57,6 +82,19 @@
     </v-snackbar>
 
     <v-snackbar v-model="notice" timeout="3000">{{ noticeText }}</v-snackbar>
+
+    <!-- La grille de l'invité n'est pas partie sur le nouveau compte : elle attend dans le navigateur -->
+    <v-snackbar
+      v-model="auth.migrationFailed"
+      color="error"
+      timeout="-1"
+    >
+      {{ t('guest.migrationFailed') }}
+
+      <template #actions>
+        <v-btn :loading="retrying" :text="t('guest.retry')" @click="retryMigration" />
+      </template>
+    </v-snackbar>
   </v-app>
 </template>
 
@@ -65,7 +103,7 @@
   import { computed, ref, watch } from 'vue'
   import { useI18n } from 'vue-i18n'
   import { useRoute, useRouter } from 'vue-router'
-  import { useTheme } from 'vuetify'
+  import { useDisplay, useTheme } from 'vuetify'
   import AccountDialog from '@/components/AccountDialog.vue'
   import AccountDrawer from '@/components/AccountDrawer.vue'
   import AccountMenu from '@/components/AccountMenu.vue'
@@ -77,10 +115,16 @@
   import { useAuthStore } from '@/stores/auth'
   import { useBigPictureStore } from '@/stores/bigPicture'
   import { useButtonsStore } from '@/stores/buttons'
+  import { useGuestStore } from '@/stores/guest'
   import { useSettingsStore } from '@/stores/settings'
   import { readWelcomeSeen, writeWelcomeSeen } from '@/utils/rememberedWelcome'
 
   const auth = useAuthStore()
+  const guest = useGuestStore()
+  // Une personne connectée ou un invité : la grille, ses dossiers et le menu sont accessibles
+  const signedIn = computed(() => auth.user !== null || guest.active)
+  const { xs } = useDisplay()
+  const retrying = ref(false)
   const { t } = useI18n()
   const settings = useSettingsStore()
   const route = useRoute()
@@ -104,17 +148,17 @@
   // Thème du compte (les effets sont lus par les cases elles-mêmes, voir ButtonTile)
   watch(() => settings.theme, name => theme.change(name), { immediate: true })
 
-  // Déconnexion (ici ou session perdue, voir api/http.ts) : retour à la page de connexion
-  watch(() => auth.user, user => {
-    if (user === null) {
+  // Déconnexion (ici ou session perdue, voir api/http.ts) ou sortie du mode invité : retour à la page de connexion
+  watch(signedIn, isSignedIn => {
+    if (!isSignedIn) {
       const destination = guardRoute(route, false)
       if (destination !== true) router.replace(destination)
     }
   })
 
-  // Écran de bienvenue : une fois connecté, une seule fois par appareil ; toute fermeture vaut « vu »
-  watch(() => auth.user, user => {
-    if (user && !readWelcomeSeen()) welcomeOpen.value = true
+  // Écran de bienvenue : une fois connecté (ou invité), une seule fois par appareil ; toute fermeture vaut « vu »
+  watch(signedIn, isSignedIn => {
+    if (isSignedIn && !readWelcomeSeen()) welcomeOpen.value = true
   }, { immediate: true })
   watch(welcomeOpen, isOpen => {
     if (!isOpen) writeWelcomeSeen()
@@ -153,6 +197,22 @@
         signOut()
         break
       }
+      case 'clear': {
+        clearOpen.value = true
+        break
+      }
+      case 'register': {
+        router.push({ name: 'register' })
+        break
+      }
+      case 'login': {
+        router.push({ name: 'login' })
+        break
+      }
+      case 'leaveGuest': {
+        auth.leaveGuest()
+        break
+      }
     }
   }
 
@@ -174,6 +234,18 @@
     accountOpen.value = false
     noticeText.value = t('notices.accountDeleted')
     notice.value = true
+  }
+
+  async function retryMigration () {
+    retrying.value = true
+    try {
+      if (await auth.retryMigration()) {
+        noticeText.value = t('guest.migrated')
+        notice.value = true
+      }
+    } finally {
+      retrying.value = false
+    }
   }
 
   async function signOut () {

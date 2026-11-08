@@ -54,6 +54,10 @@ export default {
     invalid_url: 'adresse invalide',
     empty_folder_first: 'vider le dossier d\'abord',
     slot_taken: 'l\'emplacement {position} est pris dans ce dossier',
+    array_expected: 'liste de boutons attendue',
+    too_many_buttons: '{max} boutons au plus',
+    duplicate_id: 'identifiant déjà utilisé dans la grille',
+    folder_cycle: 'des dossiers se contiennent les uns les autres',
   },
 
   /** Boutons et phrases communs à plusieurs fenêtres */
@@ -174,6 +178,25 @@ export default {
     accountWindow: 'Mon compte',
     bigPicture: 'Big picture (F)',
     logout: 'Déconnexion',
+    clearGrid: 'Effacer la grille',
+    register: 'Créer un compte',
+    login: 'Se connecter',
+    leaveGuest: 'Quitter le mode invité',
+  },
+
+  /** Mode invité : l'application sans compte, la grille gardée dans le navigateur */
+  guest: {
+    name: 'Invité',
+    title: 'Mode invité',
+    text: 'Essayez SDPC sans compte : votre grille reste dans ce navigateur. Créez un compte quand vous voulez pour la garder partout.',
+    enter: 'Entrer en mode invité',
+    badge: 'Mode invité',
+    register: 'Créer un compte',
+    registerInfo: 'Votre grille et vos réglages d\'invité seront enregistrés sur ce nouveau compte.',
+    loginWarning: 'Attention : en vous connectant avec un compte existant, vous allez perdre votre grille d\'invité.',
+    migrationFailed: 'Votre grille d\'invité n\'a pas pu être enregistrée sur le compte : elle est gardée dans ce navigateur.',
+    retry: 'Réessayer',
+    migrated: 'Grille d\'invité enregistrée sur le compte.',
   },
 
   /** Mode big picture : la grille en plein cadre */

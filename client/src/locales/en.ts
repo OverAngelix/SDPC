@@ -49,6 +49,10 @@ const en: Messages = {
     invalid_url: 'invalid address',
     empty_folder_first: 'empty the folder first',
     slot_taken: 'slot {position} is already taken in this folder',
+    array_expected: 'list of buttons expected',
+    too_many_buttons: '{max} buttons at most',
+    duplicate_id: 'identifier already used in the grid',
+    folder_cycle: 'folders contain each other',
   },
 
   common: {
@@ -159,6 +163,24 @@ const en: Messages = {
     accountWindow: 'My account',
     bigPicture: 'Big picture (F)',
     logout: 'Sign out',
+    clearGrid: 'Clear the grid',
+    register: 'Create an account',
+    login: 'Sign in',
+    leaveGuest: 'Leave guest mode',
+  },
+
+  guest: {
+    name: 'Guest',
+    title: 'Guest mode',
+    text: 'Try SDPC without an account: your grid stays in this browser. Create an account whenever you like to keep it everywhere.',
+    enter: 'Enter guest mode',
+    badge: 'Guest mode',
+    register: 'Create an account',
+    registerInfo: 'Your guest grid and settings will be saved to this new account.',
+    loginWarning: 'Warning: by signing in with an existing account, you will lose your guest grid.',
+    migrationFailed: 'Your guest grid could not be saved to the account: it is kept in this browser.',
+    retry: 'Retry',
+    migrated: 'Guest grid saved to the account.',
   },
 
   bigPicture: {
