@@ -20,8 +20,9 @@ Une fiche par feature : explication, TODO, implémentation et personne active. N
 | 14 | [Déploiement avec GitHub Actions](14-deploiement-github-actions.md) | En cours | OverAngelix |
 | 15 | [Écran de bienvenue](15-ecran-bienvenue.md) | Livré | OverAngelix |
 | 16 | [Mode invité et migration vers un compte](16-mode-invite.md) | En cours | OverAngelix |
+| 17 | [Favicon du site comme icône](17-favicon-icone.md) | À faire | OverAngelix |
 
-Ordre de réalisation : 02 → 03 → 04 → 05 → 06 → 07 → 08 → 09 → 11 → 10 → 12 → 13 → 14 → 15 → 16
+Ordre de réalisation : 02 → 03 → 04 → 05 → 06 → 07 → 08 → 09 → 11 → 10 → 12 → 13 → 14 → 15 → 16 → 17
 
 ## Plus tard
 
