@@ -25,5 +25,8 @@ Ordre de réalisation : 02 → 03 → 04 → 05 → 06 → 07 → 08 → 09 → 
 
 ## Plus tard
 
-- Image de fond de la grille (réglage de l'application, après la feature 11) + Icones personalisés
+- Statistiques d'usage discrètes : nombre de clics par bouton, pour repérer les raccourcis inutilisés. -> Mode admin avec le nombre de compte et tout
+
+- Dupliquer un bouton, y compris un dossier avec son contenu, sur la première case libre + Deplacement comme on veux
+
 - **Grille modulable** : nombre de colonnes et de lignes configurable (aujourd'hui fixe : 7 × 4, 4 × 7 en portrait, emplacements 0 à 27 ; l'emplacement 0 d'un dossier est le retour).
