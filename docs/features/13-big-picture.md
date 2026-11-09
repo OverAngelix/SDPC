@@ -16,6 +16,7 @@ Aujourd'hui la grille partage l'écran avec la barre d'application et des marges
 - L'entrée **Big picture (F)** du menu « Mon compte », ou la touche F, active le mode ; le **bouton de repli**, en haut à droite, ou la touche Échap, ramène au mode normal.
 - Le mode est **retenu sur l'appareil** : après un rechargement de la page, la grille se rouvre en big picture.
 - Les dossiers et les actions marchent comme d'habitude : ouvrir un dossier, revenir par la case 0, lancer une URL dans un nouvel onglet.
+- Les touches 1 à 7 déclenchent les cases de la première ligne : voir la [feature 18](18-raccourcis-clavier-big-picture.md).
 
 ## TODO
 
