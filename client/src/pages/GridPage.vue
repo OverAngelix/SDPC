@@ -20,8 +20,10 @@
 
       <button-grid
         :key="folderId ?? 'root'"
+        ref="grid"
         :back="folderId !== null"
         :fill="bigPicture.active"
+        :shortcuts="bigPicture.active"
         :slots="slots"
         @back="goBack"
         @select="select"
@@ -32,7 +34,7 @@
 
 <script lang="ts" setup>
   import type { Button } from '@/interfaces/button'
-  import { onBeforeUnmount, onMounted } from 'vue'
+  import { onBeforeUnmount, onMounted, useTemplateRef } from 'vue'
   import { useI18n } from 'vue-i18n'
   import ButtonGrid from '@/components/ButtonGrid.vue'
   import GridStatus from '@/components/GridStatus.vue'
@@ -40,9 +42,11 @@
   import { useBigPictureStore } from '@/stores/bigPicture'
   import { useButtonsStore } from '@/stores/buttons'
   import { useSettingsStore } from '@/stores/settings'
+  import { isTypingTarget, shortcutSlot } from '@/utils/keyboard'
   import { isHttpUrl } from '@/utils/url'
 
   const store = useButtonsStore()
+  const grid = useTemplateRef('grid')
   const { t } = useI18n()
   const settings = useSettingsStore()
   const bigPicture = useBigPictureStore()
@@ -58,13 +62,22 @@
     }
   }
 
-  // F bascule le mode, Échap en sort. Ignoré pendant une saisie ou quand une fenêtre ou un menu est ouvert
+  // F bascule le mode, Échap en sort ; en big picture, 1 à 7 déclenchent les 7 premières cases.
+  // F et les chiffres sont ignorés pendant une saisie ou quand une fenêtre ou un menu est ouvert
   function onKeydown (event: KeyboardEvent) {
     if (event.key === 'Escape' && bigPicture.active) {
       bigPicture.exit()
-    } else if (event.key.toLowerCase() === 'f' && !event.ctrlKey && !event.metaKey && !event.altKey && !event.repeat) {
-      const target = event.target instanceof Element ? event.target : null
-      if (!target?.closest('input, textarea, select, [contenteditable], .v-overlay')) bigPicture.toggle()
+      return
+    }
+    if (isTypingTarget(event)) return
+    if (event.key.toLowerCase() === 'f' && !event.ctrlKey && !event.metaKey && !event.altKey && !event.repeat) {
+      bigPicture.toggle()
+    } else if (bigPicture.active) {
+      const slot = shortcutSlot(event)
+      if (slot !== null) {
+        event.preventDefault()
+        grid.value?.press(slot)
+      }
     }
   }
 

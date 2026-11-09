@@ -19,6 +19,8 @@
       size="14cqw"
     />
 
+    <span v-if="shortcut" aria-hidden="true" class="tile-shortcut">{{ shortcut }}</span>
+
     <div v-if="editable && !back && button" class="tile-actions">
       <v-btn
         :aria-label="t('grid.edit')"
@@ -71,6 +73,8 @@
     editable?: boolean
     /** Effet ponctuel : la case vient d'être posée (pop) ou son dépôt est refusé (shake) */
     effect?: 'pop' | 'shake'
+    /** Big picture : touche (1 à 7) qui déclenche la case, rappelée dans un coin */
+    shortcut?: number
   }>()
 
   const settings = useSettingsStore()
@@ -113,6 +117,9 @@
       if (props.button.type === 'action' && !props.editable) launch()
     }
   }
+
+  // Raccourci clavier du big picture : exactement comme un clic, animation de lancement comprise
+  defineExpose({ press: onClick })
 </script>
 
 <style scoped>
@@ -251,6 +258,23 @@
     top: 6px;
     right: 6px;
     opacity: 0.6;
+  }
+
+  /* Rappel de la touche du big picture : tout petit, pour ne pas concurrencer l'icône et le libellé.
+     Réservé aux appareils à souris, ceux qui ont un clavier */
+  .tile-shortcut {
+    display: none;
+    position: absolute;
+    bottom: 3px;
+    right: 6px;
+    font-size: clamp(0.7rem, 8cqw, 0.9rem);
+    line-height: 1;
+  }
+
+  @media (pointer: fine) {
+    .tile-shortcut {
+      display: block;
+    }
   }
 
   .tile-actions {

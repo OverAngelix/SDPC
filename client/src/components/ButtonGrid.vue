@@ -7,6 +7,7 @@
     <button-tile
       v-for="(button, index) in slots"
       :key="button?.id ?? `empty-${index}`"
+      :ref="tile => setTile(index, tile)"
       :back="back && index === BACK_SLOT"
       :button="button"
       :class="{
@@ -18,6 +19,7 @@
       :draggable="editable && button !== null"
       :editable="editable"
       :effect="effectOf(button, index)"
+      :shortcut="shortcuts && index < SHORTCUT_COUNT ? index + 1 : undefined"
       :style="{ '--wave': wave(index) }"
       @back="emit('back')"
       @create="emit('create', index)"
@@ -39,6 +41,7 @@
   import ButtonTile from '@/components/ButtonTile.vue'
   import { useGridShape } from '@/composables/gridShape'
   import { BACK_SLOT, placedIds, waveStep } from '@/grid'
+  import { SHORTCUT_COUNT } from '@/utils/keyboard'
 
   const props = defineProps<{
     /** Un élément par emplacement, dans l'ordre : le bouton ou null */
@@ -51,6 +54,8 @@
     editable?: boolean
     /** Déplacement au doigt : le bouton en attente de sa destination, marqué dans la grille */
     moving?: Button | null
+    /** Big picture : les touches 1 à 7 déclenchent les 7 premières cases, dont le numéro est rappelé */
+    shortcuts?: boolean
   }>()
 
   const emit = defineEmits<{
@@ -68,6 +73,20 @@
 
   // 7 × 4 en paysage, 4 × 7 en portrait : les mêmes emplacements, rangés selon l'orientation de l'écran
   const shape = useGridShape()
+
+  // Les cases par emplacement, pour les déclencher au clavier (l'ordre d'un ref de v-for n'est pas garanti)
+  const tiles: ({ press: () => void } | null)[] = []
+
+  function setTile (index: number, tile: unknown) {
+    tiles[index] = tile as { press: () => void } | null
+  }
+
+  /** Déclenche une case comme un clic : lance l'action, ouvre le dossier ou revient au parent. Une case vide ne fait rien */
+  function press (index: number) {
+    tiles[index]?.press()
+  }
+
+  defineExpose({ press })
 
   // Glisser-déposer : le bouton en cours de déplacement et l'emplacement survolé
   const dragged = ref<Button | null>(null)
