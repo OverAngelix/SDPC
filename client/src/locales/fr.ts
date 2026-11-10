@@ -177,7 +177,7 @@ export default {
     gridConfig: 'Configuration de la grille',
     appSettings: 'Configuration de l\'application',
     accountWindow: 'Mon compte',
-    bigPicture: 'Big picture (F)',
+    bigPicture: 'Big picture (B)',
     logout: 'Déconnexion',
     clearGrid: 'Effacer la grille',
     register: 'Créer un compte',
@@ -213,7 +213,7 @@ export default {
     },
     config: {
       title: 'À vous de jouer',
-      text: 'Composez votre grille depuis « Mon compte », Configuration de la grille. La touche F l\'affiche en plein cadre.',
+      text: 'Composez votre grille depuis « Mon compte », Configuration de la grille. La touche B l\'affiche en plein cadre.',
     },
     goTo: 'Aller à la slide {number}',
     skip: 'Passer',

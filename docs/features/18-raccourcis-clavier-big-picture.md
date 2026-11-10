@@ -16,13 +16,13 @@ En big picture, la grille sert de Stream Deck posé sur un second écran. Les to
 - un **dossier** s'ouvre ; dans un dossier, la touche 1 est donc le **retour** ;
 - une case vide ne fait rien.
 
-Les raccourcis ne valent qu'en big picture, et sont ignorés pendant une saisie ou quand une fenêtre ou un menu est ouvert (même règle que la touche F de la feature 13).
+Les raccourcis ne valent qu'en big picture, et sont ignorés pendant une saisie ou quand une fenêtre ou un menu est ouvert (même règle que la touche B de la feature 13).
 
 ## TODO
 
 ### Étape 1 — Lecture des touches (client)
 
-- [x] `client/src/utils/keyboard.ts` : `isTypingTarget(event)` (saisie, fenêtre ou menu ouvert), extrait de `GridPage.vue` où la touche F l'utilise déjà
+- [x] `client/src/utils/keyboard.ts` : `isTypingTarget(event)` (saisie, fenêtre ou menu ouvert), extrait de `GridPage.vue` où la touche du big picture l'utilise déjà
 - [x] `shortcutSlot(event)` : emplacement 0 à 6 pour les touches 1 à 7, `null` sinon ; lit `event.code` (`Digit1`…`Digit7`, `Numpad1`…`Numpad7`), ignore les touches avec Ctrl, ⌘ ou Alt et les répétitions
 - [x] Tests client : rangée du haut, pavé numérique, modificateurs, répétition, touche hors plage
 
@@ -61,7 +61,7 @@ Les raccourcis ne valent qu'en big picture, et sont ignorés pendant une saisie 
 keydown (fenêtre) → GridPage.onKeydown
   Échap → sortie du big picture
   saisie, fenêtre ou menu ouvert → ignoré
-  F → bascule du big picture
+  B → bascule du big picture
   big picture et shortcutSlot(event) = n → ButtonGrid.press(n) → ButtonTile.press()
     → comme un clic : select (action : onglet, son, animation ; dossier : ouverture) ou back
 ```

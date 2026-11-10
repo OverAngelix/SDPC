@@ -13,7 +13,7 @@ Un tout petit tutoriel pour découvrir l'application, dans l'esprit des écrans 
 
 1. **Bienvenue** : la grille de boutons, un clic ouvre le site dans un nouvel onglet.
 2. **Dossiers** : un dossier ouvre une autre grille, sa première case ramène en arrière.
-3. **À vous de jouer** : la grille se compose depuis « Mon compte », Configuration de la grille ; la touche F passe en big picture.
+3. **À vous de jouer** : la grille se compose depuis « Mon compte », Configuration de la grille ; la touche B passe en big picture.
 
 - La fenêtre s'ouvre **après la connexion**, une seule fois **par appareil**.
 - **Passer**, **C'est parti** (dernière slide), Échap ou un clic à côté la ferment, et elle ne revient plus sur cet appareil.
@@ -75,5 +75,5 @@ cd client && npm run dev -- --host
 1. Supprimer la clé `sdpc.welcomeSeen` (outils du navigateur, Stockage local), se connecter : la fenêtre s'ouvre sur la première slide.
 2. Suivant, Précédent, points, balayage sur téléphone : on passe d'une slide à l'autre ; la dernière propose « C'est parti ».
 3. Fermer (Passer, C'est parti, Échap ou clic à côté), recharger la page, se déconnecter et se reconnecter : la fenêtre ne revient plus.
-4. Fenêtre ouverte, taper F : le big picture ne bascule pas.
+4. Fenêtre ouverte, taper B : le big picture ne bascule pas.
 5. Thème sombre, téléphone portrait et paysage, langue anglaise.

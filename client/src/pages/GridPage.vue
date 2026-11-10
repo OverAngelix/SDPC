@@ -62,15 +62,15 @@
     }
   }
 
-  // F bascule le mode, Échap en sort ; en big picture, 1 à 7 déclenchent les 7 premières cases.
-  // F et les chiffres sont ignorés pendant une saisie ou quand une fenêtre ou un menu est ouvert
+  // B bascule le mode, Échap en sort ; en big picture, 1 à 7 déclenchent les 7 premières cases.
+  // B et les chiffres sont ignorés pendant une saisie ou quand une fenêtre ou un menu est ouvert
   function onKeydown (event: KeyboardEvent) {
     if (event.key === 'Escape' && bigPicture.active) {
       bigPicture.exit()
       return
     }
     if (isTypingTarget(event)) return
-    if (event.key.toLowerCase() === 'f' && !event.ctrlKey && !event.metaKey && !event.altKey && !event.repeat) {
+    if (event.key.toLowerCase() === 'b' && !event.ctrlKey && !event.metaKey && !event.altKey && !event.repeat) {
       bigPicture.toggle()
     } else if (bigPicture.active) {
       const slot = shortcutSlot(event)

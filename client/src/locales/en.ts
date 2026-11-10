@@ -162,7 +162,7 @@ const en: Messages = {
     gridConfig: 'Grid settings',
     appSettings: 'App settings',
     accountWindow: 'My account',
-    bigPicture: 'Big picture (F)',
+    bigPicture: 'Big picture (B)',
     logout: 'Sign out',
     clearGrid: 'Clear the grid',
     register: 'Create an account',
@@ -195,7 +195,7 @@ const en: Messages = {
     },
     config: {
       title: 'Your turn',
-      text: 'Build your grid from “My account”, Grid configuration. The F key shows it full frame.',
+      text: 'Build your grid from “My account”, Grid configuration. The B key shows it full frame.',
     },
     goTo: 'Go to slide {number}',
     skip: 'Skip',
