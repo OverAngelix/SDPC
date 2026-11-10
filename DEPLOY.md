@@ -26,7 +26,9 @@ Les workflows ne touchent pas au VPS : ils s'arrêtent au `docker push`.
 
 ## Mise à jour des images
 
-Chaque `Deployment` porte les annotations Keel (`keel.sh/policy: force`, `keel.sh/trigger: poll`, `keel.sh/pollSchedule: "@every 1m"`) et `imagePullPolicy: Always`. Keel interroge le registre toutes les minutes ; quand `latest` a changé, il relance le pod, qui tire la nouvelle image. Le serveur est en `strategy: Recreate` : une seule réplique (SQLite est sur disque local), jamais deux pods en même temps.
+Chaque `Deployment` porte les annotations Keel (`keel.sh/policy: force`, `keel.sh/trigger: poll`, `keel.sh/pollSchedule: "@every 1m"`, `keel.sh/match-tag: "true"`) et `imagePullPolicy: Always`. Keel interroge le registre toutes les minutes ; quand `latest` a changé, il relance le pod, qui tire la nouvelle image.
+
+**`keel.sh/match-tag: "true"` est indispensable** : les images sont toujours poussées sous le même tag, `latest`. Sans cette annotation, Keel cherche une version plus récente que `latest`, n'en trouve jamais et ne relance pas le pod : l'image est bien poussée, mais l'ancienne continue de tourner. Pour vérifier : `kubectl -n dev get deployment sdpc-server -o jsonpath='{.metadata.annotations}'`. Le serveur est en `strategy: Recreate` : une seule réplique (SQLite est sur disque local), jamais deux pods en même temps.
 
 Pour forcer une mise à jour sans attendre :
 
@@ -66,7 +68,7 @@ cd /home/deploy/apps-k3s/sdpc-client && kubectl apply -f .
 
 Points à respecter dans ces manifests :
 
-- Annotations Keel et `imagePullPolicy: Always` sur les deux `Deployment` ; serveur en `strategy: Recreate`, une seule réplique.
+- Annotations Keel, `keel.sh/match-tag: "true"` compris, et `imagePullPolicy: Always` sur les deux `Deployment` ; serveur en `strategy: Recreate`, une seule réplique.
 - Serveur : port 4000, sonde sur `/api/health`, `data/` monté sur `/app/data` (`hostPath`, `DirectoryOrCreate`). Sans ce volume, comptes et boutons disparaissent à chaque mise à jour de l'image.
 - Client : port 80.
 - `IngressRoute` du **client** : deux routes sur le domaine, plus la version HTTP avec `https-redirect`. La route `/api` utilise `PathPrefix` et ne doit pas avoir de `stripPrefix` :

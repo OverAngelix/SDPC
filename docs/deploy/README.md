@@ -34,7 +34,7 @@ Un dossier par application, par exemple `/home/deploy/apps-k3s/<APP>-client/` et
 
 | Fichier | Rôle |
 | --- | --- |
-| `deployment.yaml` | Décrit le pod : image à tirer, port, ressources, sondes de santé, volume. Les annotations **Keel** y déclenchent la mise à jour automatique. `imagePullSecrets` donne l'accès au registre privé. |
+| `deployment.yaml` | Décrit le pod : image à tirer, port, ressources, sondes de santé, volume. Les annotations **Keel** y déclenchent la mise à jour automatique ; `keel.sh/match-tag: "true"` est indispensable avec le seul tag `latest`, sans elle le pod n'est jamais relancé. `imagePullSecrets` donne l'accès au registre privé. |
 | `service.yaml` | Adresse interne stable vers le pod (nom + port) que Traefik vise. |
 | `ingressroute.yaml` (client) | Règles Traefik du domaine : `Host(...) && PathPrefix(...)` sur `/api` vers le service du serveur, `Host(...)` seul pour tout le reste vers le client ; HTTPS (certificat Let's Encrypt) et version HTTP qui redirige vers HTTPS. |
 | `ingressroute.yaml` (serveur) | Accès direct à l'API sur son sous-domaine (`<API_DOMAINE>`), HTTPS et redirection HTTP. Le client n'en dépend pas. |
