@@ -2,7 +2,7 @@
 
 | | |
 | --- | --- |
-| **Statut** | En cours |
+| **Statut** | Livré |
 | **Personne active** | OverAngelix |
 | **Périmètre** | `client/`, `server/` |
 | **Dépend de** | [09 — Comptes utilisateur](09-comptes-base-de-donnees.md), [10 — Fenêtre « Mon compte »](10-fenetre-mon-compte.md), [11 — Menu « Mon compte »](11-menu-compte-reglages.md), [15 — Écran de bienvenue](15-ecran-bienvenue.md) |
@@ -81,7 +81,7 @@ Les libellés sont des noms propres : ils se lisent pareil en français et en an
 
 - [x] `CLAUDE.md` : « sans connexion, seule la page de connexion est accessible » devient faux, à réécrire ; mentionner le mode invité et la grille d'exemple
 - [x] README des features : statut, ordre de réalisation
-- [ ] Vérification manuelle (voir plus bas)
+- [x] Vérification manuelle (voir plus bas)
 
 ## Décisions
 
