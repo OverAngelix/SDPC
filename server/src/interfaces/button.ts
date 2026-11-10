@@ -10,7 +10,7 @@ export interface Button {
   /** Emplacement dans la grille du dossier parent, de 0 à SLOTS - 1 */
   position: number
   label: string
-  /** Nom d'icône MDI, ex. "mdi-youtube" */
+  /** Nom d'icône MDI, ex. "mdi-youtube", ou "favicon" (action) : le favicon du site de l'URL */
   icon: string
   type: ButtonType
   /** Couleur de la case ; absente (boutons antérieurs) = gris */

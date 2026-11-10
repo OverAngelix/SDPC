@@ -7,6 +7,9 @@ export const SLOTS = COLUMNS * ROWS
 // Dans un dossier, cet emplacement est le bouton retour : il ne peut pas recevoir de bouton
 export const BACK_SLOT = 0
 
+/** Valeur réservée de `icon` : la case affiche le favicon du site de l'action (feature 17) */
+export const FAVICON_ICON = 'favicon'
+
 export const BUTTON_COLORS = ['grey', 'red', 'orange', 'amber', 'green', 'teal', 'cyan', 'blue', 'purple', 'pink'] as const satisfies readonly ButtonColor[]
 
 /** Import d'une grille entière (migration du mode invité) : au plus ce nombre de boutons */

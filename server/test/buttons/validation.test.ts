@@ -60,6 +60,11 @@ describe('validateButtonInput', () => {
     }
   })
 
+  it('accepte l\'icône du site pour une action, la refuse pour un dossier', () => {
+    assert.equal(validateButtonInput({ ...action, icon: 'favicon' }).ok, true)
+    assert.deepEqual(issuesOf({ ...folder, icon: 'favicon' }).map(error => error.code), ['favicon_needs_url'])
+  })
+
   it('refuse un type inconnu', () => {
     assert.match(errorsOf({ ...action, type: 'script' })[0], /^type/)
   })
@@ -167,6 +172,17 @@ describe('mergeButtonPatch', () => {
     assert.ok(kept.ok)
     assert.equal(kept.value.color, 'red')
     assert.equal(mergeButtonPatch(red, { color: 'rouge' }).ok, false)
+  })
+
+  it('passe en icône du site, refuse de faire un dossier d\'une action qui l\'utilise', () => {
+    const favicon = mergeButtonPatch(current, { icon: 'favicon' })
+    assert.ok(favicon.ok)
+    assert.equal(favicon.value.icon, 'favicon')
+    const withFavicon: Button = { ...current, icon: 'favicon' }
+    const result = mergeButtonPatch(withFavicon, { type: 'folder' })
+    assert.equal(result.ok, false)
+    assert.equal(!result.ok && result.errors[0]?.code, 'favicon_needs_url')
+    assert.equal(mergeButtonPatch(withFavicon, { type: 'folder', icon: 'mdi-folder' }).ok, true)
   })
 
   it('accepte un patch vide', () => {

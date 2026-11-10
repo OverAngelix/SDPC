@@ -2,7 +2,7 @@ import { bodyNotObject, issue } from '../errors.js'
 import type { Button, ButtonColor, ButtonInput, ButtonType } from '../interfaces/button.js'
 import type { Issue } from '../interfaces/error.js'
 import type { ValidationResult } from '../interfaces/validation.js'
-import { BACK_SLOT, BUTTON_COLORS, IMPORT_MAX_BUTTONS, SLOTS } from './constants.js'
+import { BACK_SLOT, BUTTON_COLORS, FAVICON_ICON, IMPORT_MAX_BUTTONS, SLOTS } from './constants.js'
 
 export const LABEL_MAX_LENGTH = 50
 export const URL_MAX_LENGTH = 2048
@@ -26,7 +26,11 @@ function parseLabel (value: unknown): Parsed<string> {
   return { value: label }
 }
 
-function parseIcon (value: unknown): Parsed<string> {
+// L'icône du site (favicon) suppose une URL : refusée pour un dossier
+function parseIcon (value: unknown, type: ButtonType | undefined): Parsed<string> {
+  if (value === FAVICON_ICON) {
+    return type === 'folder' ? { error: issue('icon', 'favicon_needs_url', 'l\'icône du site est réservée aux actions') } : { value }
+  }
   if (typeof value !== 'string' || !ICON_PATTERN.test(value)) {
     return { error: issue('icon', 'invalid_icon', 'nom d\'icône MDI requis (ex. "mdi-youtube")') }
   }
@@ -84,8 +88,8 @@ export function validateButtonInput (body: unknown): ValidationResult<ButtonInpu
   if (!isRecord(body)) return { ok: false, errors: [bodyNotObject()] }
 
   const label = parseLabel(body.label)
-  const icon = parseIcon(body.icon)
   const type = parseType(body.type)
+  const icon = parseIcon(body.icon, 'value' in type ? type.value : undefined)
   const color = parseColor(body.color)
   const position = parsePosition(body.position)
   const parentId = parseParentId(body.parentId)

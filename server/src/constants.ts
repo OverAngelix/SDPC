@@ -48,4 +48,5 @@ export const ISSUE_CODES = [
   'too_many_buttons',
   'duplicate_id',
   'folder_cycle',
+  'favicon_needs_url',
 ] as const
