@@ -2,7 +2,7 @@
 
 | | |
 | --- | --- |
-| **Statut** | En cours |
+| **Statut** | Livré |
 | **Personne active** | OverAngelix |
 | **Périmètre** | `client/` |
 | **Dépend de** | [13 — Big picture](13-big-picture.md) |
@@ -30,7 +30,7 @@ Les raccourcis ne valent qu'en big picture, et sont ignorés pendant une saisie 
 
 - [x] `ButtonTile.vue` expose `press()`, le même traitement qu'un clic (animation de lancement comprise) ; `ButtonGrid.vue` expose `press(index)`, qui le transmet à la case de cet emplacement
 - [x] `GridPage.vue` : en big picture, la touche appelle `press(emplacement)` sur la grille
-- [ ] Action, dossier, retour, case vide et mode normal vérifiés à la main (le client n'a pas d'environnement DOM pour tester les composants)
+- [x] Action, dossier, retour, case vide et mode normal vérifiés à la main (le client n'a pas d'environnement DOM pour tester les composants)
 
 ### Étape 3 — Repère visuel (client)
 
@@ -79,7 +79,7 @@ keydown (fenêtre) → GridPage.onKeydown
 ### Validation
 
 - [x] Type-check, lint, tests (218) et build sans erreur côté client
-- [ ] Parcours vérifié à la main (voir plus bas)
+- [x] Parcours vérifié à la main (voir plus bas)
 
 ### Vérifier à la main
 
