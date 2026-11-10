@@ -13,7 +13,7 @@ Un tout petit tutoriel pour découvrir l'application, dans l'esprit des écrans 
 
 1. **Bienvenue** : la grille de boutons, un clic ouvre le site dans un nouvel onglet.
 2. **Dossiers** : un dossier ouvre une autre grille, sa première case ramène en arrière.
-3. **À vous de jouer** : la grille se compose depuis « Mon compte », Configuration de la grille ; la touche B passe en big picture.
+3. **À vous de jouer** : la grille se compose depuis « Mon compte », Configuration de la grille ; la touche B passe en big picture (F jusqu'à la feature 19), ⌘F ou Ctrl F cherche un bouton.
 
 - La fenêtre s'ouvre **après la connexion**, une seule fois **par appareil**.
 - **Passer**, **C'est parti** (dernière slide), Échap ou un clic à côté la ferment, et elle ne revient plus sur cet appareil.

@@ -22,7 +22,7 @@ Une fiche par feature : explication, TODO, implémentation et personne active. N
 | 16 | [Mode invité et migration vers un compte](16-mode-invite.md) | Livré | OverAngelix |
 | 17 | [Favicon du site comme icône](17-favicon-icone.md) | Livré | OverAngelix |
 | 18 | [Raccourcis clavier en big picture](18-raccourcis-clavier-big-picture.md) | Livré | OverAngelix |
-| 19 | [Recherche rapide (⌘K / Ctrl+K)](19-recherche-rapide.md) | À faire | OverAngelix |
+| 19 | [Recherche rapide (⌘F / Ctrl+F)](19-recherche-rapide.md) | Livré | OverAngelix |
 
 Ordre de réalisation : 02 → 03 → 04 → 05 → 06 → 07 → 08 → 09 → 11 → 10 → 12 → 13 → 14 → 15 → 16 → 17 → 18 → 19
 
