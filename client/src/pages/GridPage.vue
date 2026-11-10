@@ -29,6 +29,9 @@
         @select="select"
       />
     </grid-status>
+
+    <!-- Recherche rapide (⌘F / Ctrl+F) : un résultat s'ouvre comme un clic sur sa case -->
+    <quick-search @choose="select" />
   </v-container>
 </template>
 
@@ -38,11 +41,13 @@
   import { useI18n } from 'vue-i18n'
   import ButtonGrid from '@/components/ButtonGrid.vue'
   import GridStatus from '@/components/GridStatus.vue'
+  import QuickSearch from '@/components/QuickSearch.vue'
   import { useFolderNavigation } from '@/composables/folderNavigation'
   import { useBigPictureStore } from '@/stores/bigPicture'
   import { useButtonsStore } from '@/stores/buttons'
+  import { useQuickSearchStore } from '@/stores/quickSearch'
   import { useSettingsStore } from '@/stores/settings'
-  import { isTypingTarget, shortcutSlot } from '@/utils/keyboard'
+  import { isQuickSearchShortcut, isTypingTarget, shortcutSlot } from '@/utils/keyboard'
   import { isHttpUrl } from '@/utils/url'
 
   const store = useButtonsStore()
@@ -50,6 +55,7 @@
   const { t } = useI18n()
   const settings = useSettingsStore()
   const bigPicture = useBigPictureStore()
+  const search = useQuickSearchStore()
   const { folderId, path, slots, isEmpty, openFolder, goBack } = useFolderNavigation({ root: 'grid', folder: 'folder' })
 
   function select (button: Button) {
@@ -62,10 +68,23 @@
     }
   }
 
-  // B bascule le mode, Échap en sort ; en big picture, 1 à 7 déclenchent les 7 premières cases.
-  // B et les chiffres sont ignorés pendant une saisie ou quand une fenêtre ou un menu est ouvert
+  // ⌘F / Ctrl+F ouvre la recherche rapide, en mode normal comme en big picture. B bascule le mode,
+  // Échap en sort ; en big picture, 1 à 7 déclenchent les 7 premières cases. Tous sont ignorés
+  // pendant une saisie ou quand une fenêtre ou un menu est ouvert (Échap ferme alors la fenêtre seule)
   function onKeydown (event: KeyboardEvent) {
-    if (event.key === 'Escape' && bigPicture.active) {
+    if (isQuickSearchShortcut(event)) {
+      // La recherche ouverte, le raccourci la referme ; une autre fenêtre ouverte, il revient au navigateur.
+      // preventDefault : le navigateur ouvrirait sinon sa recherche dans la page
+      if (search.open) {
+        event.preventDefault()
+        search.hide()
+      } else if (!isTypingTarget(event)) {
+        event.preventDefault()
+        search.show()
+      }
+      return
+    }
+    if (event.key === 'Escape' && bigPicture.active && !isTypingTarget(event)) {
       bigPicture.exit()
       return
     }
@@ -87,10 +106,11 @@
     window.addEventListener('keydown', onKeydown)
   })
 
-  // Le big picture ne vaut que pour la grille : la quitter (retour du navigateur, déconnexion) en sort
+  // Le big picture et la recherche ne valent que pour la grille : la quitter (retour du navigateur, déconnexion) en sort
   onBeforeUnmount(() => {
     window.removeEventListener('keydown', onKeydown)
     bigPicture.exit()
+    search.hide()
   })
 </script>
 

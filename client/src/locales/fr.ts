@@ -177,6 +177,7 @@ export default {
     gridConfig: 'Configuration de la grille',
     appSettings: 'Configuration de l\'application',
     accountWindow: 'Mon compte',
+    search: 'Rechercher ({shortcut})',
     bigPicture: 'Big picture (B)',
     logout: 'Déconnexion',
     clearGrid: 'Effacer la grille',
@@ -196,6 +197,18 @@ export default {
     migrated: 'Grille d\'invité enregistrée sur le compte.',
   },
 
+  /** Recherche rapide (⌘F / Ctrl+F) : tous les boutons, à tous les niveaux */
+  search: {
+    label: 'Recherche rapide',
+    placeholder: 'Rechercher un bouton…',
+    empty: 'Aucun résultat',
+    /** Rappel de la touche qui ferme la fenêtre */
+    escape: 'échap',
+    /** Raccourci rappelé dans le menu : ⌘ sur Mac, Ctrl ailleurs */
+    shortcutApple: '⌘F',
+    shortcutOther: 'Ctrl F',
+  },
+
   /** Mode big picture : la grille en plein cadre */
   bigPicture: {
     exit: 'Revenir au mode normal (Échap)',
@@ -213,7 +226,7 @@ export default {
     },
     config: {
       title: 'À vous de jouer',
-      text: 'Composez votre grille depuis « Mon compte », Configuration de la grille. La touche B l\'affiche en plein cadre.',
+      text: 'Composez votre grille depuis « Mon compte », Configuration de la grille. La touche B l\'affiche en plein cadre, ⌘F ou Ctrl F y cherche un bouton.',
     },
     goTo: 'Aller à la slide {number}',
     skip: 'Passer',

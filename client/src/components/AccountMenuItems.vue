@@ -40,6 +40,12 @@
       />
 
       <v-list-item
+        prepend-icon="mdi-magnify"
+        :title="t('menu.search', { shortcut: t(isApplePlatform() ? 'search.shortcutApple' : 'search.shortcutOther') })"
+        @click="emit('select', 'search')"
+      />
+
+      <v-list-item
         prepend-icon="mdi-fullscreen"
         :title="t('menu.bigPicture')"
         @click="emit('select', 'bigPicture')"
@@ -74,6 +80,7 @@
 <script lang="ts" setup>
   import type { AccountAction } from '@/interfaces/account'
   import { useI18n } from 'vue-i18n'
+  import { isApplePlatform } from '@/utils/keyboard'
 
   withDefaults(defineProps<{
     email: string

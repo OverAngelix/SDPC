@@ -162,6 +162,7 @@ const en: Messages = {
     gridConfig: 'Grid settings',
     appSettings: 'App settings',
     accountWindow: 'My account',
+    search: 'Search ({shortcut})',
     bigPicture: 'Big picture (B)',
     logout: 'Sign out',
     clearGrid: 'Clear the grid',
@@ -180,6 +181,15 @@ const en: Messages = {
     migrated: 'Guest grid saved to the account.',
   },
 
+  search: {
+    label: 'Quick search',
+    placeholder: 'Search for a button…',
+    empty: 'No results',
+    escape: 'esc',
+    shortcutApple: '⌘F',
+    shortcutOther: 'Ctrl F',
+  },
+
   bigPicture: {
     exit: 'Back to normal mode (Esc)',
   },
@@ -195,7 +205,7 @@ const en: Messages = {
     },
     config: {
       title: 'Your turn',
-      text: 'Build your grid from “My account”, Grid configuration. The B key shows it full frame.',
+      text: 'Build your grid from “My account”, Grid configuration. The B key shows it full frame, ⌘F or Ctrl F searches it for a button.',
     },
     goTo: 'Go to slide {number}',
     skip: 'Skip',

@@ -20,3 +20,20 @@ export function isTypingTarget (event: Event): boolean {
   const target = event.target instanceof Element ? event.target : null
   return target?.closest('input, textarea, select, [contenteditable], .v-overlay') != null
 }
+
+/** ⌘F ou Ctrl+F : ouvre la recherche rapide. Les deux combinaisons marchent sur tous les systèmes, seul le rappel affiché change. */
+export function isQuickSearchShortcut (event: Pick<KeyboardEvent, 'key' | 'ctrlKey' | 'metaKey' | 'altKey' | 'shiftKey' | 'repeat'>): boolean {
+  return (event.ctrlKey || event.metaKey) && !event.altKey && !event.shiftKey && !event.repeat && event.key.toLowerCase() === 'f'
+}
+
+/** Ce que le navigateur dit du système ; `userAgentData` n'existe que dans les navigateurs Chromium */
+interface PlatformHints {
+  platform?: string
+  userAgentData?: { platform?: string }
+}
+
+/** Le système est un Mac (ou un iPhone, un iPad) : le rappel du raccourci montre ⌘ au lieu de Ctrl. */
+export function isApplePlatform (hints: PlatformHints | undefined = globalThis.navigator as PlatformHints | undefined): boolean {
+  const platform = hints?.userAgentData?.platform || hints?.platform || ''
+  return /mac|iphone|ipad|ipod/i.test(platform)
+}

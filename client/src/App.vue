@@ -102,6 +102,7 @@
   import { useBigPictureStore } from '@/stores/bigPicture'
   import { useButtonsStore } from '@/stores/buttons'
   import { useGuestStore } from '@/stores/guest'
+  import { useQuickSearchStore } from '@/stores/quickSearch'
   import { useSettingsStore } from '@/stores/settings'
   import { readGuestButtons } from '@/utils/guestStorage'
   import { readWelcomeSeen, writeWelcomeSeen } from '@/utils/rememberedWelcome'
@@ -130,6 +131,7 @@
   const noticeText = ref('')
   const buttons = useButtonsStore()
   const bigPicture = useBigPictureStore()
+  const quickSearch = useQuickSearchStore()
   // Rien à effacer : une fois les boutons chargés, une grille vide grise le bouton de la fenêtre « Mon compte »
   const gridEmpty = computed(() => buttons.loaded && buttons.buttons.length === 0)
   const theme = useTheme()
@@ -179,6 +181,10 @@
         accountOpen.value = true
         break
       }
+      case 'search': {
+        openSearch()
+        break
+      }
       case 'bigPicture': {
         enterBigPicture()
         break
@@ -208,6 +214,14 @@
       await router.push('/')
     }
     bigPicture.enter()
+  }
+
+  // La recherche ne vaut que pour la grille, comme le big picture
+  async function openSearch () {
+    if (onConfig.value) {
+      await router.push('/')
+    }
+    quickSearch.show()
   }
 
   function onCleared (count: number) {
