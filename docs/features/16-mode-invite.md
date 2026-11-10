@@ -52,7 +52,7 @@ Les libellés sont des noms propres : ils se lisent pareil en français et en an
 
 - [x] `utils/guestStorage.ts` : lecture et écriture de la grille et des réglages de l'invité (`sdpc.guest.buttons`, `sdpc.guest.settings`) et du mode invité lui-même (`sdpc.guest`) ; tolère une valeur illisible ou un stockage refusé
 - [x] `api/guestButtons.ts` : mêmes fonctions que `api/buttons.ts` (lister, créer, modifier, déplacer avec échange, supprimer avec le contenu d'un dossier, effacer), mais sur le stockage local ; identifiants générés par `crypto.randomUUID()` ; mêmes refus que le serveur pour l'emplacement réservé ou occupé (mêmes codes d'erreur, donc mêmes messages)
-- [x] Premier passage en mode invité : grille d'exemple demandée au serveur ; s'il ne répond pas, grille vide
+- [x] Premier passage en mode invité : grille d'exemple demandée au serveur au premier chargement de la grille (`api/guestButtons.ts`, `fetchButtons`) ; s'il ne répond pas, grille vide pour cette fois, sans rien retenir, et l'exemple est redemandé au chargement suivant
 - [x] Tests client : chaque opération, échange de places, suppression récursive, données corrompues, stockage refusé
 
 ### Étape 3 — Stores et routeur (client)
@@ -106,7 +106,8 @@ Les libellés sont des noms propres : ils se lisent pareil en français et en an
 ```
 Page de connexion → carte « Mode invité » → « Entrer en mode invité »
   → auth.enterGuest() : sdpc.guest retenu
-  → pas de grille d'invité ? GET /buttons/example → grille (stockage local)
+  → chargement de la grille : pas de grille d'invité ? GET /buttons/example → grille (stockage local)
+                              serveur injoignable → grille vide affichée, rien de retenu
 
 Invité → « Créer un compte » → RegisterPage
   → inscription réussie (grille d'exemple posée) → POST /buttons/import + PATCH /settings

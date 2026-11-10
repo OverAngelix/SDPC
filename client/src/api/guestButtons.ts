@@ -1,6 +1,7 @@
 import type { ApiErrorBody, ApiIssue } from '@/interfaces/api'
 import type { Button, ButtonInput, ButtonPatch } from '@/interfaces/button'
 import { AxiosError, AxiosHeaders } from 'axios'
+import { fetchExampleButtons } from '@/api/buttons'
 import { BACK_SLOT, collectSubtree } from '@/grid'
 import { readGuestButtons, writeGuestButtons } from '@/utils/guestStorage'
 
@@ -38,7 +39,18 @@ function assertSlotFree (buttons: Button[], parentId: string | null, position: n
 }
 
 export async function fetchButtons (): Promise<Button[]> {
-  return load()
+  const saved = readGuestButtons()
+  if (saved !== null) {
+    return saved
+  }
+  // Première grille de l'invité : celle d'exemple. Serveur injoignable : grille vide pour cette fois, sans rien
+  // retenir, pour que l'exemple soit redemandé au prochain chargement
+  const example = await fetchExampleButtons().catch(() => null)
+  if (example === null) {
+    return []
+  }
+  writeGuestButtons(example)
+  return example
 }
 
 export async function createButton (input: ButtonInput): Promise<Button> {

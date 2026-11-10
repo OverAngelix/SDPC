@@ -1,10 +1,15 @@
 import type { Button } from '@/interfaces/button'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { fetchExampleButtons } from '@/api/buttons'
 import { clearButtons, createButton, deleteButton, fetchButtons, moveButton, updateButton } from '@/api/guestButtons'
 import { i18n } from '@/plugins/i18n'
 import { describeApiError } from '@/utils/apiError'
 import { readGuestButtons, writeGuestButtons } from '@/utils/guestStorage'
 import { stubStorage } from '../helpers/storage'
+
+vi.mock('@/api/buttons', () => ({ fetchExampleButtons: vi.fn() }))
+
+const fetchExampleMock = vi.mocked(fetchExampleButtons)
 
 const games: Button = { id: 'games', parentId: null, position: 0, label: 'Jeux', icon: 'mdi-folder', type: 'folder' }
 const retro: Button = { id: 'retro', parentId: 'games', position: 2, label: 'Rétro', icon: 'mdi-folder', type: 'folder' }
@@ -21,16 +26,38 @@ describe('guestButtons', () => {
   beforeEach(() => {
     stubStorage()
     writeGuestButtons([games, retro, mario, mail])
+    fetchExampleMock.mockReset()
   })
 
   afterEach(() => {
     vi.unstubAllGlobals()
   })
 
-  it('liste la grille de l\'invité, vide s\'il n\'en a pas', async () => {
+  it('liste la grille de l\'invité', async () => {
     expect(await fetchButtons()).toEqual([games, retro, mario, mail])
-    stubStorage()
+    expect(fetchExampleMock).not.toHaveBeenCalled()
+  })
+
+  it('garde une grille vidée par l\'invité, sans redemander l\'exemple', async () => {
+    writeGuestButtons([])
     expect(await fetchButtons()).toEqual([])
+    expect(fetchExampleMock).not.toHaveBeenCalled()
+  })
+
+  it('part de la grille d\'exemple quand l\'invité n\'en a pas encore', async () => {
+    stubStorage()
+    fetchExampleMock.mockResolvedValue([mail])
+    expect(await fetchButtons()).toEqual([mail])
+    expect(readGuestButtons()).toEqual([mail])
+  })
+
+  it('serveur injoignable : grille vide pour cette fois, l\'exemple est redemandé ensuite', async () => {
+    stubStorage()
+    fetchExampleMock.mockRejectedValue(new Error('injoignable'))
+    expect(await fetchButtons()).toEqual([])
+    expect(readGuestButtons()).toBeNull()
+    fetchExampleMock.mockResolvedValue([mail])
+    expect(await fetchButtons()).toEqual([mail])
   })
 
   it('crée un bouton avec un nouvel identifiant et le garde', async () => {

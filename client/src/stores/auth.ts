@@ -3,13 +3,13 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { deleteAccount } from '@/api/account'
 import { fetchMe, login, logout, register } from '@/api/auth'
-import { fetchExampleButtons, importButtons } from '@/api/buttons'
+import { importButtons } from '@/api/buttons'
 import { setUnauthorizedHandler } from '@/api/http'
 import { updateSettings } from '@/api/settings'
 import { useButtonsStore } from '@/stores/buttons'
 import { useGuestStore } from '@/stores/guest'
 import { useSettingsStore } from '@/stores/settings'
-import { clearGuestData, readGuestButtons, readGuestSettings, writeGuestButtons } from '@/utils/guestStorage'
+import { clearGuestData, readGuestButtons, readGuestSettings } from '@/utils/guestStorage'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
@@ -53,12 +53,8 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  /** Mode invité : la grille et les réglages restent dans le navigateur. Un premier passage part de la grille d'exemple. */
+  /** Mode invité : la grille et les réglages restent dans le navigateur. Un premier passage part de la grille d'exemple (api/guestButtons). */
   async function enterGuest () {
-    if (readGuestButtons() === null) {
-      // Serveur injoignable : l'invité part d'une grille vide
-      writeGuestButtons(await fetchExampleButtons().catch(() => []))
-    }
     guest.enter()
     useButtonsStore().reset()
     await loadSettings()

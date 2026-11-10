@@ -4,7 +4,7 @@ import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { deleteAccount } from '@/api/account'
 import { fetchMe, login, logout, register } from '@/api/auth'
-import { fetchExampleButtons, importButtons } from '@/api/buttons'
+import { importButtons } from '@/api/buttons'
 import { fetchSettings, updateSettings } from '@/api/settings'
 import { useAuthStore } from '@/stores/auth'
 import { useButtonsStore } from '@/stores/buttons'
@@ -225,7 +225,6 @@ describe('auth store', () => {
   })
 
   describe('mode invité', () => {
-    const fetchExampleMock = vi.mocked(fetchExampleButtons)
     const importButtonsMock = vi.mocked(importButtons)
     const updateSettingsMock = vi.mocked(updateSettings)
     const github: Button = { id: 'github', parentId: null, position: 0, label: 'GitHub', icon: 'mdi-github', type: 'action', url: 'https://github.com' }
@@ -243,7 +242,7 @@ describe('auth store', () => {
 
     beforeEach(() => {
       data = stubStorage()
-      for (const mock of [fetchExampleMock, importButtonsMock, updateSettingsMock, fetchSettingsMock]) {
+      for (const mock of [importButtonsMock, updateSettingsMock, fetchSettingsMock]) {
         mock.mockReset()
       }
     })
@@ -252,25 +251,16 @@ describe('auth store', () => {
       vi.unstubAllGlobals()
     })
 
-    it('enterGuest part de la grille d\'exemple au premier passage', async () => {
-      fetchExampleMock.mockResolvedValue([github])
+    it('enterGuest passe en mode invité', async () => {
       const auth = useAuthStore()
       await auth.enterGuest()
       expect(useGuestStore().active).toBe(true)
       expect(auth.ready).toBe(true)
-      expect(JSON.parse(data.get(GUEST_BUTTONS_KEY)!)).toEqual([github])
-    })
-
-    it('enterGuest part d\'une grille vide si le serveur ne répond pas', async () => {
-      fetchExampleMock.mockRejectedValue(new Error('injoignable'))
-      await useAuthStore().enterGuest()
-      expect(data.get(GUEST_BUTTONS_KEY)).toBe('[]')
     })
 
     it('enterGuest retrouve la grille laissée et ses réglages', async () => {
       guestWithGrid()
       await useAuthStore().enterGuest()
-      expect(fetchExampleMock).not.toHaveBeenCalled()
       expect(useSettingsStore().volume).toBe(10)
       expect(fetchSettingsMock).not.toHaveBeenCalled()
     })
