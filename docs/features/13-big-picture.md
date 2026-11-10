@@ -2,7 +2,7 @@
 
 | | |
 | --- | --- |
-| **Statut** | En cours |
+| **Statut** | Livré |
 | **Personne active** | OverAngelix |
 | **Périmètre** | `client/` |
 | **Dépend de** | [03 — Grille de boutons](03-grille-boutons.md), [07 — Responsive](07-responsive.md), [11 — Menu « Mon compte »](11-menu-compte-reglages.md) |
@@ -94,7 +94,7 @@ Page grille quittée (retour navigateur, déconnexion) → bigPicture.exit()
 ### Validation
 
 - [x] Type-check, lint, tests (179) et build sans erreur côté client
-- [ ] Parcours vérifié sur ordinateur et sur téléphone (portrait et paysage)
+- [x] Parcours vérifié sur ordinateur et sur téléphone (portrait et paysage)
 
 ### Vérifier à la main
 

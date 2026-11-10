@@ -16,7 +16,7 @@ Une fiche par feature : explication, TODO, implémentation et personne active. N
 | 10 | [Fenêtre « Mon compte » : mot de passe, remise à zéro et suppression](10-fenetre-mon-compte.md) | Livré | OverAngelix |
 | 11 | [Menu « Mon compte » et réglages de l'application](11-menu-compte-reglages.md) | Livré | OverAngelix |
 | 12 | [Internationalisation (français et anglais)](12-i18n.md) | Livré | OverAngelix |
-| 13 | [Big picture : la grille en plein cadre](13-big-picture.md) | En cours | OverAngelix |
+| 13 | [Big picture : la grille en plein cadre](13-big-picture.md) | Livré | OverAngelix |
 | 14 | [Déploiement avec GitHub Actions](14-deploiement-github-actions.md) | En cours | OverAngelix |
 | 15 | [Écran de bienvenue](15-ecran-bienvenue.md) | Livré | OverAngelix |
 | 16 | [Mode invité et migration vers un compte](16-mode-invite.md) | En cours | OverAngelix |
