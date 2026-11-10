@@ -20,7 +20,7 @@ Une fiche par feature : explication, TODO, implémentation et personne active. N
 | 14 | [Déploiement avec GitHub Actions](14-deploiement-github-actions.md) | En cours | OverAngelix |
 | 15 | [Écran de bienvenue](15-ecran-bienvenue.md) | Livré | OverAngelix |
 | 16 | [Mode invité et migration vers un compte](16-mode-invite.md) | En cours | OverAngelix |
-| 17 | [Favicon du site comme icône](17-favicon-icone.md) | À faire | OverAngelix |
+| 17 | [Favicon du site comme icône](17-favicon-icone.md) | Livré | OverAngelix |
 | 18 | [Raccourcis clavier en big picture](18-raccourcis-clavier-big-picture.md) | En cours | OverAngelix |
 | 19 | [Recherche rapide (⌘K / Ctrl+K)](19-recherche-rapide.md) | À faire | OverAngelix |
 
