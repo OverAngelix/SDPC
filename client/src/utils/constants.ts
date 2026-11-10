@@ -11,3 +11,6 @@ export const FAVICON_MISSING_SIZE = 16
 
 /** Icône proposée à la création et au changement de type, tant que l'utilisateur n'en a pas choisi une autre */
 export const DEFAULT_ICONS: Record<ButtonType, string> = { action: FAVICON_ICON, folder: 'mdi-folder' }
+
+/** Nombre maximal de résultats de la recherche rapide (feature 19) */
+export const SEARCH_LIMIT = 8
