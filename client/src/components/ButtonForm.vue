@@ -33,10 +33,6 @@
             :maxlength="LABEL_MAX_LENGTH"
           />
 
-          <icon-picker v-model="values.icon" class="mt-2" :error-messages="shown.icon" />
-
-          <color-picker v-model="values.color" class="mt-4" />
-
           <!-- Un dossier n'a pas d'URL : le champ garde sa place, invisible, pour que le dialogue ne change pas de taille -->
           <v-text-field
             v-model="values.url"
@@ -44,10 +40,32 @@
             :class="{ 'url-hidden': values.type !== 'action' }"
             :disabled="values.type !== 'action'"
             :error-messages="shown.url"
+            :hide-details="!shown.url"
             :label="t('buttonForm.url')"
             placeholder="https://"
             type="url"
           />
+
+          <v-row class="mt-4">
+            <!-- La case telle qu'elle sera dans la grille : simple aperçu, ni cliquable ni lue deux fois.
+                 Téléphone : en dessous des choix, comme leur résultat -->
+            <v-col class="d-flex justify-center order-last order-sm-first" cols="12" sm="auto">
+              <div class="preview" inert>
+                <button-tile :button="preview" />
+              </div>
+            </v-col>
+
+            <v-col class="d-flex flex-column ga-4" cols="12" sm>
+              <icon-picker
+                v-model="values.icon"
+                :error-messages="shown.icon"
+                :favicon="values.type === 'action'"
+                :url="values.url"
+              />
+
+              <color-picker v-model="values.color" />
+            </v-col>
+          </v-row>
 
           <v-alert
             v-if="serverError"
@@ -90,17 +108,19 @@
 
 <script lang="ts" setup>
   import type { ApiErrorMessage } from '@/interfaces/api'
-  import type { Button, ButtonType } from '@/interfaces/button'
+  import type { Button } from '@/interfaces/button'
   import type { ButtonFormValues } from '@/interfaces/buttonForm'
   import { computed, reactive, ref, watch } from 'vue'
   import { useI18n } from 'vue-i18n'
   import { useDisplay } from 'vuetify'
+  import ButtonTile from '@/components/ButtonTile.vue'
   import ColorPicker from '@/components/ColorPicker.vue'
   import IconPicker from '@/components/IconPicker.vue'
   import { useButtonsStore } from '@/stores/buttons'
   import { describeApiError } from '@/utils/apiError'
-  import { LABEL_MAX_LENGTH, toButtonInput, toButtonPatch, validateButtonForm } from '@/utils/buttonForm'
+  import { iconAfterTypeChange, LABEL_MAX_LENGTH, toButtonInput, toButtonPatch, validateButtonForm } from '@/utils/buttonForm'
   import { colorOf, DEFAULT_COLOR } from '@/utils/colors'
+  import { DEFAULT_ICONS } from '@/utils/constants'
 
   // Téléphone : le formulaire occupe tout l'écran, ses champs défilent au-dessus du clavier
   const { xs } = useDisplay()
@@ -125,9 +145,6 @@
     move: [button: Button]
   }>()
 
-  // Icône proposée par défaut, tant que l'utilisateur n'en a pas choisi une autre
-  const DEFAULT_ICONS: Record<ButtonType, string> = { action: 'mdi-web', folder: 'mdi-folder' }
-
   const store = useButtonsStore()
 
   const values = reactive<ButtonFormValues>({ type: 'action', label: '', icon: DEFAULT_ICONS.action, color: DEFAULT_COLOR, url: '' })
@@ -135,6 +152,18 @@
   // Les erreurs de saisie n'apparaissent qu'après une première tentative d'envoi
   const submitted = ref(false)
   const serverError = ref<ApiErrorMessage | null>(null)
+
+  // Le bouton tel qu'il sera enregistré, pour l'aperçu
+  const preview = computed<Button>(() => ({
+    id: props.button?.id ?? '',
+    parentId: props.parentId,
+    position: props.position,
+    type: values.type,
+    label: values.label.trim(),
+    icon: values.icon,
+    color: values.color,
+    url: values.url.trim(),
+  }))
 
   const errors = computed(() => validateButtonForm(values))
   const shown = computed(() => submitted.value ? errors.value : {})
@@ -150,7 +179,7 @@
   })
 
   watch(() => values.type, (type, previous) => {
-    if (values.icon === DEFAULT_ICONS[previous]) values.icon = DEFAULT_ICONS[type]
+    values.icon = iconAfterTypeChange(values.icon, previous, type)
   })
 
   async function submit () {
@@ -177,6 +206,11 @@
     /* Le dialogue ne dépasse jamais la fenêtre (dvh : la barre d'adresse mobile ne la fausse pas) */
     max-height: calc(100vh - 48px);
     max-height: calc(100dvh - 48px);
+  }
+
+  /* Assez grande pour que l'icône et le libellé se lisent comme dans la grille */
+  .preview {
+    width: 132px;
   }
 
   .url-hidden {

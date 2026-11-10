@@ -1,7 +1,7 @@
 import type { ButtonFormValues } from '@/interfaces/buttonForm'
 import { afterEach, describe, expect, it } from 'vitest'
 import { setLocale } from '@/plugins/i18n'
-import { ICON_PATTERN, LABEL_MAX_LENGTH, toButtonInput, toButtonPatch, URL_MAX_LENGTH, validateButtonForm } from '@/utils/buttonForm'
+import { ICON_PATTERN, iconAfterTypeChange, LABEL_MAX_LENGTH, toButtonInput, toButtonPatch, URL_MAX_LENGTH, validateButtonForm } from '@/utils/buttonForm'
 import { COMMON_ICONS } from '@/utils/icons'
 
 const action: ButtonFormValues = { type: 'action', label: 'YouTube', icon: 'mdi-youtube', color: 'red', url: 'https://www.youtube.com' }
@@ -42,6 +42,11 @@ describe('validateButtonForm', () => {
       expect(validateButtonForm({ ...action, icon }).icon, icon).toBeDefined()
     }
     expect(validateButtonForm({ ...action, icon: 'mdi-gamepad-variant' }).icon).toBeUndefined()
+  })
+
+  it('accepte l\'icône du site pour une action seulement', () => {
+    expect(validateButtonForm({ ...action, icon: 'favicon' }).icon).toBeUndefined()
+    expect(validateButtonForm({ ...folder, icon: 'favicon' }).icon).toBe('L\'icône du site n\'existe que pour une action.')
   })
 
   it('exige une URL pour une action', () => {
@@ -105,5 +110,18 @@ describe('COMMON_ICONS', () => {
   it('ne contient que des noms d\'icône valides, sans doublon', () => {
     expect(COMMON_ICONS.every(icon => ICON_PATTERN.test(icon))).toBe(true)
     expect(new Set(COMMON_ICONS).size).toBe(COMMON_ICONS.length)
+  })
+})
+
+describe('iconAfterTypeChange', () => {
+  it('fait suivre l\'icône par défaut au type', () => {
+    expect(iconAfterTypeChange('favicon', 'action', 'folder')).toBe('mdi-folder')
+    expect(iconAfterTypeChange('mdi-folder', 'folder', 'action')).toBe('favicon')
+  })
+
+  it('remplace l\'icône du site en passant en dossier, garde une icône choisie', () => {
+    expect(iconAfterTypeChange('favicon', 'folder', 'folder')).toBe('mdi-folder')
+    expect(iconAfterTypeChange('mdi-youtube', 'action', 'folder')).toBe('mdi-youtube')
+    expect(iconAfterTypeChange('mdi-github', 'folder', 'action')).toBe('mdi-github')
   })
 })

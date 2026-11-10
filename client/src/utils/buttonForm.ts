@@ -1,6 +1,7 @@
-import type { ButtonInput } from '@/interfaces/button'
+import type { ButtonInput, ButtonType } from '@/interfaces/button'
 import type { ButtonFormErrors, ButtonFormValues } from '@/interfaces/buttonForm'
 import { i18n } from '@/plugins/i18n'
+import { DEFAULT_ICONS, FAVICON_ICON } from '@/utils/constants'
 import { isHttpUrl } from '@/utils/url'
 
 // Mêmes limites que le serveur (server/src/buttons/validation.ts), qui reste l'autorité
@@ -22,7 +23,12 @@ export function validateButtonForm (values: ButtonFormValues): ButtonFormErrors 
     errors.label = t('buttonForm.errors.labelTooLong', { max: LABEL_MAX_LENGTH })
   }
 
-  if (!ICON_PATTERN.test(values.icon)) {
+  // L'icône du site suppose une URL : réservée aux actions
+  if (values.icon === FAVICON_ICON) {
+    if (values.type !== 'action') {
+      errors.icon = t('buttonForm.errors.faviconNeedsUrl')
+    }
+  } else if (!ICON_PATTERN.test(values.icon)) {
     errors.icon = t('buttonForm.errors.iconInvalid')
   }
 
@@ -39,6 +45,14 @@ export function validateButtonForm (values: ButtonFormValues): ButtonFormErrors 
   }
 
   return errors
+}
+
+/**
+ * L'icône après un changement de type : l'icône par défaut suit le type, l'icône du site devient celle d'un dossier
+ * (qui n'a pas d'URL) ; une icône choisie par l'utilisateur est gardée.
+ */
+export function iconAfterTypeChange (icon: string, from: ButtonType, to: ButtonType): string {
+  return icon === DEFAULT_ICONS[from] || (to === 'folder' && icon === FAVICON_ICON) ? DEFAULT_ICONS[to] : icon
 }
 
 /** Les champs à envoyer pour créer un bouton à un emplacement donné */

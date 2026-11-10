@@ -53,6 +53,7 @@ const en: Messages = {
     too_many_buttons: '{max} buttons at most',
     duplicate_id: 'identifier already used in the grid',
     folder_cycle: 'folders contain each other',
+    favicon_needs_url: 'the site icon is only for actions',
   },
 
   common: {
@@ -118,7 +119,8 @@ const en: Messages = {
     errors: {
       labelRequired: 'The label is required.',
       labelTooLong: 'The label can be at most {max} characters long.',
-      iconInvalid: 'An MDI icon name is expected, for example “mdi-youtube”.',
+      iconInvalid: 'Unknown icon: pick one from the list.',
+      faviconNeedsUrl: 'The site icon is only available for an action.',
       urlRequired: 'The URL is required for an action.',
       urlTooLong: 'The URL can be at most {max} characters long.',
       urlScheme: 'The URL must start with http:// or https://.',
@@ -126,11 +128,10 @@ const en: Messages = {
   },
 
   pickers: {
-    color: 'Color',
+    color: 'Fill',
     icon: 'Icon',
-    iconPlaceholder: 'Pick one below or type an MDI icon name (mdi-youtube)',
-    iconsPrevious: 'Previous icons',
-    iconsNext: 'Next icons',
+    favicon: 'Site icon',
+    library: 'Library',
   },
 
   colors: {

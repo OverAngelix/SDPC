@@ -1,4 +1,4 @@
-// Icônes proposées dans le sélecteur (le champ libre accepte n'importe quelle icône MDI)
+// Icônes proposées dans le sélecteur ; le serveur accepte n'importe quelle icône MDI
 export const COMMON_ICONS = [
   'mdi-web', 'mdi-home', 'mdi-folder', 'mdi-star', 'mdi-heart', 'mdi-bookmark', 'mdi-cog',
   'mdi-youtube', 'mdi-twitch', 'mdi-spotify', 'mdi-netflix', 'mdi-movie', 'mdi-video', 'mdi-music',

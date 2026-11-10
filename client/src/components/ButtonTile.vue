@@ -9,7 +9,16 @@
     variant="flat"
     @click="onClick"
   >
-    <v-icon class="tile-icon" :icon="icon" size="38cqw" />
+    <v-icon v-if="back" class="tile-icon" icon="mdi-arrow-left" size="38cqw" />
+
+    <button-icon
+      v-else-if="button"
+      class="tile-icon"
+      :icon="button.icon"
+      size="38cqw"
+      :url="button.url"
+    />
+
     <span class="tile-label text-center">{{ label }}</span>
 
     <v-icon
@@ -61,6 +70,7 @@
   import type { Button } from '@/interfaces/button'
   import { computed, onBeforeUnmount, ref } from 'vue'
   import { useI18n } from 'vue-i18n'
+  import ButtonIcon from '@/components/ButtonIcon.vue'
   import { useSettingsStore } from '@/stores/settings'
   import { colorOf, DEFAULT_COLOR, solidColor } from '@/utils/colors'
 
@@ -88,7 +98,6 @@
     remove: [button: Button]
   }>()
 
-  const icon = computed(() => props.back ? 'mdi-arrow-left' : props.button?.icon)
   const label = computed(() => props.back ? t('grid.back') : props.button?.label)
   // Case pleine, texte et icônes en blanc ; la tuile de retour est toujours grise
   const color = computed(() => solidColor(props.back ? DEFAULT_COLOR : colorOf(props.button)))

@@ -15,7 +15,7 @@
         type="button"
         @click="model = color"
       >
-        <v-icon v-if="color === model" color="white" icon="mdi-check" size="20" />
+        <v-icon v-if="color === model" color="white" icon="mdi-check" size="16" />
       </button>
     </div>
   </div>
@@ -33,10 +33,13 @@
 </script>
 
 <style scoped>
+  /* Les dix pastilles toujours sur une ligne, même sur téléphone */
   .swatches {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
+    display: grid;
+    grid-template-columns: repeat(10, 28px);
+    justify-content: space-between;
+    max-width: 400px;
+    padding: 5px;
   }
 
   .swatch {
@@ -44,10 +47,10 @@
     border-radius: 50%;
     cursor: pointer;
     display: inline-flex;
-    height: 36px;
+    height: 28px;
     justify-content: center;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
-    width: 36px;
+    width: 28px;
   }
 
   .swatch:hover {

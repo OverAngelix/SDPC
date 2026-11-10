@@ -58,6 +58,7 @@ export default {
     too_many_buttons: '{max} boutons au plus',
     duplicate_id: 'identifiant déjà utilisé dans la grille',
     folder_cycle: 'des dossiers se contiennent les uns les autres',
+    favicon_needs_url: 'l\'icône du site est réservée aux actions',
   },
 
   /** Boutons et phrases communs à plusieurs fenêtres */
@@ -129,7 +130,8 @@ export default {
     errors: {
       labelRequired: 'Le libellé est obligatoire.',
       labelTooLong: 'Le libellé fait {max} caractères au plus.',
-      iconInvalid: 'Nom d\'icône MDI attendu, par exemple « mdi-youtube ».',
+      iconInvalid: 'Icône inconnue : en choisir une dans la liste.',
+      faviconNeedsUrl: 'L\'icône du site n\'existe que pour une action.',
       urlRequired: 'L\'URL est obligatoire pour une action.',
       urlTooLong: 'L\'URL fait {max} caractères au plus.',
       urlScheme: 'L\'URL doit commencer par http:// ou https://.',
@@ -138,11 +140,10 @@ export default {
 
   /** Choix de la couleur et de l'icône */
   pickers: {
-    color: 'Couleur',
+    color: 'Fond',
     icon: 'Icône',
-    iconPlaceholder: 'Choisir ci-dessous ou saisir un nom d\'icône MDI (mdi-youtube)',
-    iconsPrevious: 'Icônes précédentes',
-    iconsNext: 'Icônes suivantes',
+    favicon: 'Icône du site',
+    library: 'Bibliothèque',
   },
 
   /** Noms des couleurs proposées */
